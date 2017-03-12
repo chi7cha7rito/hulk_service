@@ -10,7 +10,6 @@ module.exports = function (sequelize) {
     },
     result: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,

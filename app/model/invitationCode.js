@@ -9,7 +9,8 @@ module.exports = function (sequelize) {
       allowNull: false
     },
     code: {
-      type: sequelize.Sequelize.STRING,
+      type: sequelize.Sequelize.INTEGER,
+      primaryKey: true,
       allowNull: false
     },
     creator: {
@@ -20,10 +21,10 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.invitationCode.belongsTo(models.member)
+      classMethods: {
+        associate(models) {
+          models.signIn.belongsTo(models.member)
+        }
       }
-    }
-  })
+    })
 }

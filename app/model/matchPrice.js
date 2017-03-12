@@ -17,7 +17,8 @@ module.exports = function (sequelize) {
     },
     status: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
@@ -27,10 +28,10 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.matchPrice.belongsTo(models.match)
+      classMethods: {
+        associate(models) {
+          models.matchPrice.belongsTo(models.match)
+        }
       }
-    }
-  })
+    })
 }

@@ -29,7 +29,8 @@ module.exports = function (sequelize) {
     },
     status: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,

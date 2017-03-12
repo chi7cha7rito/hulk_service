@@ -22,7 +22,7 @@ module.exports = function (sequelize) {
   }, {
     classMethods: {
       associate(models) {
-        models.wechat.belongsTo(models.user)
+        models.wechat.belongsTo(models.member)
       }
     }
   })

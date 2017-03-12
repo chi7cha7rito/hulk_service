@@ -15,6 +15,10 @@ module.exports = function (sequelize) {
     amount: {
       type: sequelize.Sequelize.DECIMAL
     },
+    isPositive: {
+      type: sequelize.Sequelize.BOOLEAN,
+      allowNull: false
+    },
     source: {
       type: sequelize.Sequelize.INTEGER,
       allowNull: false
@@ -39,10 +43,10 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.balance.belongsTo(models.member)
+      classMethods: {
+        associate(models) {
+          models.balance.belongsTo(models.member)
+        }
       }
-    }
-  })
+    })
 }

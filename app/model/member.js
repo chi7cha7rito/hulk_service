@@ -13,11 +13,13 @@ module.exports = function (sequelize) {
       allowNull: false
     },
     level: {
-      type: sequelize.Sequelize.INTEGER
+      type: sequelize.Sequelize.INTEGER,
+      defaultValue: 1
     },
     status: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
@@ -27,15 +29,17 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.member.belongsTo(models.user)
-        models.member.hasMany(models.loyaltyPoints)
-        models.member.hasMany(models.balance)
-        models.member.hasMany(models.signIn)
-        models.member.hasMany(models.invitationCode)
-        models.member.hasMany(models.attendance)
+      classMethods: {
+        associate(models) {
+          models.member.belongsTo(models.user)
+          models.member.hasOne(models.wechat)
+          models.member.hasMany(models.loyaltyPoint)
+          models.member.hasMany(models.balance)
+          models.member.hasMany(models.signIn)
+          models.member.hasMany(models.invitationCode)
+          models.member.hasMany(models.attendance)
+        }
+        
       }
-    }
-  })
+    })
 }

@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = function (sequelize) {
-  return sequelize.define('loyaltyPoints', {
+  return sequelize.define('loyaltyPoint', {
     id: {
       type: sequelize.Sequelize.INTEGER,
       autoIncrement: true,
@@ -14,6 +14,10 @@ module.exports = function (sequelize) {
     },
     points: {
       type: sequelize.Sequelize.DECIMAL
+    },
+    isPositive: {
+      type: sequelize.Sequelize.BOOLEAN,
+      allowNull: false
     },
     source: {
       type: sequelize.Sequelize.INTEGER,
@@ -39,10 +43,10 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.loyaltyPoints.belongsTo(models.member)
+      classMethods: {
+        associate(models) {
+          models.loyaltyPoint.belongsTo(models.member)
+        }
       }
-    }
-  })
+    })
 }
