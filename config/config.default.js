@@ -7,7 +7,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + 'hulkclub'
   config.sequelize = {
     port: '3306',
-    host: '115.159.94.198',
+    host: '',
     username: 'root',
     password: 'hulk@2017',
     database: 'hulk',
