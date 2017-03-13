@@ -31,7 +31,8 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
-    "autod": "autod"
+    "autod": "autod",
+    "prod": "EGG_SERVER_ENV=prod npm start"
   },
   "ci": {
     "version": "6"

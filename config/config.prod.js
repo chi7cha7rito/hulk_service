@@ -7,15 +7,15 @@ module.exports = appInfo => {
   config.hulk_token = "abcd1234"
   config.sequelize = {
     port: '3306',
-    host: 'localhost',
+    host: '',
     username: 'root',
-    password: '1qaz!QAZ',
+    password: 'hulk@2017',
     database: 'hulk',
     dialect: 'mysql' // support: mysql, mariadb, postgres, mssql
   }
   config.middleware = ['authentication', 'errorHandler']
   config.authentication = {
-    enable: false
+    enable: true
   }
   config.security = {
     csrf: {

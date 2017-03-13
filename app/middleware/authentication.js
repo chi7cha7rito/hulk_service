@@ -1,6 +1,6 @@
 
 module.exports = (app) => {
-    return function* authentication(ctx, next) {
+    return function* authentication(next) {
         try {
             //todo:md5加密
             const requestToken = this.headers["hulk_token"]
