@@ -11,7 +11,7 @@ module.exports = app => {
       this.success(result)
     }
     async findByWechatOpenId() {
-      const result = await this.MemberSvr.findByWechatOpenId(this.ctx.query.wechatOpenId)
+      const result = await this.MemberSvr.findByWechatOpenId(this.ctx.query)
       this.success(result)
     }
     async findByPhoneNo(phoneNo) {

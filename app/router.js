@@ -49,4 +49,9 @@ module.exports = app => {
    * 战绩api
    */
   app.get('/api/match/findRankingByMemberId', 'match.findRankingByMemberId')
+  /**
+   * 微信token api
+   */
+  app.post('/api/wechatToken/create', 'wechatToken.create')
+  app.get('/api/wechatToken/findByOpenId', 'wechatToken.findByOpenId')
 };

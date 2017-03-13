@@ -7,7 +7,7 @@ module.exports = app => {
             this.SignInSvr = this.service.signIn
         }
         async create() {
-            const result = await this.SignInSvr.create(this.ctx.request.body.wechatOpenId);
+            const result = await this.SignInSvr.create(this.ctx.request.body);
             this.success(result)
         }
     }
