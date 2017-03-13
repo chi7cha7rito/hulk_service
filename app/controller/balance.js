@@ -7,10 +7,13 @@ module.exports = app => {
             this.BalanceSvr = this.service.balance
         }
         async create() {
-            this.ctx.body = await this.BalanceSvr.create(this.ctx.request.body);
+            const result = await this.BalanceSvr.create(this.ctx.request.body)
+            this.success(result)
         }
         async findEntriesByMemberId() {
-            this.ctx.body = await this.BalanceSvr.findEntriesByMemberId(this.ctx.query)
+            const result = await this.BalanceSvr.findEntriesByMemberId(this.ctx.query)
+            this.success(result)
+
         }
     }
     return BalanceController;

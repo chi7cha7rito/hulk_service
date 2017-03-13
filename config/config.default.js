@@ -2,9 +2,9 @@
 
 module.exports = appInfo => {
   const config = {}
-
   // should change to your own
   config.keys = appInfo.name + 'hulkclub'
+  config.hulk_token = "abcd1234"
   config.sequelize = {
     port: '3306',
     host: '',
@@ -12,6 +12,10 @@ module.exports = appInfo => {
     password: 'hulk@2017',
     database: 'hulk',
     dialect: 'mysql' // support: mysql, mariadb, postgres, mssql
+  }
+  config.middleware = ['authentication', 'errorHandler']
+  config.authentication = {
+    enable: false
   }
   config.security = {
     csrf: {

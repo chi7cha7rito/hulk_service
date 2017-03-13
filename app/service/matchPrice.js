@@ -18,7 +18,7 @@ module.exports = app => {
             const result = await this.MatcPrice.findAll({
                 where: { matchId: matchId },
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -30,18 +30,16 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, type, price, status = 1, creator }) {
-            const match = await this.Match.findById(matchId)
-            if (match) {
-                const result = await this.MatcPrice.create({
-                    matchId: matchId,
-                    type: type,
-                    price: price,
-                    status: status,
-                    creator: creator
-                })
-                return this.Helper.ok(result)
-            }
-            return this.Helper.err("赛事不存在")
+            const matchCount = await this.Match.count({ where: { matchId: matchId } })
+            if (matchCount = 0) throw new Error("赛事不存在")
+            const result = await this.MatcPrice.create({
+                matchId: matchId,
+                type: type,
+                price: price,
+                status: status,
+                creator: creator
+            })
+            return result
         }
     }
     return MatcPrice;

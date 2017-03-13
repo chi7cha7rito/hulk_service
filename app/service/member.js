@@ -30,7 +30,7 @@ module.exports = app => {
                 }]
             })
 
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -48,7 +48,7 @@ module.exports = app => {
                     model: this.User,
                 }]
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -65,7 +65,7 @@ module.exports = app => {
                     model: this.User,
                 }]
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -82,7 +82,7 @@ module.exports = app => {
                     where: { phoneNo: phoneNo }
                 }]
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -99,7 +99,7 @@ module.exports = app => {
                     where: { idCardNo: idCardNo }
                 }]
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -109,32 +109,65 @@ module.exports = app => {
          * @param  {string} idCardNo
          * @param  {int} gender=2
          * @param  {string} wechatOpenId
+         * @param  {string} nickName
+         * @param  {string} headImgUrl
          * @param  {int} creator}
          * @return {object}
          */
-        async create({ name, phoneNo, idCardNo, gender = 2, wechatOpenId, creator = 1 }) {
-            try {
-                const result = await this.Member.create({
-                    cardNo: phoneNo,
-                    user: {
-                        name: name,
-                        phoneNo: phoneNo,
-                        idCardNo: idCardNo,
-                        gender: gender,
-                        creator: creator,
-                    },
-                    wechat: {
-                        wechatOpenId: wechatOpenId,
-                        creator: creator
-                    },
+        async create({ name, phoneNo, idCardNo, gender, wechatOpenId, nickName, headImgUrl, creator = 1 }) {
+            //姓名判重
+            const nameCount = await this.Member.count({
+                include: [
+                    { model: this.User, where: { name: name } }
+                ]
+            })
+            if (nameCount > 0) throw new Error("姓名已经存在")
+
+            //手机号判重
+            const phoneNoCount = await this.Member.count({
+                include: [
+                    { model: this.User, where: { phoneNo: phoneNo } }
+                ]
+            })
+            if (phoneNoCount > 0) throw new Error("手机号已经存在")
+
+            //身份证判重
+            const idCardNoCount = await this.Member.count({
+                include: [{
+                    model: this.User, where: { idCardNo: idCardNo }
+                }]
+            })
+            if (idCardNoCount > 0) throw new Error("身份证号已经存在")
+
+            //微信openId判重
+            const wechatOpenIdCount = await this.Member.count({
+                include: [{
+                    model: this.Wechat, where: { wechatOpenId: wechatOpenId }
+                }]
+            })
+            if (wechatOpenIdCount > 0) throw new Error("微信账号已被绑定")
+
+            //创建会员及用户
+            const result = await this.Member.create({
+                cardNo: phoneNo,
+                user: {
+                    name: name,
+                    phoneNo: phoneNo,
+                    idCardNo: idCardNo,
+                    gender: gender,
+                    creator: creator,
+                },
+                wechat: {
+                    wechatOpenId: wechatOpenId,
+                    nickName: nickName,
+                    headImgUrl: headImgUrl,
                     creator: creator
-                }, {
-                        include: [this.User, this.Wechat]
-                    })
-                return this.Helper.ok(result)
-            } catch (error) {
-                return this.Helper.err(JSON.stringify(error.errors))
-            }
+                },
+                creator: creator
+            }, {
+                    include: [this.User, this.Wechat]
+                })
+            return result
         }
     }
     return Member;

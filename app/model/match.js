@@ -23,6 +23,9 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.TEXT,
       allowNull: false
     },
+    url: {
+      type: sequelize.Sequelize.STRING,
+    },
     holder: {
       type: sequelize.Sequelize.STRING,
       allowNull: false
@@ -40,12 +43,12 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.match.hasMany(models.matchPrice)
-        models.match.hasMany(models.attendance)
-        models.match.hasMany(models.matchReward)
+      classMethods: {
+        associate(models) {
+          models.match.hasMany(models.matchPrice)
+          models.match.hasMany(models.attendance)
+          models.match.hasMany(models.matchReward)
+        }
       }
-    }
-  })
+    })
 }

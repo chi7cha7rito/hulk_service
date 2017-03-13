@@ -5,6 +5,7 @@ module.exports = app => {
         constructor(ctx) {
             super(ctx)
             this.LoyaltyPoint = this.app.model.loyaltyPoint
+            this.Member = this.app.model.member
             this.Sequelize = this.app.sequelize
             this.Helper = this.ctx.helper
         }
@@ -41,7 +42,7 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -55,6 +56,8 @@ module.exports = app => {
          * @param  {int} creator=1}
          */
         async create({ memberId, type, points, isPositive, source, sourceNo, remark, status = 1, creator = 1 }) {
+            const memberCount = await this.Member.count({ where: { memberId: memberId } })
+            if (matchCount = 0) throw new Error("会员不存在")
             const result = await this.LoyaltyPoint.create({
                 memberId: memberId,
                 type: type,
@@ -66,7 +69,7 @@ module.exports = app => {
                 status: status,
                 creator: creator
             })
-            return this.Helper.ok(result)
+            return result
         }
     }
 

@@ -7,10 +7,12 @@ module.exports = app => {
             this.LoyaltyPointSvr = this.service.loyaltyPoint
         }
         async create() {
-            this.ctx.body = await this.LoyaltyPointSvr.create(this.ctx.request.body);
+            const result = await this.LoyaltyPointSvr.create(this.ctx.request.body);
+            this.success(result)
         }
         async findEntriesByMemberId() {
-            this.ctx.body = await this.LoyaltyPointSvr.findEntriesByMemberId(this.ctx.query)
+            const result = await this.LoyaltyPointSvr.findEntriesByMemberId(this.ctx.query)
+            this.success(result)
         }
     }
     return LoyaltyPointController;

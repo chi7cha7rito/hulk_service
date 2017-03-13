@@ -16,19 +16,13 @@ module.exports = app => {
          * @param  {} memberId
          */
         async create({ memberId }) {
-            try {
-                const member = await this.Member.findById(memberId)
-                if (member) {
-                    const result = await this.SignIn.create({
-                        creator: member.userId,
-                        memberId: member.id
-                    })
-                    return this.Helper.ok(result)
-                }
-                return this.Helper.err("会员不存在")
-            } catch (error) {
-                return this.Helper.err(JSON.stringify(error.errors))
-            }
+            const memberCount = await this.Member.count({ where: { memberId: memberId } })
+            if (memberCount = 0) throw new Error("会员不存在")
+            const result = await this.SignIn.create({
+                creator: member.userId,
+                memberId: member.id
+            })
+            return result
         }
     }
     return SignIn;

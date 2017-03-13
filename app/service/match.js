@@ -47,10 +47,9 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size
             })
-            return this.Helper.ok(result)
+            return result
         }
 
-       
         /**
          * @description 创建赛事
          * @param  {} {name
@@ -63,6 +62,8 @@ module.exports = app => {
          * @return {object}
          */
         async create({ name, type, opening, description, holder, status = 1, creator }) {
+            const nameCount = await this.Match.count({ where: { name: name } })
+            if (nameCount > 0) throw new Error("赛事名称已存在")
             const result = await this.Match.create({
                 name: name,
                 type: type,
@@ -72,7 +73,7 @@ module.exports = app => {
                 status: status,
                 creator: creator
             })
-            return this.Helper.ok(result)
+            return result
         }
     }
 

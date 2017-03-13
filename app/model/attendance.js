@@ -9,7 +9,7 @@ module.exports = function (sequelize) {
       allowNull: false
     },
     result: {
-      type: sequelize.Sequelize.INTEGER,
+      type: sequelize.Sequelize.INTEGER
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
@@ -19,11 +19,11 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.attendance.belongsTo(models.match)
-        models.attendance.belongsTo(models.member)
+      classMethods: {
+        associate(models) {
+          models.attendance.belongsTo(models.match)
+          models.attendance.belongsTo(models.member)
+        }
       }
-    }
-  })
+    })
 }

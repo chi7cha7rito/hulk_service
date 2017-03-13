@@ -18,7 +18,7 @@ module.exports = app => {
             const result = await this.MatchReward.findAll({
                 where: { matchId: matchId },
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -29,17 +29,15 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, ranking, rewardPoints, creator }) {
-            const match = await this.Match.findById(matchId)
-            if (match) {
-                const result = await this.MatchReward.create({
-                    matchId: matchId,
-                    ranking: ranking,
-                    rewardPoints: rewardPoints,
-                    creator: creator
-                })
-                return this.Helper.ok(result)
-            }
-            return this.Helper.err("赛事不存在")
+            const matchCount = await this.Match.count({ where: { matchId: matchId } })
+            if (matchCount = 0) throw new Error("赛事不存在")
+            const result = await this.MatchReward.create({
+                matchId: matchId,
+                ranking: ranking,
+                rewardPoints: rewardPoints,
+                creator: creator
+            })
+            return result
         }
     }
     return MatchReward;

@@ -7,22 +7,28 @@ module.exports = app => {
       this.MemberSvr = this.service.member
     }
     async create() {
-      this.ctx.body = await this.MemberSvr.create(this.ctx.request.body);
+      const result = await this.MemberSvr.create(this.ctx.request.body)
+      this.success(result)
     }
     async findByWechatOpenId() {
-      this.ctx.body = await this.MemberSvr.findByWechatOpenId(this.ctx.query.wechatOpenId)
+      const result = await this.MemberSvr.findByWechatOpenId(this.ctx.query.wechatOpenId)
+      this.success(result)
     }
     async findByPhoneNo(phoneNo) {
-      this.ctx.body = await this.MemberSvr.findByPhoneNo(phoneNo)
+      const result = await this.MemberSvr.findByPhoneNo(phoneNo)
+      this.success(result)
     }
     async findByIdCardNo(idCardNo) {
-      this.ctx.body = await this.MemberSvr.findByIdCardNo(idCardNo)
+      const result = await this.MemberSvr.findByIdCardNo(idCardNo)
+      this.success(result)
     }
     async findByCardNo(cardNo) {
-      this.ctx.body = await this.MemberSvr.findByCardNo(cardNo)
+      const result = await this.MemberSvr.findByCardNo(cardNo)
+      this.success(result)
     }
     async findById(id) {
-      this.ctx.body = await this.MemberSvr.findById(id)
+      const result = await this.MemberSvr.findById(id)
+      this.success(result)
     }
   }
   return MemberController;

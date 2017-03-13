@@ -7,7 +7,6 @@ module.exports = app => {
             this.Match = this.app.model.match
             this.Member = this.app.model.member
             this.Attendance = this.app.model.attendance
-            this.Sequelize = this.app.sequelize
             this.Helper = this.ctx.helper
         }
 
@@ -24,9 +23,9 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size
             })
-            return this.Helper.ok(result)
+            return result
         }
-        
+
         /**
          * @param  {} {memberId
          * @param  {} pageIndex=1
@@ -39,7 +38,7 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size
             })
-            return this.Helper.ok(result)
+            return result
         }
 
         /**
@@ -50,17 +49,18 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, memberId, creator }) {
-            const match = await this.Match.findById(matchId)
-            const member = await this.Member.findById(memberId)
-            if (match && member) {
-                const result = await this.Attendance.create({
-                    matchId: matchId,
-                    memberId: memberId,
-                    creator: creator
-                })
-                return this.Helper.ok(result)
-            }
-            return this.Helper.err("赛事或者会员不存在")
+            const matchCount = await this.Match.count({ where: { matchId: matchId } })
+            if (matchCount = 0) throw new Error("赛事不存在")
+            const memberCount = await this.Member.count({ where: { memberId: memberId } })
+            if (matchCount = 0) throw new Error("会员不存在")
+            const attended = await this.Attendance.count({ where: { matchId: matchId, memberId: memberId } })
+            if (attended > 0) throw new Error("您已报名参赛")
+            const result = await this.Attendance.create({
+                matchId: matchId,
+                memberId: memberId,
+                creator: creator
+            })
+            return result
         }
     }
     return MatchReward;

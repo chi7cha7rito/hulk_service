@@ -13,43 +13,52 @@ module.exports = app => {
          * 赛事
          */
         async create() {
-            this.ctx.body = await this.MatchSvr.create(this.ctx.request.body);
+            const result = await this.MatchSvr.create(this.ctx.request.body)
+            this.success(result)
         }
         async findMatches() {
-            this.ctx.body = await this.MatchSvr.findMatches(this.ctx.query)
+            const result = await this.MatchSvr.findMatches(this.ctx.query)
+            this.success(result)
         }
         /**
          * 赛事价格
          */
         async createPrice() {
-            this.ctx.body = await this.MatchPriceSvr.create(this.ctx.request.body);
+            const result = await this.MatchPriceSvr.create(this.ctx.request.body)
+            this.success(result)
         }
         async findMatchPrice() {
-            this.ctx.body = await this.MatchPriceSvr.findMatchPrice(this.ctx.query)
+            const result = await this.MatchPriceSvr.findMatchPrice(this.ctx.query)
+            this.success(result)
         }
         /**
          * 赛事奖励
          */
         async createReward() {
-            this.ctx.body = await this.MatchRewardSvr.create(this.ctx.request.body);
+            const result = await this.MatchRewardSvr.create(this.ctx.request.body)
+            this.success(result)
         }
         async findMatchRewards() {
-            this.ctx.body = await this.MatchRewardSvr.findMatchRewards(this.ctx.query)
+            const result = await this.MatchRewardSvr.findMatchRewards(this.ctx.query)
+            this.success(result)
         }
         /**
         * 赛事奖励
         */
         async attend() {
-            this.ctx.body = await this.AttendanceSvr.create(this.ctx.request.body);
+            const result = await this.AttendanceSvr.create(this.ctx.request.body)
+            this.success(result)
         }
         async findAttendances() {
-            this.ctx.body = await this.AttendanceSvr.findAttendances(this.ctx.query)
+            const result = await this.AttendanceSvr.findAttendances(this.ctx.query)
+            this.success(result)
         }
         /**
          * 战绩
          */
         async findRankingByMemberId() {
-            this.ctx.body = await this.AttendanceSvr.findRankingByMemberId(this.ctx.query)
+            const result = await this.AttendanceSvr.findRankingByMemberId(this.ctx.query)
+            this.success(result)
         }
     }
     return MatchController;
