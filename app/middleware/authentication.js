@@ -1,11 +1,15 @@
 
 module.exports = (app) => {
-    return function* authentication(next) {
+    return function* authentication(ctx, next) {
         try {
             //todo:md5加密
             const requestToken = this.headers["hulk_token"]
             const token = this.app.config["hulk_token"]
-            if(requestToken != token) throw new Error("未受信任的请求")
+            this.logger.info(`Request Headers:${JSON.stringify(this.headers)}`)
+            if (this.request.body) this.logger.info(`Request Body:${JSON.stringify(this.request.body)}`)
+            if (requestToken != token) {
+                throw new Error("未受信任的请求")
+            }
             yield next;
         } catch (err) {
             // 注意：自定义的错误统一处理函数捕捉到错误后也要 `app.emit('error', err, this)`

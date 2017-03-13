@@ -15,7 +15,7 @@ module.exports = appInfo => {
   }
   config.middleware = ['authentication', 'errorHandler']
   config.authentication = {
-    enable: false
+    // enable: false
   }
   config.security = {
     csrf: {
