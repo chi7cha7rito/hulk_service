@@ -32,8 +32,8 @@ module.exports = app => {
                 cond.type = type
             }
             cond.opening = {
-                $gte: startOpening || moment('1971-01-01').utc().format(),
-                $lte: endOpening || moment('9999-12-31').utc().format(),
+                $gte: startOpening || this.moment('1971-01-01').utc().format(),
+                $lte: endOpening || this.moment('9999-12-31').utc().format(),
             }
             if (holder) {
                 cond.holder = { $like: '%' + holder + '%' }
@@ -56,13 +56,14 @@ module.exports = app => {
          * @param  {} subType
          * @param  {} opening
          * @param  {} description
+         * @param  {} url
          * @param  {} holder
          * @param  {} updator}
          * @return {object}
          */
-        async update({ id, name, type, subType, opening, description, holder, updator }) {
-            const matchCount = await this.Match.count({ where: { id: id, status: 1 } })
-            if (matchCount == 0) throw new Error("赛事不存在或已结束")
+        async update({ id, name, type, subType, opening, description, url, holder, updator }) {
+            const matchCount = await this.Match.count({ where: { id: id } })
+            if (matchCount == 0) throw new Error("赛事不存在")
             const nameCount = await this.Match.count({ where: { name: name } })
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
@@ -75,6 +76,7 @@ module.exports = app => {
                 subType: subType,
                 opening: opening,
                 description: description,
+                url: url,
                 holder: holder,
                 updator: updator
             }, { where: { id: id } })
@@ -84,13 +86,15 @@ module.exports = app => {
         /**
          * @description 关闭赛事
          * @param  {} {id
+         * @param  {} status
          * @param  {} updator}
          */
-        async disable({ id, updator }) {
-            const matchCount = await this.Match.count({ where: { id: id, status: 1 } })
-            if (matchCount == 0) throw new Error("赛事不存在或已结束")
+        async changeStatus({ id, status, updator }) {
+            const matchCount = await this.Match.count({ where: { id: id } })
+            if (matchCount == 0) throw new Error("赛事不存在")
             const result = await this.Match.update({
                 status: 2,
+                status: status,
                 updator: updator
             }, { where: { id: id } })
             return result
@@ -103,12 +107,13 @@ module.exports = app => {
          * @param  {} subType
          * @param  {} opening
          * @param  {} description
+         * @param  {} url
          * @param  {} holder
          * @param  {} status=1
          * @param  {} creator}
          * @return {object}
          */
-        async create({ name, type, subType, opening, description, holder, status = 1, creator }) {
+        async create({ name, type, subType, opening, description, url, holder, status = 1, creator }) {
             const nameCount = await this.Match.count({ where: { name: name } })
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
@@ -121,6 +126,7 @@ module.exports = app => {
                 subType: subType,
                 opening: opening,
                 description: description,
+                url: url,
                 holder: holder,
                 status: status,
                 creator: creator

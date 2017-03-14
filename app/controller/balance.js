@@ -6,7 +6,7 @@ module.exports = app => {
             super(ctx)
             this.BalanceSvr = this.service.balance
         }
-        
+
         /**
          * @description 创建充值记录
          */
@@ -18,8 +18,17 @@ module.exports = app => {
         /**
          * @description 查询余额记录
          */
-        async findEntriesByMemberId() {
-            const result = await this.BalanceSvr.findEntriesByMemberId(this.ctx.query)
+        async findEntries() {
+            const result = await this.BalanceSvr.findEntries(this.ctx.query)
+            this.success(result)
+
+        }
+
+        /**
+        * @description 根据memberId查询余额
+        */
+        async totalByMemberId() {
+            const result = await this.BalanceSvr.totalByMemberId(this.ctx.query)
             this.success(result)
 
         }

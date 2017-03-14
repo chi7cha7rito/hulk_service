@@ -15,7 +15,7 @@ module.exports = app => {
          * @description 签到
          * @param  {} memberId
          */
-        async create({ memberId }) {
+        async create({ memberId, comment }) {
             const member = await this.Member.findById(memberId)
             if (!member) throw new Error("会员不存在")
             const today = await this.SignIn.count({
@@ -29,7 +29,9 @@ module.exports = app => {
                     ]
                 }
             })
+            if (today > 0) throw new Error("今天已经签到过")
             const result = await this.SignIn.create({
+                comment: comment,
                 creator: member.userId,
                 memberId: member.id
             })

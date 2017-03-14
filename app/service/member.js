@@ -7,31 +7,10 @@ module.exports = app => {
             this.Member = this.app.model.member
             this.User = this.app.model.user
             this.Wechat = this.app.model.wechat
-            this.Balance = this.app.model.balance
-            this.LoyaltyPoint = this.app.model.loyaltyPoint
-            this.Sequelize = this.app.sequelize
             this.Helper = this.ctx.helper
         }
 
-        /**
-         * @description:根据卡号查询会员
-         * @param {string} cardNo
-         * @return {object} 会员信息
-         */
-        async findByCardNo({ cardNo }) {
-            const result = await this.Member.findOne({
-                where: {
-                    cardNo: cardNo
-                },
-                include: [{
-                    model: this.Wechat,
-                }, {
-                    model: this.User,
-                }]
-            })
-
-            return result
-        }
+        //todo:findAll
 
         /**
         * @description:根据会员id查询会员
@@ -39,14 +18,14 @@ module.exports = app => {
         * @return {object} 会员信息
         */
         async findById({ id }) {
-            const result = await this.Member.findOne({
-                where: { id: id },
+            const result = await this.User.findOne({
                 include: [{
-                    model: this.Wechat,
-                    where: { wechatOpenId: wechatOpenId }
-                }, {
-                    model: this.User,
-                }]
+                    model: this.Member,
+                    include: [{
+                        model: this.Wechat,
+                    }],
+                    where: { id: id }
+                }],
             })
             return result
         }
@@ -70,36 +49,43 @@ module.exports = app => {
         }
 
         /**
-        * @description:根据手机号查询会员
-        * @param {string} wechatOpenId
-        * @return {object} 会员信息
-        */
-        async findByPhoneNo({ phoneNo }) {
-            const result = await this.Member.findOne({
+         * @description:更新会员
+         * @param  {string} {id
+         * @param  {string} name
+         * @param  {string} phoneNo
+         * @param  {string} idCardNo
+         * @param  {int} gender
+         * @param  {int} updator}
+         * @return {object}
+         */
+        async update({ id, name, phoneNo, idCardNo, gender, updator }) {
+            const user = await this.User.findOne({
                 include: [{
-                    model: this.Wechat,
-                }, {
-                    model: this.User,
-                    where: { phoneNo: phoneNo }
-                }]
+                    model: this.Member,
+                    where: { id: id }
+                }],
             })
-            return result
-        }
+            if (!user) throw new Error("会员不存在")
 
-        /**
-        * @description:根据身份证查询会员
-        * @param {string} idCardNo
-        * @return {object} 会员信息
-        */
-        async findByIdCardNo({ idCardNo }) {
-            const result = await this.Member.findOne({
-                include: [{
-                    model: this.Wechat,
-                }, {
-                    model: this.User,
-                    where: { idCardNo: idCardNo }
-                }]
+            //手机号判重
+            const phoneNoCount = await this.User.count({
+                where: { id: { $ne: user.id }, phoneNo: phoneNo }
             })
+            if (phoneNoCount > 0) throw new Error("手机号已经存在")
+
+            //身份证判重
+            const idCardNoCount = await this.User.count({
+                where: { id: { $ne: user.id }, idCardNo: idCardNo }
+            })
+            if (idCardNoCount > 0) throw new Error("身份证号已经存在")
+
+            const result = await this.User.update({
+                name: name,
+                phoneNo: phoneNo,
+                idCardNo: idCardNo,
+                gender: gender,
+                updator: updator,
+            }, { where: { id: user.id } })
             return result
         }
 
@@ -108,7 +94,7 @@ module.exports = app => {
          * @param  {string} {name
          * @param  {string} phoneNo
          * @param  {string} idCardNo
-         * @param  {int} gender=2
+         * @param  {int} gender
          * @param  {string} wechatOpenId
          * @param  {string} nickName
          * @param  {string} headImgUrl
@@ -116,14 +102,6 @@ module.exports = app => {
          * @return {object}
          */
         async create({ name, phoneNo, idCardNo, gender, wechatOpenId, nickName, headImgUrl, creator = 1 }) {
-            //姓名判重
-            const nameCount = await this.Member.count({
-                include: [
-                    { model: this.User, where: { name: name } }
-                ]
-            })
-            if (nameCount > 0) throw new Error("姓名已经存在")
-
             //手机号判重
             const phoneNoCount = await this.Member.count({
                 include: [
@@ -155,6 +133,7 @@ module.exports = app => {
                 idCardNo: idCardNo,
                 gender: gender,
                 creator: creator,
+                roleType: 3,
                 member: {
                     cardNo: phoneNo,
                     creator: creator,

@@ -25,7 +25,8 @@ module.exports = function (sequelize) {
         status: {
             type: sequelize.Sequelize.INTEGER,
             allowNull: false,
-            comemt: '1:成功,2:失败'
+            defaultValue: 1,
+            comemt: '1:未发送,2:成功,3:失败'
         }
     })
 }

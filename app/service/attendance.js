@@ -19,7 +19,7 @@ module.exports = app => {
         async findAttendances({ matchId, pageIndex = 1, pageSize = 10 }) {
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             const result = await this.Attendance.findAndCount({
-                where: { matchId: matchId },
+                where: { matchId: matchId, status: 1 },
                 offset: (index - 1) * size,
                 limit: size
             })
@@ -35,7 +35,7 @@ module.exports = app => {
         async findRankingByMemberId({ memberId, pageIndex = 1, pageSize = 10 }) {
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             const result = await this.Attendance.findAndCount({
-                where: { memberId: memberId },
+                where: { memberId: memberId, status: 1 },
                 offset: (index - 1) * size,
                 limit: size
             })
@@ -46,7 +46,7 @@ module.exports = app => {
          * @description 取消报名
          * @param  {} {id}
          */
-        async delete({ id }) {
+        async del({ id }) {
             const attendedExist = await this.Attendance.count({
                 where: { id: id }
             })
@@ -78,6 +78,7 @@ module.exports = app => {
             const result = await this.Attendance.create({
                 matchId: matchId,
                 memberId: memberId,
+                status: 1,
                 creator: creator
             })
             return result

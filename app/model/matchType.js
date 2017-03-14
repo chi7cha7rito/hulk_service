@@ -11,7 +11,7 @@ module.exports = function (sequelize) {
         pid: {
             type: sequelize.Sequelize.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: 1
         },
         name: {
             type: sequelize.Sequelize.STRING,

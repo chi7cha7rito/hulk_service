@@ -13,7 +13,10 @@ module.exports = app => {
          * @param  {} status}
          */
         async findByPid({ pid, status }) {
-            const result = await this.MatchType.findAll({ where: { pid: pid, status: status } })
+            let cond = {}
+            if (pid) cond.pid = pid
+            if (status) cond.status = status
+            const result = await this.MatchType.findAll({ where: cond })
             return result
         }
 
@@ -37,15 +40,14 @@ module.exports = app => {
 
         /**
         * @description 更新状态
-        * @param  {} {name
-        * @param  {} pid}
+        * @param  {} {id
+        * @param  {} status}
         */
         async changeStatus({ id, status }) {
-            const typeCount = await this.MatchType.count({ where: { name: name } })
-            if (typeCount > 0) throw new Error("赛事类型已存在")
+            const exist = await this.MatchType.count({ where: { id: id } })
+            if (exist == 0) throw new Error("记录不存在")
             const result = await this.MatchType.update({
-                name: name,
-                pid: pid
+                status: status
             }, { where: { id: id } })
             return result
         }

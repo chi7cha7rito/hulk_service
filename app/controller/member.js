@@ -6,28 +6,36 @@ module.exports = app => {
       super(ctx)
       this.MemberSvr = this.service.member
     }
+
+    /**
+     * @description 新建会员
+     */
     async create() {
       const result = await this.MemberSvr.create(this.ctx.request.body)
       this.success(result)
     }
+
+    /**
+     * @description 更新会员
+     */
+    async update() {
+      const result = await this.MemberSvr.update(this.ctx.request.body)
+      this.success(result)
+    }
+
+    /**
+     * @description 根据openid查找会员
+     */
     async findByWechatOpenId() {
       const result = await this.MemberSvr.findByWechatOpenId(this.ctx.query)
       this.success(result)
     }
-    async findByPhoneNo(phoneNo) {
-      const result = await this.MemberSvr.findByPhoneNo(phoneNo)
-      this.success(result)
-    }
-    async findByIdCardNo(idCardNo) {
-      const result = await this.MemberSvr.findByIdCardNo(idCardNo)
-      this.success(result)
-    }
-    async findByCardNo(cardNo) {
-      const result = await this.MemberSvr.findByCardNo(cardNo)
-      this.success(result)
-    }
-    async findById(id) {
-      const result = await this.MemberSvr.findById(id)
+
+    /**
+     * @description 根据Id查找会员
+     */
+    async findById() {
+      const result = await this.MemberSvr.findById(this.ctx.query)
       this.success(result)
     }
   }

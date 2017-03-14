@@ -26,7 +26,13 @@ module.exports = function (sequelize) {
     },
     gender: {
       type: sequelize.Sequelize.INTEGER,
+      defaultValue: 0,
       comment: '0:未知,1:男,2:女'
+    },
+    roleType: {
+      type: sequelize.Sequelize.INTEGER,
+      allowNull: false,
+      comment:'1:管理员,2:员工,3:会员'
     },
     status: {
       type: sequelize.Sequelize.INTEGER,

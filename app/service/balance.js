@@ -14,7 +14,7 @@ module.exports = app => {
          * @param  {int} memberId
          * @return {decimal} 余额
          */
-        async totalByMemberId(memberId) {
+        async totalByMemberId({ memberId }) {
             const positive = await this.Balance.sum('amount', {
                 where: { memberId: memberId, isPositive: true, status: 1 }
             })
@@ -33,7 +33,7 @@ module.exports = app => {
          * @param  {int} pageSize=10}
          * @return {object}
          */
-        async findEntriesByMemberId({ memberId, type, status, pageIndex = 1, pageSize = 10 }) {
+        async findEntries({ memberId, type, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             if (memberId) {
@@ -44,6 +44,8 @@ module.exports = app => {
             }
             if (status) {
                 cond.status = status
+            } else {
+                cond.status = { $in: [1, 2] }
             }
             const result = await this.Balance.findAndCount({
                 where: cond,
@@ -64,7 +66,7 @@ module.exports = app => {
          * @param  {int} status=1
          * @param  {int} creator=1}
          */
-        async create({ memberId, type, amount, isPositive, source, sourceNo, remark, status, creator = 1 }) {
+        async create({ memberId, type, amount, source, sourceNo, remark, status, creator = 1 }) {
             const memberCount = await this.Member.count({
                 where: { id: memberId, status: 1 }
             })
@@ -73,7 +75,6 @@ module.exports = app => {
                 memberId: memberId,
                 type: type,
                 amount: amount,
-                isPositive: isPositive,
                 source: source,
                 sourceNo: sourceNo,
                 remark: remark,

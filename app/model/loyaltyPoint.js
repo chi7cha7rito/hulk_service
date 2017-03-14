@@ -11,6 +11,11 @@ module.exports = function (sequelize) {
     type: {
       type: sequelize.Sequelize.INTEGER,
       allowNull: false,
+      set: function (val) {
+        let boo = val % 2 == 0 ? false : true
+        this.setDataValue('type', val)
+        this.setDataValue('isPositive', boo);
+      },
       comment: '1:获取,2:消费,3:正调整,4:负调整'
     },
     points: {
@@ -18,10 +23,6 @@ module.exports = function (sequelize) {
     },
     isPositive: {
       type: sequelize.Sequelize.BOOLEAN,
-      set: (val) => {
-        let boo = type % 2 == 0 ? false : true
-        this.setDataValue('isPositive', boo);
-      },
       comment: 'true:正向积分,false:负向积分'
     },
     source: {

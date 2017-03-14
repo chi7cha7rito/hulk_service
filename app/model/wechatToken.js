@@ -17,6 +17,9 @@ module.exports = function (sequelize) {
             allowNull: false,
             comment: 'token过期时间（秒）'
         },
+        refresh_token: {
+            type: sequelize.Sequelize.STRING,
+        },
         openid: {
             type: sequelize.Sequelize.STRING,
             allowNull: false
