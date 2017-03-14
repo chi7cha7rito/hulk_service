@@ -30,8 +30,8 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, type, price, status = 1, creator }) {
-            const matchCount = await this.Match.count({ where: { matchId: matchId } })
-            if (matchCount = 0) throw new Error("赛事不存在")
+            const matchCount = await this.Match.count({ where: { id: matchId } })
+            if (matchCount == 0) throw new Error("赛事不存在")
             const result = await this.MatcPrice.create({
                 matchId: matchId,
                 type: type,

@@ -49,10 +49,10 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, memberId, creator }) {
-            const matchCount = await this.Match.count({ where: { matchId: matchId } })
-            if (matchCount = 0) throw new Error("赛事不存在")
-            const memberCount = await this.Member.count({ where: { memberId: memberId } })
-            if (matchCount = 0) throw new Error("会员不存在")
+            const matchCount = await this.Match.count({ where: { id: matchId } })
+            if (matchCount == 0) throw new Error("赛事不存在")
+            const memberCount = await this.Member.count({ where: { id: memberId } })
+            if (memberCount == 0) throw new Error("会员不存在")
             const attended = await this.Attendance.count({ where: { matchId: matchId, memberId: memberId } })
             if (attended > 0) throw new Error("您已报名参赛")
             const result = await this.Attendance.create({

@@ -57,13 +57,14 @@ module.exports = app => {
         * @return {object} 会员信息
         */
         async findByWechatOpenId({ wechatOpenId }) {
-            const result = await this.Member.findOne({
+            const result = await this.User.findOne({
                 include: [{
-                    model: this.Wechat,
-                    where: { wechatOpenId: wechatOpenId }
-                }, {
-                    model: this.User,
-                }]
+                    model: this.Member,
+                    include: [{
+                        model: this.Wechat,
+                        where: { wechatOpenId: wechatOpenId }
+                    }],
+                }],
             })
             return result
         }
@@ -148,24 +149,24 @@ module.exports = app => {
             if (wechatOpenIdCount > 0) throw new Error("微信账号已被绑定")
 
             //创建会员及用户
-            const result = await this.Member.create({
-                cardNo: phoneNo,
-                user: {
-                    name: name,
-                    phoneNo: phoneNo,
-                    idCardNo: idCardNo,
-                    gender: gender,
+            const result = await this.User.create({
+                name: name,
+                phoneNo: phoneNo,
+                idCardNo: idCardNo,
+                gender: gender,
+                creator: creator,
+                member: {
+                    cardNo: phoneNo,
                     creator: creator,
-                },
-                wechat: {
-                    wechatOpenId: wechatOpenId,
-                    nickName: nickName,
-                    headImgUrl: headImgUrl,
-                    creator: creator
-                },
-                creator: creator
+                    wechat: {
+                        wechatOpenId: wechatOpenId,
+                        nickName: nickName,
+                        headImgUrl: headImgUrl,
+                        creator: creator
+                    }
+                }
             }, {
-                    include: [this.User, this.Wechat]
+                    include: [{ model: this.Member, include: [this.Wechat] }]
                 })
             return result
         }

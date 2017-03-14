@@ -16,8 +16,8 @@ module.exports = app => {
          * @param  {} memberId
          */
         async create({ memberId }) {
-            const memberCount = await this.Member.count({ where: { memberId: memberId } })
-            if (memberCount = 0) throw new Error("会员不存在")
+            const memberCount = await this.Member.count({ where: { id: memberId } })
+            if (memberCount == 0) throw new Error("会员不存在")
             const result = await this.SignIn.create({
                 creator: member.userId,
                 memberId: member.id

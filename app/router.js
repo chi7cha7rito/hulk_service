@@ -10,7 +10,7 @@ module.exports = app => {
    * 会员api
    */
   app.post('/api/member/create', 'member.create')
-  app.get('/member/findByWechatOpenId', 'member.findByWechatOpenId')
+  app.get('/api/member/findByWechatOpenId', 'member.findByWechatOpenId')
   /**
    * 签到api
    */

@@ -56,8 +56,8 @@ module.exports = app => {
          * @param  {int} creator=1}
          */
         async create({ memberId, type, points, isPositive, source, sourceNo, remark, status = 1, creator = 1 }) {
-            const memberCount = await this.Member.count({ where: { memberId: memberId } })
-            if (matchCount = 0) throw new Error("会员不存在")
+            const memberCount = await this.Member.count({ where: { id: memberId } })
+            if (memberCount == 0) throw new Error("会员不存在")
             const result = await this.LoyaltyPoint.create({
                 memberId: memberId,
                 type: type,

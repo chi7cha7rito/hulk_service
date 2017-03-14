@@ -11,7 +11,7 @@ module.exports = appInfo => {
   // 数据库配置
   config.sequelize = {
     port: '3306',
-    host: 'localhost',
+    host: '115.159.94.198',
     username: 'root',
     password: 'hulk@2017',
     database: 'hulk',
