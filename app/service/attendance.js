@@ -27,6 +27,7 @@ module.exports = app => {
         }
 
         /**
+         * @description 查询成绩
          * @param  {} {memberId
          * @param  {} pageIndex=1
          * @param  {} pageSize=10}
@@ -42,6 +43,19 @@ module.exports = app => {
         }
 
         /**
+         * @description 取消报名
+         * @param  {} {id}
+         */
+        async delete({ id }) {
+            const attendedExist = await this.Attendance.count({
+                where: { id: id }
+            })
+            if (attendedExist == 0) throw new Error("参赛记录不存在")
+            const result = await this.Attendance.update({ status: 2 }, { where: { id: id } })
+            return result
+        }
+
+        /**
          * @description 报名参加
          * @param  {} {matchId
          * @param  {} ranking
@@ -49,11 +63,17 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, memberId, creator }) {
-            const matchCount = await this.Match.count({ where: { id: matchId } })
-            if (matchCount == 0) throw new Error("赛事不存在")
-            const memberCount = await this.Member.count({ where: { id: memberId } })
+            const matchCount = await this.Match.count({
+                where: { id: matchId, status: 1 }
+            })
+            if (matchCount == 0) throw new Error("赛事不存在或已结束")
+            const memberCount = await this.Member.count({
+                where: { id: memberId }
+            })
             if (memberCount == 0) throw new Error("会员不存在")
-            const attended = await this.Attendance.count({ where: { matchId: matchId, memberId: memberId } })
+            const attended = await this.Attendance.count({
+                where: { matchId: matchId, memberId: memberId }
+            })
             if (attended > 0) throw new Error("您已报名参赛")
             const result = await this.Attendance.create({
                 matchId: matchId,

@@ -13,7 +13,7 @@ module.exports = app => {
         async totalByMemberId(memberId) {
             const positive = await this.LoyaltyPoint.sum('points', { where: { memberId: memberId, isPositive: true } })
             const negative = await this.LoyaltyPoint.sum('points', { where: { memberId: memberId, isPositive: false } })
-            return positive - negative
+            return (positive || 0) - (negative || 0)
         }
 
         /**
@@ -46,6 +46,7 @@ module.exports = app => {
         }
 
         /**
+         * @description 创建积分记录
          * @param  {int} {memberId
          * @param  {int} type
          * @param  {decimal} points

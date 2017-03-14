@@ -10,23 +10,29 @@ module.exports = function (sequelize) {
     },
     ranking: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      comment: '赛事名次'
     },
     rewardPoints: {
-      type: sequelize.Sequelize.DECIMAL
+      type: sequelize.Sequelize.DECIMAL,
+      comment: '赛事奖励积分'
+    },
+    status: {
+      type: sequelize.Sequelize.INTEGER,
+      allowNull: false,
+      comment: '1:启用,2:禁用,3:删除'
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     updator: {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.matchReward.belongsTo(models.match)
+      classMethods: {
+        associate(models) {
+          models.matchReward.belongsTo(models.match)
+        }
       }
-    }
-  })
+    })
 }

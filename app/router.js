@@ -14,7 +14,7 @@ module.exports = app => {
   /**
    * 签到api
    */
-  app.post('/signIn/create', 'signIn.create')
+  app.post('/api/signIn/create', 'signIn.create')
   /**
    * 帐户api
    */

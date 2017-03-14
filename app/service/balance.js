@@ -15,15 +15,20 @@ module.exports = app => {
          * @return {decimal} 余额
          */
         async totalByMemberId(memberId) {
-            const positive = await this.Balance.sum('amount', { where: { memberId: memberId, isPositive: true } })
-            const negative = await this.Balance.sum('amount', { where: { memberId: memberId, isPositive: false } })
+            const positive = await this.Balance.sum('amount', {
+                where: { memberId: memberId, isPositive: true, status: 1 }
+            })
+            const negative = await this.Balance.sum('amount', {
+                where: { memberId: memberId, isPositive: false, status: 1 }
+            })
             return (positive || 0) - (negative || 0)
         }
+
         /**
          * @description 获取余额明细
          * @param  {int} {memberId
          * @param  {int} type
-         * @param  {int} status=1
+         * @param  {int} status
          * @param  {int} pageIndex=1
          * @param  {int} pageSize=10}
          * @return {object}
@@ -49,6 +54,7 @@ module.exports = app => {
         }
 
         /**
+         * @description 创建余额记录
          * @param  {int} {memberId
          * @param  {int} type
          * @param  {decimal} amount
@@ -58,9 +64,11 @@ module.exports = app => {
          * @param  {int} status=1
          * @param  {int} creator=1}
          */
-        async create({ memberId, type, amount, isPositive, source, sourceNo, remark, status = 1, creator = 1 }) {
-            const memberCount = await this.Member.count({ where: { id: memberId } })
-            if (memberCount == 0) throw new Error("会员不存在")
+        async create({ memberId, type, amount, isPositive, source, sourceNo, remark, status, creator = 1 }) {
+            const memberCount = await this.Member.count({
+                where: { id: memberId, status: 1 }
+            })
+            if (memberCount == 0) throw new Error("会员不存在或被冻结")
             const result = await this.Balance.create({
                 memberId: memberId,
                 type: type,
@@ -69,7 +77,7 @@ module.exports = app => {
                 source: source,
                 sourceNo: sourceNo,
                 remark: remark,
-                status: status,
+                status: type == 1 ? 2 : 1,  //线上充值状态为2（冻结）,等待支付反馈成功转为1（正常）,失败转为状态3（失败）
                 creator: creator
             })
             return result

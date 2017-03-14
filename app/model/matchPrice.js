@@ -10,7 +10,8 @@ module.exports = function (sequelize) {
     },
     type: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      comment: '1:线上价格,2:线下价格,3:优惠价格'
     },
     price: {
       type: sequelize.Sequelize.DECIMAL
@@ -18,11 +19,11 @@ module.exports = function (sequelize) {
     status: {
       type: sequelize.Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: 1,
+      comment: '1:启用,2:禁用,3:删除'
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     updator: {
       type: sequelize.Sequelize.INTEGER

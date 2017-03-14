@@ -10,16 +10,15 @@ module.exports = function (sequelize) {
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     updator: {
       type: sequelize.Sequelize.INTEGER
     }
   }, {
-    classMethods: {
-      associate(models) {
-        models.signIn.belongsTo(models.member)
+      classMethods: {
+        associate(models) {
+          models.signIn.belongsTo(models.member)
+        }
       }
-    }
-  })
+    })
 }

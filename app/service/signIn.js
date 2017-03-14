@@ -16,8 +16,19 @@ module.exports = app => {
          * @param  {} memberId
          */
         async create({ memberId }) {
-            const memberCount = await this.Member.count({ where: { id: memberId } })
-            if (memberCount == 0) throw new Error("会员不存在")
+            const member = await this.Member.findById(memberId)
+            if (!member) throw new Error("会员不存在")
+            const today = await this.SignIn.count({
+                where: {
+                    $and: [
+                        { memberId: memberId },
+                        this.app.sequelize.where(
+                            this.app.sequelize.fn('DATE', this.app.sequelize.col('createdAt')),
+                            this.app.sequelize.literal('CURRENT_DATE')
+                        )
+                    ]
+                }
+            })
             const result = await this.SignIn.create({
                 creator: member.userId,
                 memberId: member.id

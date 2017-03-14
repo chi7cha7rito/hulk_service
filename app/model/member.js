@@ -10,20 +10,22 @@ module.exports = function (sequelize) {
     },
     cardNo: {
       type: sequelize.Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      comment: '会员卡号（默认手机号）'
     },
     level: {
       type: sequelize.Sequelize.INTEGER,
-      defaultValue: 1
+      defaultValue: 1,
+      comment: '会员级别'
     },
     status: {
       type: sequelize.Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: 1,
+      comment: '1:正常,2:冻结,3:删除'
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     updator: {
       type: sequelize.Sequelize.INTEGER
@@ -39,7 +41,7 @@ module.exports = function (sequelize) {
           models.member.hasMany(models.invitationCode)
           models.member.hasMany(models.attendance)
         }
-        
+
       }
     })
 }

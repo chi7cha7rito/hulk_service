@@ -9,11 +9,16 @@ module.exports = function (sequelize) {
       allowNull: false
     },
     result: {
-      type: sequelize.Sequelize.INTEGER
+      type: sequelize.Sequelize.INTEGER,
+      comment: '比赛成绩,同比赛奖励的ranking'
+    },
+    status: {
+      type: sequelize.Sequelize.INTEGER,
+      allowNull: false,
+      comment: '1:正常,2:删除'
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     updator: {
       type: sequelize.Sequelize.INTEGER

@@ -14,13 +14,14 @@ module.exports = function (sequelize) {
     },
     nickName: {
       type: sequelize.Sequelize.STRING,
+      comment: '昵称'
     },
     headImgUrl: {
       type: sequelize.Sequelize.STRING,
+      comment: '头像Url'
     },
     creator: {
       type: sequelize.Sequelize.INTEGER,
-      allowNull: false
     },
     updator: {
       type: sequelize.Sequelize.INTEGER

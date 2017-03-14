@@ -1,30 +1,27 @@
 'use strict'
 
 module.exports = function (sequelize) {
-    return sequelize.define('wechatToken', {
+    return sequelize.define('matchType', {
         id: {
             type: sequelize.Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             allowNull: false
         },
-        access_token: {
-            type: sequelize.Sequelize.STRING,
-            allowNull: false,
-        },
-        expires_in: {
+        pid: {
             type: sequelize.Sequelize.INTEGER,
             allowNull: false,
-            comment: 'token过期时间（秒）'
+            defaultValue: 0
         },
-        openid: {
-            type: sequelize.Sequelize.STRING,
-            allowNull: false
-        },
-        scope: {
+        name: {
             type: sequelize.Sequelize.STRING,
             allowNull: false,
-            comment: '授权范围（逗号分隔）'
+        },
+        status: {
+            type: sequelize.Sequelize.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '1:正常,2:禁用'
         }
     }, { updatedAt: false })
 }

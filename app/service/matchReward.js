@@ -22,6 +22,45 @@ module.exports = app => {
         }
 
         /**
+        * @description 删除奖励
+        * @param  {} {id
+        * @param  {} updator}
+        */
+        async delete({ id, updator }) {
+            const exist = await this.MatchReward.count({
+                where: { id: id }
+            })
+            if (exist == 0) throw new Error("记录不存在")
+
+            const result = await this.MatchReward.update({
+                status: 3,
+                updator: updator
+            }, { where: { id: id } })
+            return result
+        }
+
+        /**
+        * @description 更新赛事奖励
+        * @param  {} {id
+        * @param  {} rewardPoints
+        * @param  {} rewardPoints
+        * @param  {} updator}
+        */
+        async update({ id, ranking, rewardPoints, updator }) {
+            const exist = await this.MatchReward.count({
+                where: { matchId: matchId, ranking: ranking, status: { $ne: 3 } }
+            })
+            if (exist > 0) throw new Error("该赛事已存在此等级的奖励")
+
+            const result = await this.MatchReward.update({
+                ranking: ranking,
+                rewardPoints: rewardPoints,
+                updator: updator
+            })
+            return result
+        }
+
+        /**
          * @description 创建赛事奖励
          * @param  {} {matchId
          * @param  {} ranking
@@ -29,8 +68,15 @@ module.exports = app => {
          * @param  {} creator}
          */
         async create({ matchId, ranking, rewardPoints, creator }) {
-            const matchCount = await this.Match.count({ where: { id: matchId } })
-            if (matchCount == 0) throw new Error("赛事不存在")
+            const matchCount = await this.Match.count({
+                where: { id: matchId, status: 1 }
+            })
+            if (matchCount == 0) throw new Error("赛事不存在或已经结束")
+
+            const exist = await this.MatchReward.count({
+                where: { matchId: matchId, ranking: ranking, status: { $ne: 3 } }
+            })
+            if (exist > 0) throw new Error("该赛事已存在此等级的奖励")
             const result = await this.MatchReward.create({
                 matchId: matchId,
                 ranking: ranking,
