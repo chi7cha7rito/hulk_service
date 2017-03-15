@@ -43,6 +43,7 @@ module.exports = app => {
             }
             const result = await this.Match.findAndCount({
                 where: cond,
+                include:[{ model: this.MatchType, as: 'Type'},{model: this.MatchType, as: 'SubType'}],
                 offset: (index - 1) * size,
                 limit: size
             })

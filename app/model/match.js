@@ -16,10 +16,22 @@ module.exports = function (sequelize) {
     type: {
       type: sequelize.Sequelize.INTEGER,
       allowNull: false,
+      // references: {
+      //   // This is a reference to another model
+      //   model: "matchTypes",
+      //   // This is the column name of the referenced model
+      //   key: 'id'
+      // },
       comment: '1:SNG,2:MTT,3:猎人赛---由matchType定义'
     },
     subType: {
       type: sequelize.Sequelize.INTEGER,
+      // references: {
+      //   // This is a reference to another model
+      //   model: "matchTypes",
+      //   // This is the column name of the referenced model
+      //   key: 'id'
+      // },
       comment: '1:下午场,2:晚场,3:周末赛,4:月度会员杯赛---由matchType定义'
     },
     opening: {
@@ -56,6 +68,8 @@ module.exports = function (sequelize) {
   }, {
       classMethods: {
         associate(models) {
+          models.match.belongsTo(models.matchType, { as: 'Type', foreignKey: 'type' })
+          models.match.belongsTo(models.matchType, { as: 'SubType', foreignKey: 'subType' })
           models.match.hasMany(models.matchPrice)
           models.match.hasMany(models.attendance)
           models.match.hasMany(models.matchReward)
