@@ -9,7 +9,7 @@ module.exports = () => {
             // 自定义错误时异常返回的格式
             this.body = {
                 status: 0,
-                message: this.app.config.env === 'prod' ? 'Internal Server Error' : err.message,
+                message: err.message,
             };
         }
     };
