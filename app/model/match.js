@@ -48,6 +48,11 @@ module.exports = function (sequelize) {
       type: sequelize.Sequelize.STRING,
       comment: '赛事介绍页面url'
     },
+    online: {
+      type: sequelize.Sequelize.BOOLEAN,
+      defaultValue: false,
+      comment: '线上或线下比赛'
+    },
     holder: {
       type: sequelize.Sequelize.STRING,
       allowNull: false,
