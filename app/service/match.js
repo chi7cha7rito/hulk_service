@@ -6,6 +6,8 @@ module.exports = app => {
             super(ctx)
             this.Match = this.app.model.match
             this.MatchType = this.app.model.matchType
+            this.MatchPrice = this.app.model.matchPrice
+            this.MatchReward = this.app.model.matchReward
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
         }
@@ -43,7 +45,10 @@ module.exports = app => {
             }
             const result = await this.Match.findAndCount({
                 where: cond,
-                include:[{ model: this.MatchType, as: 'Type'},{model: this.MatchType, as: 'SubType'}],
+                include: [
+                    { model: this.MatchType, as: 'Type' },
+                    { model: this.MatchType, as: 'SubType' },
+                    { model: this.MatchPrice, where: { status: 1 }, attributes: ['type', 'price'] }],
                 offset: (index - 1) * size,
                 limit: size
             })
@@ -63,7 +68,7 @@ module.exports = app => {
          * @param  {} updator}
          * @return {object}
          */
-        async update({ id, name, type, subType, opening, description,online, url, holder, updator }) {
+        async update({ id, name, type, subType, opening, description, online, url, holder, updator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const nameCount = await this.Match.count({ where: { name: name } })
@@ -116,7 +121,7 @@ module.exports = app => {
          * @param  {} creator}
          * @return {object}
          */
-        async create({ name, type, subType, opening, description,online, url, holder, status = 1, creator }) {
+        async create({ name, type, subType, opening, description, online, url, holder, status = 1, creator }) {
             const nameCount = await this.Match.count({ where: { name: name } })
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
