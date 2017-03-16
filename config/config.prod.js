@@ -22,7 +22,7 @@ module.exports = appInfo => {
   config.expires = 6000
 
   // 中间件配置
-  config.middleware = ['authentication', 'errorHandler']
+  config.middleware = ['authentication','notFoundHandler', 'errorHandler']
   config.authentication = {
     enable: true
   }

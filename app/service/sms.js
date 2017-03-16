@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = app => {
-    class SmsToken extends app.Service {
+    class Sms extends app.Service {
         constructor(ctx) {
             super(ctx)
             this.Sms = this.app.model.sms
@@ -22,5 +22,5 @@ module.exports = app => {
             return result
         }
     }
-    return SmsToken;
+    return Sms;
 };
