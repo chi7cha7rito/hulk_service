@@ -22,6 +22,12 @@ module.exports = function (sequelize) {
             allowNull: false,
             comemt: '短信内容'
         },
+        request: {
+            type: sequelize.Sequelize.STRING
+        },
+        response: {
+            type: sequelize.Sequelize.STRING
+        },
         status: {
             type: sequelize.Sequelize.INTEGER,
             allowNull: false,

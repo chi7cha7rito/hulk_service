@@ -79,5 +79,7 @@ module.exports = app => {
   /**
    * 短信api
    */
-  app.post('/sms/SecurityCode', 'sms.SecurityCode')
+  app.post('/sms/create', 'sms.create')
+  app.post('/sms/successful', 'sms.successful')
+  app.post('/sms/failure', 'sms.failure')
 };

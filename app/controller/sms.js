@@ -10,9 +10,29 @@ module.exports = app => {
         /**
          * @description 创建短信验证码
          */
-        async SecurityCode() {
-            const result = await this.SmsSvr.SecurityCode(this.ctx.request.body);
+        async create() {
+            const result = await this.SmsSvr.create(this.ctx.request.body)
             this.success(result)
+        }
+
+        /**
+        * @description 创建短信验证码
+        */
+        async successful() {
+            const result = await this.SmsSvr.success(this.ctx.request.body)
+            this.success(result)
+        }
+
+        /**
+        * @description 创建短信验证码
+        */
+        async failure() {
+            const result = await this.SmsSvr.failure(this.ctx.request.body)
+            this.success(result)
+        }
+
+        async test() {
+            this.ctx.body = "hi"
         }
     }
     return SmsController;
