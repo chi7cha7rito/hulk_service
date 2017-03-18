@@ -47,8 +47,8 @@ module.exports = app => {
                 cond.status = { $in: [1, 2] }
             }
             const result = await this.Balance.findAndCount({
-                order:["createAt DESC"],
                 where: cond,
+                order: 'createdAt DESC',
                 offset: (index - 1) * size,
                 limit: size
             })

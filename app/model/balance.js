@@ -17,6 +17,17 @@ module.exports = app => {
         this.setDataValue('type', val)
         this.setDataValue('isPositive', boo);
       },
+      get: function () {
+        let val = this.getDataValue('type')
+        let str = ''
+        if (val == 1) str = '线上充值'
+        if (val == 2) str = '消费'
+        if (val == 3) str = '线下充值'
+        if (val == 4) str = '提现'
+        if (val == 5) str = '正调整'
+        if (val == 6) str = '负调整'
+        return str
+      },
       comment: '1:线上充值,2:消费,3:线下充值,4:提现,5:正调整,6:负调整'
     },
     isPositive: {
@@ -29,7 +40,20 @@ module.exports = app => {
     source: {
       type: INTEGER,
       allowNull: false,
-      comment: '1:微信充值,2:支付宝充值,3:刷卡充值,4:现金充值,5:店内消费,6:商城消费,7:手动调整'
+      get: function () {
+        let val = this.getDataValue('source')
+        let str = ''
+        if (val == 1) str = '微信充值'
+        if (val == 2) str = '支付宝充值'
+        if (val == 3) str = '刷卡充值'
+        if (val == 4) str = '现金充值'
+        if (val == 5) str = '店内消费'
+        if (val == 6) str = '商城消费'
+        if (val == 7) str = '赛事门票'
+        if (val == 8) str = '手动调整'
+        return str
+      },
+      comment: '1:微信充值,2:支付宝充值,3:刷卡充值,4:现金充值,5:店内消费,6:商城消费,7:赛事门票,8:手动调整'
     },
     sourceNo: {
       type: STRING,
