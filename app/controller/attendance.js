@@ -10,8 +10,8 @@ module.exports = app => {
         /**
          * @description 报名参赛
          */
-        async create() {
-            const result = await this.AttendanceSvr.create(this.ctx.request.body)
+        async createOnline() {
+            const result = await this.AttendanceSvr.createOnline(this.ctx.request.body)
             this.success(result)
         }
 

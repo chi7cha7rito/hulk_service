@@ -7,6 +7,9 @@ module.exports = app => {
             this.Match = this.app.model.Match
             this.Member = this.app.model.Member
             this.Attendance = this.app.model.Attendance
+            this.Balance = this.app.model.Balance
+            this.BalanceSvr = this.service.balance
+            this.MatchPriceSvr = this.service.matchPrice
             this.Helper = this.ctx.helper
         }
 
@@ -58,30 +61,59 @@ module.exports = app => {
         /**
          * @description 报名参加
          * @param  {} {matchId
-         * @param  {} ranking
-         * @param  {} rewardPoints
+         * @param  {} memberId
          * @param  {} creator}
          */
-        async create({ matchId, memberId, creator }) {
-            const matchCount = await this.Match.count({
+        async createOnline({ matchId, memberId, creator }) {
+            let classSelf = this
+            //检查赛事
+            const match = await this.Match.findOne({
                 where: { id: matchId, status: 1 }
             })
-            if (matchCount == 0) throw new Error("赛事不存在或已结束")
-            const memberCount = await this.Member.count({
-                where: { id: memberId }
+            if (!match) throw new Error("赛事不存在或已结束")
+
+            //查找线上价格
+            const price = await this.MatchPriceSvr.findActivePrice({ matchId, type: 1 })
+
+            //检查会员
+            const member = await this.Member.findOne({
+                where: { id: memberId },
+                include: [{ all: true }]
             })
-            if (memberCount == 0) throw new Error("会员不存在")
+            if (!member) throw new Error("会员不存在")
+
+            //查询余额
+            const balance = await this.BalanceSvr.totalByMemberId({ memberId })
+            if (balance < price.price) throw new Error("帐户余额不足")
+
+            //检查是否报名
             const attended = await this.Attendance.count({
                 where: { matchId: matchId, memberId: memberId }
             })
             if (attended > 0) throw new Error("您已报名参赛")
-            const result = await this.Attendance.create({
-                matchId: matchId,
-                memberId: memberId,
-                status: 1,
-                creator: creator
-            })
-            return result
+
+            //报名事务
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.Attendance.create({
+                    matchId: matchId,
+                    memberId: memberId,
+                    status: 1,
+                    creator: member.user.id
+                }, { transaction: t }).then(function (attendance) {
+                    return classSelf.Balance.create({
+                        memberId: memberId,
+                        type: 2,  //消费
+                        amount: price.price,
+                        source: 7,  //赛事门票
+                        sourceNo: attendance.id,
+                        remark: "线上赛事报名门票费用",
+                        status: 1,
+                        creator: member.user.id
+                    }, { transaction: t }).then(function (result) {
+                        return result
+                    })
+                });
+            });
         }
     }
     return MatchReward;

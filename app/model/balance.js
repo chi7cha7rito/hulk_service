@@ -20,15 +20,14 @@ module.exports = app => {
       get: function () {
         let val = this.getDataValue('type')
         let str = ''
-        if (val == 1) str = '线上充值'
+        if (val == 1) str = '充值'
         if (val == 2) str = '消费'
-        if (val == 3) str = '线下充值'
+        if (val == 3) str = '正调整'
         if (val == 4) str = '提现'
-        if (val == 5) str = '正调整'
         if (val == 6) str = '负调整'
         return str
       },
-      comment: '1:线上充值,2:消费,3:线下充值,4:提现,5:正调整,6:负调整'
+      comment: '1:充值,2:消费,3:正调整,4:提现,6:负调整'
     },
     isPositive: {
       type: BOOLEAN,

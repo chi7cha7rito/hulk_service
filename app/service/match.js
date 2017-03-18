@@ -34,8 +34,8 @@ module.exports = app => {
                 cond.type = type
             }
             cond.opening = {
-                $gte: startOpening || this.moment('1971-01-01').utc().format(),
-                $lte: endOpening || this.moment('9999-12-31').utc().format(),
+                $gte: startOpening || this.moment('1971-01-01').format(),
+                $lte: endOpening || this.moment('9999-12-31').format(),
             }
             if (holder) {
                 cond.holder = { $like: '%' + holder + '%' }
@@ -48,7 +48,7 @@ module.exports = app => {
                 include: [
                     { model: this.MatchType, as: 'Type' },
                     { model: this.MatchType, as: 'SubType' },
-                    { model: this.MatchPrice, where: { status: 1 }, attributes: ['type', 'price'] }],
+                    { model: this.MatchPrice, where: { status: 1, type: 1 }, attributes: ['type', 'price'] }],
                 offset: (index - 1) * size,
                 limit: size
             })

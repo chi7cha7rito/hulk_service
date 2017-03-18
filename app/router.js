@@ -5,7 +5,7 @@ module.exports = app => {
   /**
    * 报名api
    */
-  app.post('/attendance/create', 'attendance.create')
+  app.post('/attendance/createOnline', 'attendance.createOnline')
   app.post('/attendance/del', 'attendance.del')
   app.get('/attendance/findAttendances', 'attendance.findAttendances')
   app.get('/attendance/findRankingByMemberId', 'attendance.findRankingByMemberId')
