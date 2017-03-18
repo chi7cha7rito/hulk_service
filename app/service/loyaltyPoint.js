@@ -4,9 +4,8 @@ module.exports = app => {
     class LoyaltyPoint extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.LoyaltyPoint = this.app.model.loyaltyPoint
-            this.Member = this.app.model.member
-            this.Sequelize = this.app.sequelize
+            this.LoyaltyPoint = this.app.model.LoyaltyPoint
+            this.Member = this.app.model.Member
             this.Helper = this.ctx.helper
         }
 

@@ -1,15 +1,16 @@
 'use strict'
 
-module.exports = function (sequelize) {
-  return sequelize.define('loyaltyPoint', {
+module.exports = app => {
+  const { STRING, INTEGER, DATE, BOOLEAN, DECIMAL } = app.Sequelize
+  return app.model.define('loyaltyPoint', {
     id: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false
     },
     type: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       set: function (val) {
         let boo = val % 2 == 0 ? false : true
@@ -19,39 +20,39 @@ module.exports = function (sequelize) {
       comment: '1:获取,2:消费,3:正调整,4:负调整'
     },
     points: {
-      type: sequelize.Sequelize.DECIMAL
+      type: DECIMAL
     },
     isPositive: {
-      type: sequelize.Sequelize.BOOLEAN,
+      type: BOOLEAN,
       comment: 'true:正向积分,false:负向积分'
     },
     source: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       comment: '1:充值返现,2:比赛奖励,3:店内消费,4:商城消费,5:手工调整'
     },
     sourceNo: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       comment: '参考号'
     },
     remark: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       comment: '操作备注'
     },
     status: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       comment: '1:正常,2:冻结,3:失败'
     },
     creator: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
     },
     updator: {
-      type: sequelize.Sequelize.INTEGER
+      type: INTEGER
     }
   }, {
       classMethods: {
-        associate(models) {
-          models.loyaltyPoint.belongsTo(models.member)
+        associate() {
+          app.model.LoyaltyPoint.belongsTo(app.model.Member)
         }
       }
     })

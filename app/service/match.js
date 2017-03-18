@@ -4,10 +4,10 @@ module.exports = app => {
     class Match extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Match = this.app.model.match
-            this.MatchType = this.app.model.matchType
-            this.MatchPrice = this.app.model.matchPrice
-            this.MatchReward = this.app.model.matchReward
+            this.Match = this.app.model.Match
+            this.MatchType = this.app.model.MatchType
+            this.MatchPrice = this.app.model.MatchPrice
+            this.MatchReward = this.app.model.MatchReward
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
         }

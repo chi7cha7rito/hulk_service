@@ -4,7 +4,7 @@ module.exports = app => {
     class WechatToken extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.WechatToken = this.app.model.wechatToken
+            this.WechatToken = this.app.model.WechatToken
             this.moment = this.app.moment
         }
         /**

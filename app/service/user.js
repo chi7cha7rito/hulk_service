@@ -3,7 +3,7 @@
 module.exports = app => {
   class User extends app.Service {
     async findUsers({ phoneNo, idCardNo, gender, status, pageIndex, pageSize }) {
-      const user = await this.ctx.model.user.findAndCountAll({
+      const user = await this.ctx.model.User.findAndCountAll({
         where: {
           phoneNo: {
             $like: phoneNo + '%'
@@ -20,7 +20,7 @@ module.exports = app => {
       return user;
     }
     async findByPhoneNo(phoneNo) {
-      const user = await this.ctx.model.user.findOne({
+      const user = await this.ctx.model.User.findOne({
         where: { phoneNo: phoneNo },
         include: [{
           model: this.ctx.model.member,
@@ -36,15 +36,15 @@ module.exports = app => {
       // const user = await this.ctx.model.user.create({ phoneNo: '18912341234', idCardNo: '310115198709091010', gender: 1, status: 1, creator: 1 })
       // return user;
       let classSelf = this
-      return classSelf.ctx.app.sequelize.transaction(function (t) {
-        return classSelf.ctx.model.user.create({
+      return classSelf.ctx.app.model.transaction(function (t) {
+        return classSelf.ctx.model.User.create({
           phoneNo: '18912341234',
           idCardNo: '310115198709091010',
           gender: 1,
           status: 1,
           creator: 1
         }, { transaction: t }).then(function (user) {
-          return classSelf.ctx.model.member.create({
+          return classSelf.ctx.model.Member.create({
             cardNo: "777",
             level: 2,
             status: 1,

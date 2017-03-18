@@ -1,35 +1,36 @@
 'use strict'
 
-module.exports = function (sequelize) {
-  return sequelize.define('wechat', {
+module.exports =  app => {
+  const { STRING, INTEGER} = app.Sequelize
+  return app.model.define('wechat', {
     id: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false
     },
     wechatOpenId: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       allowNull: false
     },
     nickName: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       comment: '昵称'
     },
     headImgUrl: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       comment: '头像Url'
     },
     creator: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
     },
     updator: {
-      type: sequelize.Sequelize.INTEGER
+      type: INTEGER
     }
   }, {
       classMethods: {
-        associate(models) {
-          models.wechat.belongsTo(models.member)
+        associate() {
+          app.model.Wechat.belongsTo(app.model.Member)
         }
       }
     })

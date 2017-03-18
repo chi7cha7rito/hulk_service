@@ -4,9 +4,8 @@ module.exports = app => {
     class MatcPrice extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Match = this.app.model.match
-            this.MatchPrice = this.app.model.matchPrice
-            this.Sequelize = this.app.sequelize
+            this.Match = this.app.model.Match
+            this.MatchPrice = this.app.model.MatchPrice
             this.Helper = this.ctx.helper
         }
 

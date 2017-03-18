@@ -4,7 +4,7 @@ module.exports = app => {
     class Sms extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Sms = this.app.model.sms
+            this.Sms = this.app.model.Sms
         }
 
         /**

@@ -1,26 +1,27 @@
 'use strict'
 
-module.exports = function (sequelize) {
-  return sequelize.define('signIn', {
+module.exports = app => {
+  const { STRING, INTEGER} = app.Sequelize
+  return app.model.define('signIn', {
     id: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false
     },
     comment: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
     },
     creator: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
     },
     updator: {
-      type: sequelize.Sequelize.INTEGER
+      type: INTEGER
     }
   }, {
       classMethods: {
-        associate(models) {
-          models.signIn.belongsTo(models.member)
+        associate() {
+          app.model.SignIn.belongsTo(app.model.Member)
         }
       }
     })

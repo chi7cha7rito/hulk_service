@@ -4,7 +4,7 @@ module.exports = app => {
     class MatchType extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.MatchType = this.app.model.matchType
+            this.MatchType = this.app.model.MatchType
         }
 
         /**

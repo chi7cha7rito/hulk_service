@@ -1,24 +1,25 @@
 'use strict'
 
-module.exports = function (sequelize) {
-    return sequelize.define('matchType', {
+module.exports = app => {
+    const { STRING, INTEGER } = app.Sequelize
+    return app.model.define('matchType', {
         id: {
-            type: sequelize.Sequelize.INTEGER,
+            type: INTEGER,
             autoIncrement: true,
             primaryKey: true,
             allowNull: false
         },
         pid: {
-            type: sequelize.Sequelize.INTEGER,
+            type: INTEGER,
             allowNull: false,
             defaultValue: 0
         },
         name: {
-            type: sequelize.Sequelize.STRING,
+            type: STRING,
             allowNull: false,
         },
         status: {
-            type: sequelize.Sequelize.INTEGER,
+            type: INTEGER,
             allowNull: false,
             defaultValue: 1,
             comment: '1:正常,2:禁用'
@@ -26,9 +27,9 @@ module.exports = function (sequelize) {
     }, {
             updatedAt: false,
             classMethods: {
-                associate(models) {
-                    models.matchType.hasMany(models.match,{as:'Type',foreignKey:'type'})
-                    models.matchType.hasMany(models.match,{as:'SubType',foreignKey:'subType'})
+                associate() {
+                    app.model.MatchType.hasMany(app.model.Match, { as: 'Type', foreignKey: 'type' })
+                    app.model.MatchType.hasMany(app.model.Match, { as: 'SubType', foreignKey: 'subType' })
                 }
             }
         })

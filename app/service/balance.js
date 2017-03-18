@@ -4,9 +4,8 @@ module.exports = app => {
     class Balance extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Balance = this.app.model.balance
-            this.Member = this.app.model.member
-            this.Sequelize = this.app.sequelize
+            this.Balance = this.app.model.Balance
+            this.Member = this.app.model.Member
             this.Helper = this.ctx.helper
         }
         /**

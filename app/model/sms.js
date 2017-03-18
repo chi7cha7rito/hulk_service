@@ -1,35 +1,36 @@
 'use strict'
 
-module.exports = function (sequelize) {
-    return sequelize.define('sms', {
+module.exports = app => {
+  const { STRING, INTEGER} = app.Sequelize
+    return app.model.define('sms', {
         id: {
-            type: sequelize.Sequelize.INTEGER,
+            type: INTEGER,
             autoIncrement: true,
             primaryKey: true,
             allowNull: false
         },
         type: {
-            type: sequelize.Sequelize.INTEGER,
+            type: INTEGER,
             allowNull: false,
             comemt: '1:短信,2:语音'
         },
         phoneNo: {
-            type: sequelize.Sequelize.STRING,
+            type: STRING,
             allowNull: false
         },
         content: {
-            type: sequelize.Sequelize.STRING,
+            type: STRING,
             allowNull: false,
             comemt: '短信内容'
         },
         request: {
-            type: sequelize.Sequelize.STRING
+            type: STRING
         },
         response: {
-            type: sequelize.Sequelize.STRING
+            type: STRING
         },
         status: {
-            type: sequelize.Sequelize.INTEGER,
+            type: INTEGER,
             allowNull: false,
             defaultValue: 1,
             comemt: '1:未发送,2:成功,3:失败'

@@ -1,20 +1,21 @@
 'use strict'
 
-module.exports = function (sequelize) {
-  return sequelize.define('match', {
+module.exports = app => {
+  const { STRING, INTEGER, DATE, BOOLEAN, DECIMAL, TEXT } = app.Sequelize
+  return app.model.define('match', {
     id: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false
     },
     name: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       allowNull: false,
       comment: '赛事名称'
     },
     type: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       // references: {
       //   // This is a reference to another model
@@ -25,7 +26,7 @@ module.exports = function (sequelize) {
       comment: '1:SNG,2:MTT,3:猎人赛---由matchType定义'
     },
     subType: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       // references: {
       //   // This is a reference to another model
       //   model: "matchTypes",
@@ -35,49 +36,49 @@ module.exports = function (sequelize) {
       comment: '1:下午场,2:晚场,3:周末赛,4:月度会员杯赛---由matchType定义'
     },
     opening: {
-      type: sequelize.Sequelize.DATE,
+      type: DATE,
       allowNull: false,
       comment: '比赛时间'
     },
     description: {
-      type: sequelize.Sequelize.TEXT,
+      type: TEXT,
       allowNull: false,
       comment: '赛事描述'
     },
     url: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       comment: '赛事介绍页面url'
     },
     online: {
-      type: sequelize.Sequelize.BOOLEAN,
+      type: BOOLEAN,
       defaultValue: false,
       comment: '线上或线下比赛'
     },
     holder: {
-      type: sequelize.Sequelize.STRING,
+      type: STRING,
       allowNull: false,
       comment: '主办方'
     },
     status: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       defaultValue: 1,
       comment: '1:启用,2:禁用'
     },
     creator: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
     },
     updator: {
-      type: sequelize.Sequelize.INTEGER
+      type: INTEGER
     }
   }, {
       classMethods: {
-        associate(models) {
-          models.match.belongsTo(models.matchType, { as: 'Type', foreignKey: 'type' })
-          models.match.belongsTo(models.matchType, { as: 'SubType', foreignKey: 'subType' })
-          models.match.hasMany(models.matchPrice)
-          models.match.hasMany(models.attendance)
-          models.match.hasMany(models.matchReward)
+        associate() {
+          app.model.Match.belongsTo(app.model.MatchType, { as: 'Type', foreignKey: 'type' })
+          app.model.Match.belongsTo(app.model.MatchType, { as: 'SubType', foreignKey: 'subType' })
+          app.model.Match.hasMany(app.model.MatchPrice)
+          app.model.Match.hasMany(app.model.Attendance)
+          app.model.Match.hasMany(app.model.MatchReward)
         }
       }
     })

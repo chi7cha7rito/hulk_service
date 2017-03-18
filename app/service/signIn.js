@@ -4,11 +4,10 @@ module.exports = app => {
     class SignIn extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.SignIn = this.app.model.signIn
-            this.Member = this.app.model.member
-            this.Wechat = this.app.model.wechat
-            this.Sequelize = this.app.sequelize
-            this.Helper = this.ctx.helper
+            this.SignIn = this.app.model.SignIn
+            this.Member = this.app.model.Member
+            this.Wechat = this.app.model.Wechat
+            this.Sequelize = this.app.model
         }
 
         /**
@@ -22,9 +21,9 @@ module.exports = app => {
                 where: {
                     $and: [
                         { memberId: memberId },
-                        this.app.sequelize.where(
-                            this.app.sequelize.fn('DATE', this.app.sequelize.col('createdAt')),
-                            this.app.sequelize.literal('CURRENT_DATE')
+                        this.Sequelize.where(
+                            this.Sequelize.fn('DATE', this.Sequelize.col('createdAt')),
+                            this.Sequelize.literal('CURRENT_DATE')
                         )
                     ]
                 }

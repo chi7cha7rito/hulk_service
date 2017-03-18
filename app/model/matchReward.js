@@ -1,37 +1,38 @@
 'use strict'
 
-module.exports = function (sequelize) {
-  return sequelize.define('matchReward', {
+module.exports = app => {
+  const { INTEGER, DECIMAL } = app.Sequelize
+  return app.model.define('matchReward', {
     id: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false
     },
     ranking: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       comment: '赛事名次'
     },
     rewardPoints: {
-      type: sequelize.Sequelize.DECIMAL,
+      type: DECIMAL,
       comment: '赛事奖励积分'
     },
     status: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       comment: '1:启用,2:禁用,3:删除'
     },
     creator: {
-      type: sequelize.Sequelize.INTEGER,
+      type: INTEGER,
     },
     updator: {
-      type: sequelize.Sequelize.INTEGER
+      type: INTEGER
     }
   }, {
       classMethods: {
-        associate(models) {
-          models.matchReward.belongsTo(models.match)
+        associate() {
+          app.model.MatchReward.belongsTo(app.model.Match)
         }
       }
     })

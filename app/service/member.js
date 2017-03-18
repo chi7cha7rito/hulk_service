@@ -4,9 +4,9 @@ module.exports = app => {
     class Member extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Member = this.app.model.member
-            this.User = this.app.model.user
-            this.Wechat = this.app.model.wechat
+            this.Member = this.app.model.Member
+            this.User = this.app.model.User
+            this.Wechat = this.app.model.Wechat
             this.Helper = this.ctx.helper
         }
 
