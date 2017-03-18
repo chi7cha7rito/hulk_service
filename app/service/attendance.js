@@ -5,6 +5,7 @@ module.exports = app => {
         constructor(ctx) {
             super(ctx)
             this.Match = this.app.model.Match
+            this.MatchReward = this.app.model.MatchReward
             this.Member = this.app.model.Member
             this.Attendance = this.app.model.Attendance
             this.Balance = this.app.model.Balance
@@ -40,7 +41,8 @@ module.exports = app => {
             const result = await this.Attendance.findAndCount({
                 where: { memberId: memberId, status: 1 },
                 offset: (index - 1) * size,
-                limit: size
+                limit: size,
+                include: [{ model: this.Match }]
             })
             return result
         }

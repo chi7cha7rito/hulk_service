@@ -13,6 +13,9 @@ module.exports = app => {
       type: INTEGER,
       comment: '比赛成绩,同比赛奖励的ranking'
     },
+    rewards: {
+      type: STRING,
+    },
     status: {
       type: INTEGER,
       allowNull: false,
