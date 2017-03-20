@@ -27,6 +27,10 @@ module.exports = app => {
       allowNull: false,
       comment: '商户id'
     },
+    attach: {
+      type: STRING,
+      comment:'附带参数'
+    },
     nonce_str: {
       type: STRING,
       comment: '随机字符串'
@@ -49,7 +53,7 @@ module.exports = app => {
       comment: '发起支付的ip'
     },
     total_fee: {
-      type: DECIMAL,
+      type: DECIMAL(10, 2),
       allowNull: false,
       comment: '支付金额'
     },

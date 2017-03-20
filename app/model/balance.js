@@ -34,7 +34,7 @@ module.exports = app => {
       comment: 'true:正向金额,false:负向金额'
     },
     amount: {
-      type: DECIMAL
+      type: DECIMAL(10, 2)
     },
     source: {
       type: INTEGER,

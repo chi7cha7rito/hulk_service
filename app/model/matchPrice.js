@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-  const {  INTEGER, BOOLEAN, DECIMAL } = app.Sequelize
+  const { INTEGER, BOOLEAN, DECIMAL } = app.Sequelize
   return app.model.define('matchPrice', {
     id: {
       type: INTEGER,
@@ -15,7 +15,7 @@ module.exports = app => {
       comment: '1:线上价格,2:线下价格,3:优惠价格'
     },
     price: {
-      type: DECIMAL
+      type: DECIMAL(10, 2)
     },
     status: {
       type: INTEGER,

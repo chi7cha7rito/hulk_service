@@ -15,7 +15,7 @@ module.exports = app => {
       comment: '赛事名次'
     },
     rewardPoints: {
-      type: DECIMAL,
+      type: DECIMAL(10, 2),
       comment: '赛事奖励积分'
     },
     status: {

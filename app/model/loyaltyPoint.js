@@ -29,7 +29,7 @@ module.exports = app => {
       comment: '1:获取,2:消费,3:正调整,4:负调整'
     },
     points: {
-      type: DECIMAL
+      type: DECIMAL(10, 2)
     },
     isPositive: {
       type: BOOLEAN,

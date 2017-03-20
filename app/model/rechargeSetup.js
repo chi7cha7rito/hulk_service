@@ -10,12 +10,12 @@ module.exports = app => {
             allowNull: false
         },
         threshold: {
-            type: DECIMAL,
+            type: DECIMAL(10, 2),
             allowNull: false,
             comment: '返现阀值,取大于等于'
         },
         reward: {
-            type: DECIMAL,
+            type: DECIMAL(10, 2),
             allowNull: false,
             comment: '返现数值'
         },

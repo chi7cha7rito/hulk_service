@@ -35,13 +35,14 @@ module.exports = app => {
          * @param  {} nonce_str
          * @param  {} notify_url
          * @param  {} openid
+         * @param  {} attach
          * @param  {} out_trade_no
          * @param  {} spbill_create_ip
          * @param  {} total_fee
          * @param  {} trade_type
          * @param  {} creator=1}
          */
-        async create({ memberId, appid, body, mch_id, nonce_str, notify_url, openid, out_trade_no, spbill_create_ip, total_fee, trade_type, creator = 1 }) {
+        async create({ memberId, appid, body, mch_id, nonce_str, notify_url, openid, attach, out_trade_no, spbill_create_ip, total_fee, trade_type, creator = 1 }) {
             const memberCount = await this.Member.count({
                 where: { id: memberId, status: 1 }
             })
@@ -54,6 +55,7 @@ module.exports = app => {
                 nonce_str: nonce_str,
                 notify_url: notify_url,
                 openid: openid,
+                attach: attach,
                 out_trade_no: out_trade_no,
                 spbill_create_ip: spbill_create_ip,
                 total_fee: total_fee,
@@ -94,7 +96,7 @@ module.exports = app => {
                         remark: "微信公众号充值",
                         status: 1,
                     }, { transaction: t }).then(async (balance) => {
-                        const max = await classSelf.RechargeSetup.max('reward,', { where: { threshold: { $lte: entry.total_fee ? (entry.total_fee / 100) : 0 }, status: 1 } })
+                        const max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: entry.total_fee ? (entry.total_fee / 100) : 0 }, status: 1 } })
                         if (max) {
                             return classSelf.LoyaltyPoint.create({
                                 memberId: entry.memberId,
@@ -102,6 +104,7 @@ module.exports = app => {
                                 points: max,
                                 source: 1,  //充值返现
                                 sourceNo: entry.id,
+                                status: 1,  //状态正常
                                 remark: "充值积分返现",
                             })
                         } else {

@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE, BOOLEAN, DECIMAL, TEXT } = app.Sequelize
+  const { STRING, INTEGER, DATE, BOOLEAN, TEXT } = app.Sequelize
   return app.model.define('match', {
     id: {
       type: INTEGER,
