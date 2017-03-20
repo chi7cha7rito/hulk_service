@@ -19,6 +19,14 @@ module.exports = app => {
   app.get('/balance/totalByMemberId', 'balance.totalByMemberId')
 
   /**
+   * 
+   */
+  app.post('/wechatPayment/create','wechatPayment.create')
+  app.post('/wechatPayment/notify','wechatPayment.notify')
+  app.get('/wechatPayment/findEntry','wechatPayment.findEntry')
+
+
+  /**
    * 积分api
    */
   app.post('/point/create', 'loyaltyPoint.create')

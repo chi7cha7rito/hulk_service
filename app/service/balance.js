@@ -78,33 +78,9 @@ module.exports = app => {
                 source: source,
                 sourceNo: sourceNo,
                 remark: remark,
-                status: type == 1 ? 2 : 1,  //线上充值状态为2（冻结）,等待支付反馈成功转为1（正常）,失败转为状态3（失败）
+                status: 1,
                 creator: creator
             })
-            return result
-        }
-
-        /**
-         * @description 微信回调更新
-         * @param  {} {memberId
-         * @param  {} source
-         * @param  {} sourceNo
-         * @param  {} remark}
-         */
-        async wechatNotify({ memberId, source, sourceNo, remark }) {
-            const memberCount = await this.Member.count({
-                where: { id: memberId, status: 1 }
-            })
-            if (memberCount == 0) throw new Error("会员不存在或被冻结")
-
-            const balance = await this.Balance.findOne({
-                where: { memberId: memberId, source: source, sourceNo: sourceNo }
-            })
-            if (!balance) throw new Error("找不到该条充值记录")
-
-            const result = await this.Balance.update({
-                status: 1,
-            }, { memberId: memberId, source: source, sourceNo: sourceNo })
             return result
         }
     }
