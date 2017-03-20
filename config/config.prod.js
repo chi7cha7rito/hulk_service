@@ -6,7 +6,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + 'hulkclub'
 
   // service调用token
-  config.hulk_token = "abcd1234"
+  config.hulk_token = "hulk_club_20170312"
 
   // 数据库配置
   config.sequelize = {
@@ -24,7 +24,7 @@ module.exports = appInfo => {
   // 中间件配置
   config.middleware = ['authentication', 'errorHandler']
   config.authentication = {
-    enable: false
+    enable: true
   }
   config.security = {
     csrf: {

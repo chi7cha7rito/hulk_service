@@ -1,4 +1,4 @@
-
+const md5 = require('md5')
 module.exports = (app) => {
     return function* authentication(next) {
         try {
@@ -7,7 +7,7 @@ module.exports = (app) => {
             const token = this.app.config["hulk_token"]
             this.logger.info(`Request Headers:${JSON.stringify(this.headers)}`)
             if (this.request.body) this.logger.info(`Request Body:${JSON.stringify(this.request.body)}`)
-            if (requestToken !== token) {
+            if (requestToken !== md5(token)) {
                 throw new Error("未受信任的请求")
             }
             yield next;
