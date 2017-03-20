@@ -49,10 +49,11 @@ module.exports = app => {
         if (val == 5) str = '店内消费'
         if (val == 6) str = '商城消费'
         if (val == 7) str = '赛事门票'
-        if (val == 8) str = '手动调整'
+        if (val == 8) str = '提现'
+        if (val == 9) str = '手动调整'
         return str
       },
-      comment: '1:微信充值,2:支付宝充值,3:刷卡充值,4:现金充值,5:店内消费,6:商城消费,7:赛事门票,8:手动调整'
+      comment: '1:微信充值,2:支付宝充值,3:刷卡充值,4:现金充值,5:店内消费,6:商城消费,7:赛事门票,8:提现,9:手动调整'
     },
     sourceNo: {
       type: STRING,

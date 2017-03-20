@@ -30,10 +30,6 @@ module.exports = app => {
             const result = await this.SmsSvr.failure(this.ctx.request.body)
             this.success(result)
         }
-
-        async test() {
-            this.ctx.body = "hi"
-        }
     }
     return SmsController;
 };
