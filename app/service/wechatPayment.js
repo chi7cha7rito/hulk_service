@@ -7,6 +7,8 @@ module.exports = app => {
             this.Balance = this.app.model.Balance
             this.Member = this.app.model.Member
             this.WechatPayment = this.app.model.WechatPayment
+            this.RechargeSetup = this.app.model.RechargeSetup
+            this.LoyaltyPoint = this.app.model.LoyaltyPoint
             this.Helper = this.ctx.helper
         }
 
@@ -66,9 +68,10 @@ module.exports = app => {
          * @description 微信回调成功更新
          * @param  {} {out_trade_no,
          * @param  {} transaction_id
-         * @param  {} time_end}
+         * @param  {} time_end
+         * @param  {} status}
          */
-        async notify({ out_trade_no, transaction_id, time_end }) {
+        async notify({ out_trade_no, transaction_id, time_end, status }) {
             const classSelf = this;
             const entry = await this.WechatPayment.findOne({
                 where: { out_trade_no: out_trade_no }
@@ -80,21 +83,33 @@ module.exports = app => {
                 return classSelf.WechatPayment.update({
                     transaction_id: transaction_id,
                     time_end: time_end,
-                    status: 2,
-                }, { where: { out_trade_no: out_trade_no }, transaction: t }).then(function (payment) {
+                    status: status,
+                }, { where: { out_trade_no: out_trade_no }, transaction: t, lock: t.LOCK }).then(function (payment) {
                     return classSelf.Balance.create({
                         memberId: entry.memberId,
                         type: 1,  //充值
-                        amount: entry.total_fee,
+                        amount: entry.total_fee ? (entry.total_fee / 100) : 0,
                         source: 1,  //微信充值
                         sourceNo: entry.id,
                         remark: "微信公众号充值",
                         status: 1,
-                    }, { transaction: t }).then(function (result) {
-                        return result
+                    }, { transaction: t }).then(async (balance) => {
+                        const max = await classSelf.RechargeSetup.max('reward,', { where: { threshold: { $lte: entry.total_fee ? (entry.total_fee / 100) : 0 }, status: 1 } })
+                        if (max) {
+                            return classSelf.LoyaltyPoint.create({
+                                memberId: entry.memberId,
+                                type: 1,    //获取
+                                points: max,
+                                source: 1,  //充值返现
+                                sourceNo: entry.id,
+                                remark: "充值积分返现",
+                            })
+                        } else {
+                            return balance
+                        }
                     })
-                });
-            });
+                })
+            })
         }
     }
     return WechatPayment;

@@ -19,12 +19,19 @@ module.exports = app => {
   app.get('/balance/totalByMemberId', 'balance.totalByMemberId')
 
   /**
-   * 
+   * 微信支付api
    */
-  app.post('/wechatPayment/create','wechatPayment.create')
-  app.post('/wechatPayment/notify','wechatPayment.notify')
-  app.get('/wechatPayment/findEntry','wechatPayment.findEntry')
+  app.post('/wechatPayment/create', 'wechatPayment.create')
+  app.post('/wechatPayment/notify', 'wechatPayment.notify')
+  app.get('/wechatPayment/findEntry', 'wechatPayment.findEntry')
 
+  /**
+   * 充值返现设置api
+   */
+  app.post('/rechargeSetup/create', 'rechargeSetup.create')
+  app.post('/rechargeSetup/update', 'rechargeSetup.update')
+  app.get('/rechargeSetup/findAll', 'rechargeSetup.findAll')
+  app.get('/rechargeSetup/findMax', 'rechargeSetup.findMax')
 
   /**
    * 积分api
