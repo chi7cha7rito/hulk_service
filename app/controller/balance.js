@@ -15,6 +15,11 @@ module.exports = app => {
             this.success(result)
         }
 
+        async wechatNotify() {
+            const result = await this.BalanceSvr.wechatNotify(this.ctx.request.body)
+            this.success(result)
+        }
+
         /**
          * @description 查询余额记录
          */

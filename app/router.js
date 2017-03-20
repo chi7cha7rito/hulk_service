@@ -14,6 +14,7 @@ module.exports = app => {
    * 帐户api
    */
   app.post('/balance/create', 'balance.create')
+  app.post('/balance/wechatNotify', 'balance.wechatNotify')
   app.get('/balance/findEntries', 'balance.findEntries')
   app.get('/balance/totalByMemberId', 'balance.totalByMemberId')
 
