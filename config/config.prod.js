@@ -24,7 +24,7 @@ module.exports = appInfo => {
   // 中间件配置
   config.middleware = ['authentication', 'errorHandler']
   config.authentication = {
-    enable: true
+    enable: false
   }
   config.security = {
     csrf: {
