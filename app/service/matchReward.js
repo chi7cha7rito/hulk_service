@@ -21,6 +21,17 @@ module.exports = app => {
         }
 
         /**
+         * @description 查询有效奖励
+         * @param  {} {matchId}
+         */
+        async findAllActive({ matchId }) {
+            const result = await this.MatchReward.findAll({
+                where: { matchId: matchId, status: 1 },
+            })
+            return result
+        }
+
+        /**
         * @description 修改赛事奖励状态
         * @param  {} {id
         * @param  {} status
@@ -71,7 +82,7 @@ module.exports = app => {
          * @param  {} rewardPoints
          * @param  {} creator}
          */
-        async create({ matchId, ranking, rewardPoints,status, creator }) {
+        async create({ matchId, ranking, rewardPoints, status, creator }) {
             const matchCount = await this.Match.count({
                 where: { id: matchId, status: 1 }
             })

@@ -23,6 +23,11 @@ module.exports = app => {
             this.success(result)
         }
 
+        async findAllActive() {
+            const result = await this.MatchRewardSvr.findAllActive(this.ctx.query)
+            this.success(result)
+        }
+
         /**
          * @description 修改赛事奖励状态
          */

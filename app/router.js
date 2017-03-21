@@ -63,6 +63,7 @@ module.exports = app => {
   app.post('/matchReward/changeStatus', 'matchReward.changeStatus')
   app.post('/matchReward/update', 'matchReward.update')
   app.get('/matchReward/findAll', 'matchReward.findAll')
+  app.get('/matchReward/findAllActive', 'matchReward.findAllActive')
 
   /**
    * 赛事类型
