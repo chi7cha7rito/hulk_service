@@ -79,6 +79,7 @@ module.exports = app => {
   app.post('/member/update', 'member.update')
   app.get('/member/findByWechatOpenId', 'member.findByWechatOpenId')
   app.get('/member/findById', 'member.findById')
+  app.get('/member/findTotal', 'member.findTotal')
 
   /**
    * 签到api

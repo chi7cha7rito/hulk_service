@@ -6,6 +6,7 @@ module.exports = app => {
             super(ctx)
             this.Balance = this.app.model.Balance
             this.Member = this.app.model.Member
+            this.User = this.app.model.User
             this.WechatPayment = this.app.model.WechatPayment
             this.RechargeSetup = this.app.model.RechargeSetup
             this.LoyaltyPoint = this.app.model.LoyaltyPoint
@@ -68,12 +69,12 @@ module.exports = app => {
 
         /**
          * @description 微信回调成功更新
-         * @param  {} {out_trade_no,
+         * @param  {} {out_trade_no
          * @param  {} transaction_id
          * @param  {} time_end
          * @param  {} status}
          */
-        async notify({ out_trade_no, transaction_id, time_end, status }) {
+        async notify({ name, out_trade_no, transaction_id, time_end, status }) {
             const classSelf = this;
             const entry = await this.WechatPayment.findOne({
                 where: { out_trade_no: out_trade_no }
