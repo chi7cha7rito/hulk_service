@@ -4,30 +4,30 @@ module.exports = app => {
     class MatcPrice extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Match = this.app.model.Match
+            this.MatchConfig = this.app.model.MatchConfig
             this.MatchPrice = this.app.model.MatchPrice
             this.Helper = this.ctx.helper
         }
 
         /**
-         * @description 获取比赛价格
-         * @param  {} {matchId}
+         * @description 获取比赛配置价格
+         * @param  {} {matchConfigId}
          */
-        async findAll({ matchId }) {
+        async findAll({ matchConfigId }) {
             const result = await this.MatchPrice.findAll({
-                where: { matchId: matchId, status: { $ne: 3 } },
+                where: { matchConfigId: matchConfigId, status: { $ne: 3 } },
             })
             return result
         }
 
         /**
          * @description 根据赛事id和类型查找价格
-         * @param  {} {matchId
+         * @param  {} {matchConfigId
          * @param  {} type}
          */
-        async findActivePrice({ matchId, type }) {
+        async findActivePrice({ matchConfigId, type }) {
             const result = await this.MatchPrice.findOne({
-                where: { matchId, type, status: 1 }
+                where: { matchConfigId, type, status: 1 }
             })
             return result
         }
@@ -63,7 +63,7 @@ module.exports = app => {
 
             if (record.type != type) {
                 const typeCount = await this.MatchPrice.count({
-                    where: { matchId: record.matchId, type: type, status: { $ne: 3 } }
+                    where: { matchConfigId: record.matchConfigId, type: type, status: { $ne: 3 } }
                 })
                 if (typeCount > 0) throw new Error("该类型价格已经存在")
             }
@@ -78,21 +78,21 @@ module.exports = app => {
 
         /**
          * @description 新建比赛价格
-         * @param  {} {matchId
+         * @param  {} {matchConfigId
          * @param  {} type
          * @param  {} price
          * @param  {} status
          * @param  {} creator}
          */
-        async create({ matchId, type, price, status, creator }) {
-            const matchCount = await this.Match.count({ where: { id: matchId } })
-            if (matchCount == 0) throw new Error("赛事不存在")
+        async create({ matchConfigId, type, price, status, creator }) {
+            const configCount = await this.MatchConfig.count({ where: { id: matchConfigId } })
+            if (configCount == 0) throw new Error("赛事配置不存在")
             const priceCount = await this.MatchPrice.count({
-                where: { matchId: matchId, type: type, status: { $ne: 3 } }
+                where: { matchConfigId: matchConfigId, type: type, status: { $ne: 3 } }
             })
             if (priceCount > 0) throw new Error("该类型价格已经存在")
             const result = await this.MatchPrice.create({
-                matchId: matchId,
+                matchConfigId: matchConfigId,
                 type: type,
                 price: price,
                 status: status,

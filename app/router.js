@@ -41,12 +41,20 @@ module.exports = app => {
   app.get('/point/totalByMemberId', 'loyaltyPoint.totalByMemberId')
 
   /**
-   * 赛事api
+   * 配置api
    */
   app.post('/match/create', 'match.create')
   app.post('/match/update', 'match.update')
   app.post('/match/changeStatus', 'match.changeStatus')
   app.get('/match/findMatches', 'match.findMatches')
+
+  /**
+   * 赛事配置api
+   */
+  app.post('/matchConfig/create', 'matchConfig.create')
+  app.post('/matchConfig/update', 'matchConfig.update')
+  app.post('/matchConfig/changeStatus', 'matchConfig.changeStatus')
+  app.get('/matchConfig/findMatchConfigs', 'matchConfig.findMatchConfigs')
 
   /**
    * 赛事价格api
@@ -83,9 +91,21 @@ module.exports = app => {
   app.get('/member/findTotal', 'member.findTotal')
 
   /**
+   * 会员等级设置api
+   */
+  app.post('/memberLevel/create', 'memberLevel.create')
+  app.post('/memberLevel/update', 'memberLevel.update')
+  app.get('/memberLevel/findAll', 'memberLevel.findAll')
+
+  /**
    * 签到api
    */
   app.post('/signIn/create', 'signIn.create')
+
+  /**
+   * 筹码api
+   */
+  app.post('/chip/create', 'chip.create')
 
   /**
    * 微信token api

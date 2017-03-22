@@ -14,11 +14,6 @@ module.exports = app => {
       allowNull: false,
       comment: '会员卡号（默认手机号）'
     },
-    level: {
-      type: INTEGER,
-      defaultValue: 1,
-      comment: '会员级别'
-    },
     status: {
       type: INTEGER,
       allowNull: false,
@@ -35,14 +30,16 @@ module.exports = app => {
       classMethods: {
         associate() {
           app.model.Member.belongsTo(app.model.User)
+          app.model.Member.belongsTo(app.model.MemberLevel)
           app.model.Member.hasOne(app.model.Wechat)
           app.model.Member.hasMany(app.model.LoyaltyPoint)
           app.model.Member.hasMany(app.model.Balance)
           app.model.Member.hasMany(app.model.SignIn)
           app.model.Member.hasMany(app.model.InvitationCode)
           app.model.Member.hasMany(app.model.Attendance)
+          app.model.Member.hasMany(app.model.Chip)
+          app.model.Member.hasMany(app.model.Sprit)
         }
-
       }
     })
 }

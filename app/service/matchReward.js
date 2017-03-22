@@ -4,29 +4,29 @@ module.exports = app => {
     class MatchReward extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Match = this.app.model.Match
+            this.MatchConfig = this.app.model.MatchConfig
             this.MatchReward = this.app.model.MatchReward
             this.Helper = this.ctx.helper
         }
 
         /**
          * @description 获取比赛奖励
-         * @param  {} {matchId}
+         * @param  {} {matchConfigId}
          */
-        async findAll({ matchId }) {
+        async findAll({ matchConfigId }) {
             const result = await this.MatchReward.findAll({
-                where: { matchId: matchId },
+                where: { matchConfigId: matchConfigId },
             })
             return result
         }
 
         /**
          * @description 查询有效奖励
-         * @param  {} {matchId}
+         * @param  {} {matchConfigId}
          */
-        async findAllActive({ matchId }) {
+        async findAllActive({ matchConfigId }) {
             const result = await this.MatchReward.findAll({
-                where: { matchId: matchId, status: 1 },
+                where: { matchConfigId: matchConfigId, status: 1 },
             })
             return result
         }
@@ -62,9 +62,9 @@ module.exports = app => {
 
             if (record.ranking != ranking) {
                 const typeCount = await this.MatchReward.count({
-                    where: { matchId: record.matchId, ranking: ranking, status: { $ne: 3 } }
+                    where: { matchConfigId: record.matchConfigId, ranking: ranking, status: { $ne: 3 } }
                 })
-                if (typeCount > 0) throw new Error("该赛事已存在此等级的奖励")
+                if (typeCount > 0) throw new Error("该赛事配置已存在此等级的奖励")
             }
 
             const result = await this.MatchReward.update({
@@ -77,23 +77,23 @@ module.exports = app => {
 
         /**
          * @description 创建赛事奖励
-         * @param  {} {matchId
+         * @param  {} {matchConfigId
          * @param  {} ranking
          * @param  {} rewardPoints
          * @param  {} creator}
          */
-        async create({ matchId, ranking, rewardPoints, status, creator }) {
-            const matchCount = await this.Match.count({
-                where: { id: matchId, status: 1 }
+        async create({ matchConfigId, ranking, rewardPoints, status = 1, creator }) {
+            const configCount = await this.MatchConfig.count({
+                where: { id: matchConfigId, status: 1 }
             })
-            if (matchCount == 0) throw new Error("赛事不存在或已经结束")
+            if (configCount == 0) throw new Error("赛事配置不存在或已禁用")
 
             const exist = await this.MatchReward.count({
-                where: { matchId: matchId, ranking: ranking, status: { $ne: 3 } }
+                where: { matchConfigId: matchConfigId, ranking: ranking, status: { $ne: 3 } }
             })
             if (exist > 0) throw new Error("该赛事已存在此等级的奖励")
             const result = await this.MatchReward.create({
-                matchId: matchId,
+                matchConfigId: matchConfigId,
                 ranking: ranking,
                 rewardPoints: rewardPoints,
                 status: status,

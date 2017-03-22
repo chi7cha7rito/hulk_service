@@ -4,51 +4,47 @@ module.exports = app => {
     class Match extends app.Service {
         constructor(ctx) {
             super(ctx)
+            this.MatchConfig = this.app.model.MatchConfig
             this.Match = this.app.model.Match
-            this.MatchType = this.app.model.MatchType
             this.MatchPrice = this.app.model.MatchPrice
             this.MatchReward = this.app.model.MatchReward
+            this.MatchType = this.app.model.MatchType
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
         }
 
         /**
          * @description 获取赛事
-         * @param  {} {name
-         * @param  {} type
-         * @param  {} startOpening
+         * @param  {} {startOpening
          * @param  {} endOpening
-         * @param  {} holder
          * @param  {} status
          * @param  {} pageIndex=1
          * @param  {} pageSize=10}
          * @return {object}
          */
-        async findMatches({ name, type, startOpening, endOpening, holder, status, pageIndex = 1, pageSize = 10 }) {
+        async findMatches({ startOpening, endOpening, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
-            if (name) {
-                cond.name = { $like: '%' + name + '%' }
-            }
-            if (type) {
-                cond.type = type
-            }
-            cond.opening = {
+
+            cond.openingDatetime = {
                 $gte: startOpening || this.moment('1971-01-01').format(),
                 $lte: endOpening || this.moment('9999-12-31').format(),
-            }
-            if (holder) {
-                cond.holder = { $like: '%' + holder + '%' }
             }
             if (status) {
                 cond.status = status
             }
             const result = await this.Match.findAndCount({
                 where: cond,
-                include: [
-                    { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchType, as: 'SubType' },
-                    { model: this.MatchPrice, where: { status: 1, type: 1 }, attributes: ['type', 'price'] }],
+                order: 'openingDatetime DESC',
+                include: [{
+                    model: this.MatchConfig,
+                    include: [
+                        { model: this.MatchType, as: 'Type' },
+                        { model: this.MatchType, as: 'SubType' },
+                        { model: this.MatchPrice },
+                        { model: this.MatchReward }
+                    ]
+                }],
                 offset: (index - 1) * size,
                 limit: size
             })
@@ -57,41 +53,30 @@ module.exports = app => {
 
         /**
          * @description 更新赛事
-         * @param  {} {name
-         * @param  {} type
-         * @param  {} subType
-         * @param  {} opening
-         * @param  {} description
-         * @param  {} online
-         * @param  {} url
-         * @param  {} holder
+         * @param  {} {id
+         * @param  {} closingDatetime
+         * @param  {} openingDatetime
+         * @param  {} matchConfigId
          * @param  {} updator}
          * @return {object}
          */
-        async update({ id, name, type, subType, opening, description, online, url, holder, updator }) {
+        async update({ id, closingDatetime, openingDatetime, matchConfigId, status, updator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
-            const nameCount = await this.Match.count({ where: { name: name } })
-            if (nameCount > 0) throw new Error("赛事名称已存在")
-            const typeCount = await this.MatchType.count({ where: { id: type } })
-            if (typeCount == 0) throw new Error("赛事类型不存在")
-            const subTypeCount = await this.MatchType.count({ where: { id: subType } })
-            if (subTypeCount == 0) throw new Error("赛事子类型不存在")
+            const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
+            if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.update({
-                name: name,
-                type: type,
-                subType: subType,
-                opening: opening,
-                description: description,
-                url: url,
-                holder: holder,
+                closingDatetime: closingDatetime,
+                openingDatetime: openingDatetime,
+                matchConfigId: matchConfigId,
+                status: status,
                 updator: updator
             }, { where: { id: id } })
             return result
         }
 
         /**
-         * @description 关闭赛事
+         * @description 变更赛事状态
          * @param  {} {id
          * @param  {} status
          * @param  {} updator}
@@ -100,7 +85,6 @@ module.exports = app => {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const result = await this.Match.update({
-                status: 2,
                 status: status,
                 updator: updator
             }, { where: { id: id } })
@@ -109,33 +93,20 @@ module.exports = app => {
 
         /**
          * @description 创建赛事
-         * @param  {} {name
-         * @param  {} type
-         * @param  {} subType
-         * @param  {} opening
-         * @param  {} description
-         * @param  {} online
-         * @param  {} url
-         * @param  {} holder
-         * @param  {} status=1
+         * @param  {} {closingDatetime
+         * @param  {} openingDatetime
+         * @param  {} matchConfigId
+         * @param  {} status
          * @param  {} creator}
          * @return {object}
          */
-        async create({ name, type, subType, opening, description, online, url, holder, status = 1, creator }) {
-            const nameCount = await this.Match.count({ where: { name: name } })
-            if (nameCount > 0) throw new Error("赛事名称已存在")
-            const typeCount = await this.MatchType.count({ where: { id: type } })
-            if (typeCount == 0) throw new Error("赛事类型不存在")
-            const subTypeCount = await this.MatchType.count({ where: { id: subType } })
-            if (subTypeCount == 0) throw new Error("赛事子类型不存在")
+        async create({ closingDatetime, openingDatetime, matchConfigId, status = 1, creator }) {
+            const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
+            if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.create({
-                name: name,
-                type: type,
-                subType: subType,
-                opening: opening,
-                description: description,
-                url: url,
-                holder: holder,
+                closingDatetime: closingDatetime,
+                openingDatetime: openingDatetime,
+                matchConfigId: matchConfigId,
                 status: status,
                 creator: creator
             })

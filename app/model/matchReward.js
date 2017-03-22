@@ -32,7 +32,7 @@ module.exports = app => {
   }, {
       classMethods: {
         associate() {
-          app.model.MatchReward.belongsTo(app.model.Match)
+          app.model.MatchReward.belongsTo(app.model.MatchConfig)
         }
       }
     })

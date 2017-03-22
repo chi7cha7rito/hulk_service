@@ -28,8 +28,8 @@ module.exports = app => {
             updatedAt: false,
             classMethods: {
                 associate() {
-                    app.model.MatchType.hasMany(app.model.Match, { as: 'Type', foreignKey: 'type' })
-                    app.model.MatchType.hasMany(app.model.Match, { as: 'SubType', foreignKey: 'subType' })
+                    app.model.MatchType.hasMany(app.model.MatchConfig, { as: 'Type', foreignKey: 'type' })
+                    app.model.MatchType.hasMany(app.model.MatchConfig, { as: 'SubType', foreignKey: 'subType' })
                 }
             }
         })

@@ -7,6 +7,7 @@ module.exports = app => {
             this.Member = this.app.model.Member
             this.User = this.app.model.User
             this.Wechat = this.app.model.Wechat
+            this.MemberLevel = this.app.model.MemberLevel
             this.Helper = this.ctx.helper
         }
 
@@ -42,6 +43,8 @@ module.exports = app => {
                     include: [{
                         model: this.Wechat,
                         where: { wechatOpenId: wechatOpenId }
+                    },{
+                        model:this.MemberLevel
                     }],
                 }],
             })
@@ -95,13 +98,14 @@ module.exports = app => {
          * @param  {string} phoneNo
          * @param  {string} idCardNo
          * @param  {int} gender
+         * @param  {int} memberLevelId
          * @param  {string} wechatOpenId
          * @param  {string} nickName
          * @param  {string} headImgUrl
          * @param  {int} creator}
          * @return {object}
          */
-        async create({ name, phoneNo, idCardNo, gender, wechatOpenId, nickName, headImgUrl, creator = 1 }) {
+        async create({ name, phoneNo, idCardNo, gender, memberLevelId = 1, wechatOpenId, nickName, headImgUrl, creator = 1 }) {
             //手机号判重
             const phoneNoCount = await this.Member.count({
                 include: [
@@ -126,6 +130,11 @@ module.exports = app => {
             })
             if (wechatOpenIdCount > 0) throw new Error("微信账号已被绑定")
 
+            const memberLevelCount = await this.MemberLevel.count({
+                where: { id: memberLevelId, status: 1 }
+            })
+            if (memberLevelCount == 0) throw new Error("会员等级不存在或已禁用")
+
             //创建会员及用户
             const result = await this.User.create({
                 name: name,
@@ -136,6 +145,7 @@ module.exports = app => {
                 roleType: 3,
                 member: {
                     cardNo: phoneNo,
+                    memberLevelId: memberLevelId,
                     creator: creator,
                     wechat: {
                         wechatOpenId: wechatOpenId,

@@ -12,9 +12,14 @@ module.exports = app => {
     type: {
       type: INTEGER,
       allowNull: false,
-      comment: '1:线上价格,2:线下价格,3:优惠价格'
+      comment: '1:线上价格,2:原价,3:高级会员价,4:豪客价,5:豪爵价,6:优惠价'
     },
     price: {
+      defaultValue: 0,
+      type: DECIMAL(10, 2)
+    },
+    points: {
+      defaultValue: 0,
       type: DECIMAL(10, 2)
     },
     status: {
@@ -32,7 +37,7 @@ module.exports = app => {
   }, {
       classMethods: {
         associate() {
-          app.model.MatchPrice.belongsTo(app.model.Match)
+          app.model.MatchPrice.belongsTo(app.model.MatchConfig)
         }
       }
     })

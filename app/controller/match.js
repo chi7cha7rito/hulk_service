@@ -5,9 +5,6 @@ module.exports = app => {
         constructor(ctx) {
             super(ctx)
             this.MatchSvr = this.service.match
-            this.MatchPriceSvr = this.service.matchPrice
-            this.MatchRewardSvr = this.service.matchReward
-            this.AttendanceSvr = this.service.attendance
         }
 
         /**
@@ -27,7 +24,7 @@ module.exports = app => {
         }
 
         /**
-        * @description 禁用赛事
+        * @description 变更赛事状态
         */
         async changeStatus() {
             const result = await this.MatchSvr.changeStatus(this.ctx.request.body)
