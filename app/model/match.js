@@ -19,10 +19,6 @@ module.exports = app => {
             allowNull: false,
             comment: '比赛开始时间'
         },
-        // matchConfig: {
-        //     type: INTEGER,
-        //     allowNull: false,
-        // },
         status: {
             type: INTEGER,
             allowNull: false,

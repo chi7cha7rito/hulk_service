@@ -23,6 +23,10 @@ module.exports = app => {
       type: INTEGER,
       comment: '1:下午场,2:晚场,3:周末赛,4:月度会员杯赛---由matchType定义'
     },
+    frequency: {
+      type: INTEGER,
+      comment: '1:平日赛,2:每周,3:每月,4:每年'
+    },
     description: {
       type: TEXT,
       allowNull: false,

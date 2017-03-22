@@ -25,7 +25,7 @@ module.exports = app => {
         if (val == 3) str = '正调整'
         if (val == 4) str = '提现'
         if (val == 6) str = '负调整'
-        return str
+        return { val, name: str }
       },
       comment: '1:充值,2:消费,3:正调整,4:提现,6:负调整'
     },
@@ -53,7 +53,7 @@ module.exports = app => {
         if (val == 9) str = '提现'
         if (val == 10) str = '手动调整'
         if (val == 11) str = '购买筹码'
-        return str
+        return { val, name: str }
       },
       comment: '1:微信充值,2:支付宝充值,3:刷卡充值,4:现金充值,5:店内消费,6:商城消费,7:赛事门票,8:购买积分,9:提现,10:手动调整,11:购买筹码'
     },

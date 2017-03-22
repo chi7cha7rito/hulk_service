@@ -12,6 +12,14 @@ module.exports = app => {
         type: {
             type: INTEGER,
             allowNull: false,
+            get: function () {
+                let val = this.getDataValue('type')
+                let str = ''
+                if (val == 1) str = '参赛'
+                if (val == 2) str = '重入'
+                if (val == 3) str = '余额消费'
+                return { val, name: str }
+            },
             comment: '1:参赛,2:重入,3:余额消费,'
         },
         point: {

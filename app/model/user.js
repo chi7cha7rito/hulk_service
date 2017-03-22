@@ -1,7 +1,7 @@
 'use strict'
 
-module.exports =  app => {
-  const { STRING, INTEGER} = app.Sequelize
+module.exports = app => {
+  const { STRING, INTEGER } = app.Sequelize
   return app.model.define('user', {
     id: {
       type: INTEGER,
@@ -28,12 +28,28 @@ module.exports =  app => {
     gender: {
       type: INTEGER,
       defaultValue: 0,
+      get: function () {
+        let val = this.getDataValue('gender')
+        let str = ''
+        if (val == 0) str = '未知'
+        if (val == 1) str = '男'
+        if (val == 2) str = '女'
+        return { val, name: str }
+      },
       comment: '0:未知,1:男,2:女'
     },
     roleType: {
       type: INTEGER,
       allowNull: false,
-      comment:'1:管理员,2:员工,3:会员'
+      get: function () {
+        let val = this.getDataValue('roleType')
+        let str = ''
+        if (val == 1) str = '管理员'
+        if (val == 2) str = '员工'
+        if (val == 3) str = '会员'
+        return { val, name: str }
+      },
+      comment: '1:管理员,2:员工,3:会员'
     },
     status: {
       type: INTEGER,

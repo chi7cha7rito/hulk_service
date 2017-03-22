@@ -40,13 +40,14 @@ module.exports = app => {
                 const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
                 if (point < payAmount) throw new Error("帐户积分不足")
             } else {
-                throw new Error('支付方式不对')
+                // throw new Error('支付方式不对')
             }
 
             const buyChip = member.memberLevel.buyChip || 0
             const consume = member.memberLevel.consume || 0
             //报名事务
             return classSelf.app.model.transaction(function (t) {
+                //买筹码
                 return classSelf.Chip.create({
                     memberId: memberId,
                     matchId: matchId,
@@ -71,6 +72,7 @@ module.exports = app => {
                                 type: 3,
                                 point: payAmount * consume / 100
                             }, { transaction: t }).then(function (result) {
+                                //扣减余额
                                 return classSelf.Balance.create({
                                     memberId: memberId,
                                     type: 2,
@@ -85,6 +87,7 @@ module.exports = app => {
                                 })
                             })
                         } else if (payType == 2) {
+                            //扣减积分
                             return classSelf.LoyaltyPoint.create({
                                 memberId: memberId,
                                 type: 2,
