@@ -8,10 +8,18 @@ module.exports = app => {
         }
 
         /**
-         * @description 报名参赛
+         * @description 线上报名参赛
          */
         async createOnline() {
             const result = await this.AttendanceSvr.createOnline(this.ctx.request.body)
+            this.success(result)
+        }
+
+         /**
+         * @description 线下报名参赛
+         */
+        async createOffline() {
+            const result = await this.AttendanceSvr.createOffline(this.ctx.request.body)
             this.success(result)
         }
 
