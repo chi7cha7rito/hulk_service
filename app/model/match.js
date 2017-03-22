@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-    const { STRING, INTEGER, DATE, BOOLEAN, TEXT } = app.Sequelize
+    const { STRING, INTEGER, DATE, BOOLEAN, TEXT, DECIMAL } = app.Sequelize
     return app.model.define('match', {
         id: {
             type: INTEGER,
@@ -18,6 +18,11 @@ module.exports = app => {
             type: DATE,
             allowNull: false,
             comment: '比赛开始时间'
+        },
+        perHand: {
+            type: DECIMAL(10, 2),
+            defaultValue: 0,
+            comment: '每手价格(元)'
         },
         status: {
             type: INTEGER,

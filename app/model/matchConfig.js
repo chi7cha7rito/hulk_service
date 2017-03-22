@@ -36,11 +36,6 @@ module.exports = app => {
       type: STRING,
       comment: '赛事介绍页面url'
     },
-    perHand: {
-      type: DECIMAL(10, 2),
-      defaultValue: 0,
-      comment: '每手价格'
-    },
     online: {
       type: BOOLEAN,
       defaultValue: false,

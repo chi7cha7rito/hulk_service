@@ -57,10 +57,11 @@ module.exports = app => {
          * @param  {} closingDatetime
          * @param  {} openingDatetime
          * @param  {} matchConfigId
+         * @param  {} perHand
          * @param  {} updator}
          * @return {object}
          */
-        async update({ id, closingDatetime, openingDatetime, matchConfigId, status, updator }) {
+        async update({ id, closingDatetime, openingDatetime, matchConfigId,perHand, status, updator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
@@ -69,6 +70,7 @@ module.exports = app => {
                 closingDatetime: closingDatetime,
                 openingDatetime: openingDatetime,
                 matchConfigId: matchConfigId,
+                perHand: perHand,
                 status: status,
                 updator: updator
             }, { where: { id: id } })
@@ -96,16 +98,18 @@ module.exports = app => {
          * @param  {} {closingDatetime
          * @param  {} openingDatetime
          * @param  {} matchConfigId
+         * @param  {} perHand
          * @param  {} status
          * @param  {} creator}
          * @return {object}
          */
-        async create({ closingDatetime, openingDatetime, matchConfigId, status = 1, creator }) {
+        async create({ closingDatetime, openingDatetime, matchConfigId, perHand, status = 1, creator }) {
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
             if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.create({
                 closingDatetime: closingDatetime,
                 openingDatetime: openingDatetime,
+                perHand: perHand,
                 matchConfigId: matchConfigId,
                 status: status,
                 creator: creator

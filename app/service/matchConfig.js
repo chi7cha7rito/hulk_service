@@ -61,13 +61,12 @@ module.exports = app => {
          * @param  {} subType
          * @param  {} description
          * @param  {} online
-         * @param  {} perHand
          * @param  {} url
          * @param  {} holder
          * @param  {} updator}
          * @return {object}
          */
-        async update({ id, name, type, subType, description, online, perHand, url, holder, updator }) {
+        async update({ id, name, type, subType, description, online, url, holder, updator }) {
             const configCount = await this.MatchConfig.count({ where: { id: id } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const nameCount = await this.MatchConfig.count({ where: { name: name, id: { $ne: id } } })
@@ -83,7 +82,6 @@ module.exports = app => {
                 description: description,
                 url: url,
                 online: online,
-                perHand: perHand,
                 holder: holder,
                 updator: updator
             }, { where: { id: id } })
@@ -114,14 +112,13 @@ module.exports = app => {
          * @param  {} subType
          * @param  {} description
          * @param  {} online
-         * @param  {} perHand
          * @param  {} url
          * @param  {} holder
          * @param  {} status=1
          * @param  {} creator}
          * @return {object}
          */
-        async create({ name, type, subType, description, online, perHand, url, holder, status = 1, creator }) {
+        async create({ name, type, subType, description, online, url, holder, status = 1, creator }) {
             const nameCount = await this.MatchConfig.count({ where: { name: name } })
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
@@ -135,7 +132,6 @@ module.exports = app => {
                 description: description,
                 url: url,
                 online: online,
-                perHand: perHand,
                 holder: holder,
                 status: status,
                 creator: creator

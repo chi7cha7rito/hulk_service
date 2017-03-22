@@ -17,7 +17,7 @@ module.exports = app => {
         source: {
             type: INTEGER,
             allowNull: false,
-            comment: '1:签到'
+            comment: '1:签到,2:豪气'
         },
         remark: {
             type: STRING

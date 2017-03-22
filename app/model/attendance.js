@@ -16,6 +16,10 @@ module.exports = app => {
     rewards: {
       type: STRING,
     },
+    payType:{
+       type: INTEGER,
+       comment:'1:余额,2:积分,3:优惠券'
+    },
     status: {
       type: INTEGER,
       allowNull: false,

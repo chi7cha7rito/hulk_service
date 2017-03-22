@@ -33,6 +33,18 @@ module.exports = app => {
         }
 
         /**
+         * @description 根据赛事id和类型查找价格
+         * @param  {} {matchConfigId
+         * @param  {} type}
+         */
+        async findActivePriceById({ id }) {
+            const result = await this.MatchPrice.findOne({
+                where: { id, status: 1 }
+            })
+            return result
+        }
+
+        /**
          * @description 修改状态
          * @param  {} {id
          * @param  {} status

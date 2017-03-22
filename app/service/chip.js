@@ -34,13 +34,15 @@ module.exports = app => {
             if (!match) throw new Error('赛事不存在')
             //查询余额
             if (payType == 1) {
+                //余额支付
                 const balance = await this.BalanceSvr.totalByMemberId({ memberId })
                 if (balance < payAmount) throw new Error("帐户余额不足")
             } else if (payType == 2) {
+                //积分支付
                 const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
                 if (point < payAmount) throw new Error("帐户积分不足")
             } else {
-                // throw new Error('支付方式不对')
+                throw new Error('支付方式不存在')
             }
 
             const buyChip = member.memberLevel.buyChip || 0
@@ -51,7 +53,7 @@ module.exports = app => {
                 return classSelf.Chip.create({
                     memberId: memberId,
                     matchId: matchId,
-                    unitPrice: match.matchConfig.perHand || 0,
+                    unitPrice: match.perHand || 0,
                     quantity: quantity,
                     payType: payType,
                     payAmount: payAmount,
@@ -101,7 +103,7 @@ module.exports = app => {
                                 return result
                             })
                         } else {
-                            throw new Error('支付方式不对')
+                            throw new Error('支付方式不存在')
                         }
                     })
                 })

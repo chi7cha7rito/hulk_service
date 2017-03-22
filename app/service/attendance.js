@@ -7,11 +7,13 @@ module.exports = app => {
             this.Match = this.app.model.Match
             this.MatchConfig = this.app.model.MatchConfig
             this.MatchReward = this.app.model.MatchReward
+            this.User = this.app.model.User
             this.Member = this.app.model.Member
             this.MemberLevel = this.app.model.MemberLevel
             this.Sprit = this.app.model.Sprit
             this.Attendance = this.app.model.Attendance
             this.Balance = this.app.model.Balance
+            this.Coupon = this.app.model.Coupon
             this.BalanceSvr = this.service.balance
             this.MatchPriceSvr = this.service.matchPrice
             this.Helper = this.ctx.helper
@@ -105,6 +107,7 @@ module.exports = app => {
                 return classSelf.Attendance.create({
                     matchId: matchId,
                     memberId: memberId,
+                    payType: 1,
                     status: 1,
                     creator: member.user.id
                 }, { transaction: t }).then(function (attendance) {
@@ -138,7 +141,7 @@ module.exports = app => {
                 });
             });
         }
-        
+
         /**
          * @description 线下报名参加
          * @param  {} {phoneNo
@@ -147,7 +150,7 @@ module.exports = app => {
          * @param  {} payType
          * @param  {} couponId}
          */
-        async createOffline({ matchId, memberId }) {
+        async createOffline({ phoneNo, matchId, matchPriceId, payType, couponId, creator }) {
             let classSelf = this
             //检查赛事
             const match = await this.Match.findOne({
@@ -157,21 +160,35 @@ module.exports = app => {
             if (!match) throw new Error("赛事不存在或已结束")
 
             //查找线上价格
-            const price = await this.MatchPriceSvr.findActivePrice({ matchConfigId: match.matchConfigId, type: 1 })
+            const price = await this.MatchPriceSvr.findActivePriceById({ id: matchPriceId })
             if (!price) throw new Error('赛事价格不存在')
 
             //检查会员
             const member = await this.Member.findOne({
-                where: { id: memberId },
-                include: [{ all: true }]
+                include: [{
+                    model: this.User,
+                    where: { phoneNo }
+                }, {
+                    model: this.MemberLevel
+                }]
             })
             if (!member) throw new Error("会员不存在")
             const apply = member.memberLevel.apply || 0
             const consume = member.memberLevel.consume || 0
 
-            //查询余额
-            const balance = await this.BalanceSvr.totalByMemberId({ memberId })
-            if (balance < price.price) throw new Error("帐户余额不足")
+
+            if (payType == 1) {
+                const balance = await this.BalanceSvr.totalByMemberId({ memberId })
+                if (balance < price.price) throw new Error("帐户余额不足")
+            } else if (payType == 2) {
+                const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
+                if (point < payAmount) throw new Error("帐户积分不足")
+            } else if (payType == 3) {
+                const coupon = await this.Coupon.findOne({ memberId: memberId, id: couponId, status: 1 })
+                if (!coupon) throw new Error("免费赛事门票不存在")
+            } else {
+                throw new Error('支付方式不存在')
+            }
 
             //检查是否报名
             const attended = await this.Attendance.count({
@@ -188,33 +205,59 @@ module.exports = app => {
                     status: 1,
                     creator: member.user.id
                 }, { transaction: t }).then(function (attendance) {
-                    //扣余额
-                    return classSelf.Balance.create({
-                        memberId: memberId,
-                        type: 2,  //消费
-                        amount: price.price,
-                        source: 7,  //赛事门票
-                        sourceNo: attendance.id,
-                        remark: "线上赛事报名门票费用",
-                        status: 1,
-                        creator: member.user.id
-                    }, { transaction: t }).then(function (result) {
-                        //消费返豪气
-                        return classSelf.Sprit.create({
+                    if (payType == 1) {
+                        //扣余额
+                        return classSelf.Balance.create({
                             memberId: memberId,
-                            type: 3,
-                            point: price.price * consume / 100,
-                            creator: member.user.id
+                            type: 2,  //消费
+                            amount: price.price,
+                            source: 7,  //赛事门票
+                            sourceNo: attendance.id,
+                            remark: "线上赛事报名门票费用",
+                            status: 1,
+                            creator: creator
                         }, { transaction: t }).then(function (result) {
-                            //参赛返豪气
+                            //消费返豪气
+                            return classSelf.Sprit.create({
+                                memberId: memberId,
+                                type: 3,
+                                point: price.price * consume / 100,
+                                creator: creator
+                            }, { transaction: t }).then(function (result) {
+                                //参赛返豪气
+                                return classSelf.Sprit.create({
+                                    memberId: memberId,
+                                    type: 1,
+                                    point: apply,
+                                    creator: creator
+                                })
+                            })
+                        })
+                    } else if (payType == 2) {
+                        //扣积分
+                        return classSelf.LoyaltyPoint.create({
+                            memberId: memberId,
+                            type: 2,
+                            points: price.price,
+                            source: 7,
+                            sourceNo: attendance.id,
+                            remark: '线上赛事报名门票费用',
+                            status: 1,
+                            creator: creator
+                        }, { transaction: t }).then(function (result) {
+                            //消费返豪气
                             return classSelf.Sprit.create({
                                 memberId: memberId,
                                 type: 1,
                                 point: apply,
-                                creator: member.user.id
+                                creator: creator
                             })
                         })
-                    })
+                    } else if (payType == 3) {
+
+                    } else {
+                        throw new Error('支付方式不存在')
+                    }
                 });
             });
         }
