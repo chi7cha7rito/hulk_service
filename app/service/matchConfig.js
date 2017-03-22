@@ -48,6 +48,7 @@ module.exports = app => {
                     { model: this.MatchType, as: 'SubType' },
                     { model: this.MatchPrice },
                     { model: this.MatchReward }],
+                distinct: true,
                 offset: (index - 1) * size,
                 limit: size
             })

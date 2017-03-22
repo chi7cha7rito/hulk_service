@@ -49,6 +49,7 @@ module.exports = app => {
                 where: { memberId: memberId, status: 1 },
                 offset: (index - 1) * size,
                 limit: size,
+                distinct: true,
                 include: [{ model: this.Match }]
             })
             return result

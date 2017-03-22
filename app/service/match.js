@@ -42,11 +42,12 @@ module.exports = app => {
                         { model: this.MatchType, as: 'Type' },
                         { model: this.MatchType, as: 'SubType' },
                         { model: this.MatchPrice },
-                        { model: this.MatchReward }
+                        { model: this.MatchReward },
                     ]
                 }],
+                distinct: true,
                 offset: (index - 1) * size,
-                limit: size
+                limit: size,
             })
             return result
         }
@@ -61,7 +62,7 @@ module.exports = app => {
          * @param  {} updator}
          * @return {object}
          */
-        async update({ id, closingDatetime, openingDatetime, matchConfigId,perHand, status, updator }) {
+        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, status, updator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
