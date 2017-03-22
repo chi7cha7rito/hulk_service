@@ -2,19 +2,29 @@
 
 module.exports = app => {
   class UserController extends app.Controller {
-    async index() {
-      this.ctx.body = 'hi, egg';
+    constructor(ctx) {
+      super(ctx)
+      this.UserSvr = this.service.user
     }
-    async create() {
-      this.ctx.body = await this.ctx.service.user.create();
+
+    async findAll() {
+      const result = await this.UserSvr.findAll(this.ctx.query);
+      this.success(result)
     }
+
     async findByPhoneNo() {
-      this.ctx.body = await this.ctx.service.user.findByPhoneNo('18918229973');
+      const result = await this.UserSvr.findByPhoneNo(this.ctx.query);
+      this.success(result)
     }
-    async findUsers() {
-      //  this.ctx.body = await this.ctx.model.user.findAll()
-      // this.ctx.body = await this.ctx.service.user.findUsers({ phoneNo: 1 });
-      this.ctx.body = await this.ctx.service.user.findUsers();
+
+    async update() {
+      const result = await this.UserSvr.update(this.ctx.request.body);
+      this.success(result)
+    }
+
+    async create() {
+      const result = await this.UserSvr.create(this.ctx.request.body);
+      this.success(result)
     }
   }
   return UserController;

@@ -121,4 +121,12 @@ module.exports = app => {
   app.post('/sms/create', 'sms.create')
   app.post('/sms/successful', 'sms.successful')
   app.post('/sms/failure', 'sms.failure')
+
+  /**
+   * 用户api
+   */
+  app.post('/user/create', 'user.create')
+  app.post('/user/update', 'user.update')
+  app.get('/user/findAll', 'user.findAll')
+  app.get('/user/findByPhoneNo', 'user.findByPhoneNo')
 };
