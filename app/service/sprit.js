@@ -10,6 +10,17 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取豪气总数
+         * @param  {} {memberId}
+         */
+        async totalByMemberId({ memberId }) {
+            const result = await this.Sprit.sum('point', {
+                where: { memberId: memberId }
+            })
+            return result
+        }
+
+        /**
          * @description 获取豪气
          * @param  {} {memberId
          * @param  {} type
