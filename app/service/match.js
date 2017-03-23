@@ -37,7 +37,7 @@ module.exports = app => {
             if (status) {
                 cond.status = status
             }
-            if (name) {
+            if (name && name.length) {
                 configCond.name = { $like: '%' + name + '%' }
             }
             if (type) {
