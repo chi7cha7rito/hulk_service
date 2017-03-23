@@ -18,7 +18,7 @@ module.exports = app => {
          * @param  {} {name
          * @param  {} type
          * @param  {} startClosing
-         * @param  {} endOpening
+         * @param  {} endClosing
          * @param  {} frequency
          * @param  {} status
          * @param  {} pageIndex=1
