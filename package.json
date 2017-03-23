@@ -4,7 +4,7 @@
   "description": "hulk service",
   "private": true,
   "dependencies": {
-    "egg": "^1.0.0-rc.3",
+    "egg": "^1.0.0",
     "egg-sequelize": "^2.0.1",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",
