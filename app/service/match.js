@@ -15,7 +15,9 @@ module.exports = app => {
 
         /**
          * @description 获取赛事
-         * @param  {} {startOpening
+         * @param  {} {name
+         * @param  {} type
+         * @param  {} startClosing
          * @param  {} endOpening
          * @param  {} frequency
          * @param  {} status
@@ -23,23 +25,33 @@ module.exports = app => {
          * @param  {} pageSize=10}
          * @return {object}
          */
-        async findMatches({ startOpening, endOpening, frequency, status, pageIndex = 1, pageSize = 10 }) {
+        async findMatches({ name, type, startClosing, endClosing, frequency, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
+            let configCond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
 
-            cond.openingDatetime = {
-                $gte: startOpening || this.moment('1971-01-01').format(),
-                $lte: endOpening || this.moment('9999-12-31').format(),
+            cond.closingDatetime = {
+                $gte: startClosing || this.moment('1971-01-01').format(),
+                $lte: endClosing || this.moment('9999-12-31').format(),
             }
             if (status) {
                 cond.status = status
+            }
+            if (name) {
+                configCond.name = { $like: '%' + name + '%' }
+            }
+            if (type) {
+                configCond.type = type
+            }
+            if (frequency) {
+                configCond.frequency = frequency
             }
             const result = await this.Match.findAndCount({
                 where: cond,
                 order: 'openingDatetime DESC',
                 include: [{
                     model: this.MatchConfig,
-                    where: { frequency },
+                    where: configCond,
                     include: [
                         { model: this.MatchType, as: 'Type' },
                         { model: this.MatchType, as: 'SubType' },
