@@ -4,6 +4,7 @@ module.exports = app => {
     class Sprit extends app.Service {
         constructor(ctx) {
             super(ctx)
+            this.User = this.app.model.User
             this.Member = this.app.model.Member
             this.MemberType = this.app.model.MemberType
             this.Sprit = this.app.model.Sprit
@@ -22,11 +23,26 @@ module.exports = app => {
             if (!startDatetime) throw new Error('请输入开始时间')
             if (!endDatetime) throw new Error('请输入结束时间')
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
-            const result = await this.Member.findAndCount({
-               attributes: [[this.Sequelize.fn('sum', this.Sequelize.col('sprint.point')), 'total']],
+            const result = await this.Member.findAll({
+                order: 'total DESC',
+
+                attributes: ['id', 'user.name', [this.Sequelize.fn('SUM', this.Sequelize.col('sprits.point')), 'total']],
                 include: [{
                     model: this.Sprit,
+                    attributes: [],
+                    duplicating: false,
+                    where: {
+                        createdAt: {
+                            $gte: startDatetime,
+                            $lte: endDatetime
+                        }
+                    },
+                }, {
+                    model: this.User,
+                    attributes: [],
                 }],
+                raw: true,
+                group: ['member.id'],
                 offset: (index - 1) * size,
                 limit: size,
             })
