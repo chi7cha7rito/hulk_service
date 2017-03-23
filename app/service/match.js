@@ -17,12 +17,13 @@ module.exports = app => {
          * @description 获取赛事
          * @param  {} {startOpening
          * @param  {} endOpening
+         * @param  {} frequency
          * @param  {} status
          * @param  {} pageIndex=1
          * @param  {} pageSize=10}
          * @return {object}
          */
-        async findMatches({ startOpening, endOpening, status, pageIndex = 1, pageSize = 10 }) {
+        async findMatches({ startOpening, endOpening, frequency, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
 
@@ -38,6 +39,7 @@ module.exports = app => {
                 order: 'openingDatetime DESC',
                 include: [{
                     model: this.MatchConfig,
+                    where: { frequency },
                     include: [
                         { model: this.MatchType, as: 'Type' },
                         { model: this.MatchType, as: 'SubType' },

@@ -31,10 +31,6 @@ module.exports = app => {
             if (type) {
                 cond.type = type
             }
-            // cond.opening = {
-            //     $gte: startOpening || this.moment('1971-01-01').format(),
-            //     $lte: endOpening || this.moment('9999-12-31').format(),
-            // }
             if (holder) {
                 cond.holder = { $like: '%' + holder + '%' }
             }
