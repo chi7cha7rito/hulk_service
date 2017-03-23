@@ -39,6 +39,13 @@ module.exports = app => {
             this.success(result)
         }
 
+        /**
+         * @description 查找赛事
+         */
+        async findMatchById() {
+            const result = await this.MatchSvr.findMatchById(this.ctx.query)
+            this.success(result)
+        }
 
     }
     return MatchController;

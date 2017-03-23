@@ -48,6 +48,7 @@ module.exports = app => {
   app.post('/match/update', 'match.update')
   app.post('/match/changeStatus', 'match.changeStatus')
   app.get('/match/findMatches', 'match.findMatches')
+   app.get('/match/findMatchById', 'match.findMatchById')
 
   /**
    * 赛事配置api
@@ -129,4 +130,9 @@ module.exports = app => {
   app.post('/user/update', 'user.update')
   app.get('/user/findAll', 'user.findAll')
   app.get('/user/findByPhoneNo', 'user.findByPhoneNo')
+
+  /**
+   * 豪气api
+   */
+  app.get('/sprit/spritRanking','sprit.spritRanking')
 };

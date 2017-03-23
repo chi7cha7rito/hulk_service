@@ -4,9 +4,37 @@ module.exports = app => {
     class Sprit extends app.Service {
         constructor(ctx) {
             super(ctx)
-            this.Member = this.app.Member
-            this.MemberType = this.app.MemberType
+            this.Member = this.app.model.Member
+            this.MemberType = this.app.model.MemberType
             this.Sprit = this.app.model.Sprit
+            this.Helper = this.ctx.helper
+            this.Sequelize = this.app.model
+        }
+
+        /**
+         * @description 查询豪气排名
+         * @param  {} {startDatetime
+         * @param  {} endDatetime
+         * @param  {} pageIndex
+         * @param  {} pageSize}
+         */
+        async spritRanking({ startDatetime, endDatetime, pageIndex = 1, pageSize = 10 }) {
+            if (!startDatetime) throw new Error('请输入开始时间')
+            if (!endDatetime) throw new Error('请输入结束时间')
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            const result = await this.Member.findAndCount({
+                // attributes: [
+                //     'id',
+                //     this.Sequelize.fn('SUM',this.Sequelize.col('sprits.point'))
+                // ],
+                include: [{
+                    model: this.Sprit
+                }],
+                distinct: true,
+                offset: (index - 1) * size,
+                limit: size,
+            })
+            return result
         }
 
         /**

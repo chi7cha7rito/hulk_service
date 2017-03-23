@@ -67,6 +67,27 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取赛事
+         * @param  {} {id }
+         * @return {object}
+         */
+        async findMatchById({ id }) {
+            const result = await this.Match.findOne({
+                where: { id },
+                include: [{
+                    model: this.MatchConfig,
+                    include: [
+                        { model: this.MatchType, as: 'Type' },
+                        { model: this.MatchType, as: 'SubType' },
+                        { model: this.MatchPrice },
+                        { model: this.MatchReward }
+                    ]
+                }],
+            })
+            return result
+        }
+
+        /**
          * @description 更新赛事
          * @param  {} {id
          * @param  {} closingDatetime
