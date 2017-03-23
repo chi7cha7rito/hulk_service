@@ -48,7 +48,7 @@ module.exports = app => {
   app.post('/match/update', 'match.update')
   app.post('/match/changeStatus', 'match.changeStatus')
   app.get('/match/findMatches', 'match.findMatches')
-   app.get('/match/findMatchById', 'match.findMatchById')
+  app.get('/match/findMatchById', 'match.findMatchById')
 
   /**
    * 赛事配置api
@@ -57,6 +57,7 @@ module.exports = app => {
   app.post('/matchConfig/update', 'matchConfig.update')
   app.post('/matchConfig/changeStatus', 'matchConfig.changeStatus')
   app.get('/matchConfig/findMatchConfigs', 'matchConfig.findMatchConfigs')
+  app.get('/matchConfig/findAll', 'matchConfig.findAll')
 
   /**
    * 赛事价格api
@@ -134,5 +135,5 @@ module.exports = app => {
   /**
    * 豪气api
    */
-  app.get('/sprit/spritRanking','sprit.spritRanking')
+  app.get('/sprit/spritRanking', 'sprit.spritRanking')
 };

@@ -52,6 +52,21 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取赛事配置
+         * @return {object}
+         */
+        async findAll() {
+            const result = await this.MatchConfig.findAll({
+                include: [
+                    { model: this.MatchType, as: 'Type' },
+                    { model: this.MatchType, as: 'SubType' },
+                    { model: this.MatchPrice },
+                    { model: this.MatchReward }],
+            })
+            return result
+        }
+
+        /**
          * @description 更新赛事配置
          * @param  {} {name
          * @param  {} type

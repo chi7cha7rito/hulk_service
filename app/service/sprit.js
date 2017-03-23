@@ -23,14 +23,10 @@ module.exports = app => {
             if (!endDatetime) throw new Error('请输入结束时间')
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             const result = await this.Member.findAndCount({
-                // attributes: [
-                //     'id',
-                //     this.Sequelize.fn('SUM',this.Sequelize.col('sprits.point'))
-                // ],
+               attributes: [[this.Sequelize.fn('sum', this.Sequelize.col('sprint.point')), 'total']],
                 include: [{
-                    model: this.Sprit
+                    model: this.Sprit,
                 }],
-                distinct: true,
                 offset: (index - 1) * size,
                 limit: size,
             })

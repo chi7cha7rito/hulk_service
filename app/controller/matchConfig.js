@@ -39,6 +39,14 @@ module.exports = app => {
             this.success(result)
         }
 
+        /**
+        * @description 获取所有赛事配置
+        */
+        async findAll() {
+            const result = await this.MatchConfigSvr.findAll()
+            this.success(result)
+        }
+
 
     }
     return MatchConfigController;
