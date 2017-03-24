@@ -34,7 +34,12 @@ module.exports = app => {
       comment: 'true:正向金额,false:负向金额'
     },
     amount: {
-      type: DECIMAL(10, 2)
+      type: DECIMAL(10, 2),
+      set: function (val) {
+        var type = this.getDataValue('type')
+        let amount = type % 2 == 0 ? -val : val
+        this.setDataValue('amount', amount)
+      }
     },
     source: {
       type: INTEGER,

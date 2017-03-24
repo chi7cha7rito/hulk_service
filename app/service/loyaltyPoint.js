@@ -10,13 +10,10 @@ module.exports = app => {
         }
 
         async totalByMemberId({ memberId }) {
-            const positive = await this.LoyaltyPoint.sum('points', {
-                where: { memberId: memberId, isPositive: true, status: 1 }
+            const total = await this.LoyaltyPoint.sum('points', {
+                where: { memberId: memberId, status: 1 }
             })
-            const negative = await this.LoyaltyPoint.sum('points', {
-                where: { memberId: memberId, isPositive: false, status: 1 }
-            })
-            return (positive || 0) - (negative || 0)
+            return total || 0
         }
 
         /**

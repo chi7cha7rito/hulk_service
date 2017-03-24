@@ -23,9 +23,8 @@ module.exports = app => {
             if (!startDatetime) throw new Error('请输入开始时间')
             if (!endDatetime) throw new Error('请输入结束时间')
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
-            const result = await this.Member.findAll({
+            const result = await this.Member.findAndCount({
                 order: 'total DESC',
-
                 attributes: ['id', 'user.name', [this.Sequelize.fn('SUM', this.Sequelize.col('sprits.point')), 'total']],
                 include: [{
                     model: this.Sprit,
@@ -36,9 +35,10 @@ module.exports = app => {
                             $gte: startDatetime,
                             $lte: endDatetime
                         }
-                    },
+                    }
                 }, {
                     model: this.User,
+                    duplicating: false,
                     attributes: [],
                 }],
                 raw: true,
@@ -46,6 +46,7 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size,
             })
+            result.count = result.count.length
             return result
         }
 

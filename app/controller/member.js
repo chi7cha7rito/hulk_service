@@ -39,7 +39,6 @@ module.exports = app => {
       this.success({ balance: totalBalance, points: totalPoints })
     }
 
-
     /**
      * @description 根据Id查找会员
      */
@@ -47,6 +46,12 @@ module.exports = app => {
       const result = await this.MemberSvr.findById(this.ctx.query)
       this.success(result)
     }
+
+    async findMembers(){
+      const result = await this.MemberSvr.findMembers(this.ctx.query)
+      this.success(result)
+    }
+
   }
   return MemberController;
 };

@@ -14,13 +14,13 @@ module.exports = app => {
          * @return {decimal} 余额
          */
         async totalByMemberId({ memberId }) {
-            const positive = await this.Balance.sum('amount', {
-                where: { memberId: memberId, isPositive: true, status: 1 }
+            const total = await this.Balance.sum('amount', {
+                where: { memberId: memberId, status: 1 }
             })
-            const negative = await this.Balance.sum('amount', {
-                where: { memberId: memberId, isPositive: false, status: 1 }
-            })
-            return (positive || 0) - (negative || 0)
+            // const negative = await this.Balance.sum('amount', {
+            //     where: { memberId: memberId, isPositive: false, status: 1 }
+            // })
+            return total
         }
 
         /**

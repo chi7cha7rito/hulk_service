@@ -92,6 +92,7 @@ module.exports = app => {
   app.get('/member/findByWechatOpenId', 'member.findByWechatOpenId')
   app.get('/member/findById', 'member.findById')
   app.get('/member/findTotal', 'member.findTotal')
+  app.get('/member/findMembers', 'member.findMembers')
 
   /**
    * 会员等级设置api

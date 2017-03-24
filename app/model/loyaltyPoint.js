@@ -29,7 +29,12 @@ module.exports = app => {
       comment: '1:获取,2:消费,3:正调整,4:负调整'
     },
     points: {
-      type: DECIMAL(10, 2)
+      type: DECIMAL(10, 2),
+      set: function (val) {
+        var type = this.getDataValue('type')
+        let points = type % 2 == 0 ? -val : val
+        this.setDataValue('points', points)
+      }
     },
     isPositive: {
       type: BOOLEAN,

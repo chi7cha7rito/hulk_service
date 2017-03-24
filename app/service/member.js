@@ -6,12 +6,55 @@ module.exports = app => {
             super(ctx)
             this.Member = this.app.model.Member
             this.User = this.app.model.User
+            this.Balance = this.app.model.Balance
+            this.LoyaltyPoint = this.app.model.LoyaltyPoint
             this.Wechat = this.app.model.Wechat
             this.MemberLevel = this.app.model.MemberLevel
             this.Helper = this.ctx.helper
+            this.Sequelize = this.app.model
+            this.moment = this.app.moment
         }
 
-        //todo:findAll
+        /**
+         * @description 查找会员
+         * @param  {} {phoneNo
+         * @param  {} name
+         * @param  {} idCardNo
+         * @param  {} gender
+         * @param  {} status
+         * @param  {} level
+         * @param  {} startCreatedAt
+         * @param  {} endCreatedAt
+         * @param  {} pageIndex
+         * @param  {} pageSize}
+         */
+        async findMembers({ phoneNo, name, idCardNo, gender, status, level, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            let cond = {}
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: endCreatedAt || this.moment('9999-12-31').format(),
+            }
+            if (phoneNo) cond.phoneNo = { $like: '%' + phoneNo + '%' }
+            if (name) cond.name = { $like: '%' + name + '%' }
+            if (idCardNo) cond.idCardNo = { $like: '%' + idCardNo + '%' }
+            if (gender) cond.gender = gender
+            if (status) cond.gender = status
+            if (level) cond.memberLevelId = level
+            const result = await this.User.findAndCount({
+                where: cond,
+                include: [{
+                    model: this.Member,
+                    include: [{
+                        model: this.MemberLevel,
+                    }],
+                }],
+                distinct: true,
+                offset: (index - 1) * size,
+                limit: size,
+            })
+            return result
+        }
 
         /**
         * @description:根据会员id查询会员
@@ -43,8 +86,8 @@ module.exports = app => {
                     include: [{
                         model: this.Wechat,
                         where: { wechatOpenId: wechatOpenId }
-                    },{
-                        model:this.MemberLevel
+                    }, {
+                        model: this.MemberLevel
                     }],
                 }],
             })
