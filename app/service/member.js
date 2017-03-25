@@ -31,6 +31,7 @@ module.exports = app => {
         async findMembers({ phoneNo, name, idCardNo, gender, status, level, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             let cond = {}
+            let memberCond = {}
             cond.createdAt = {
                 $gte: startCreatedAt || this.moment('1971-01-01').format(),
                 $lte: endCreatedAt || this.moment('9999-12-31').format(),
@@ -40,10 +41,11 @@ module.exports = app => {
             if (idCardNo) cond.idCardNo = { $like: '%' + idCardNo + '%' }
             if (gender) cond.gender = gender
             if (status) cond.gender = status
-            if (level) cond.memberLevelId = level
+            if (level) memberCond.memberLevelId = level
             const result = await this.User.findAndCount({
                 where: cond,
                 include: [{
+                    where: memberCond,
                     model: this.Member,
                     include: [{
                         model: this.MemberLevel,
@@ -53,6 +55,106 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size,
             })
+            return result
+        }
+
+        /**
+         * @description 查找会员余额
+         * @param  {} {phoneNo
+         * @param  {} name
+         * @param  {} idCardNo
+         * @param  {} gender
+         * @param  {} status
+         * @param  {} level
+         * @param  {} startCreatedAt
+         * @param  {} endCreatedAt
+         * @param  {} pageIndex
+         * @param  {} pageSize}
+         */
+        async findMembersBalance({ phoneNo, name, idCardNo, gender, status, level, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            let cond = {}
+            let memberCond = {}
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: endCreatedAt || this.moment('9999-12-31').format(),
+            }
+            if (phoneNo) cond.phoneNo = { $like: '%' + phoneNo + '%' }
+            if (name) cond.name = { $like: '%' + name + '%' }
+            if (idCardNo) cond.idCardNo = { $like: '%' + idCardNo + '%' }
+            if (gender) cond.gender = gender
+            if (status) cond.gender = status
+            if (level) memberCond.memberLevelId = level
+            const result = await this.User.findAndCount({
+                where: cond,
+                include: [{
+                    where: memberCond,
+                    attributes: ['cardNo', [this.Sequelize.fn('SUM', this.Sequelize.col('member.balances.amount')), 'total']],
+                    model: this.Member,
+                    include: [{
+                        model: this.MemberLevel,
+                    }, {
+                        model: this.Balance,
+                        duplicating: false,
+                        attributes: []
+                    }],
+                }],
+                group: ['member.id'],
+                offset: (index - 1) * size,
+                limit: size,
+
+            })
+            result.count = result.count.length
+            return result
+        }
+
+        /**
+         * @description 查找会员积分
+         * @param  {} {phoneNo
+         * @param  {} name
+         * @param  {} idCardNo
+         * @param  {} gender
+         * @param  {} status
+         * @param  {} level
+         * @param  {} startCreatedAt
+         * @param  {} endCreatedAt
+         * @param  {} pageIndex
+         * @param  {} pageSize}
+         */
+        async findMembersPoints({ phoneNo, name, idCardNo, gender, status, level, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            let cond = {}
+            let memberCond = {}
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: endCreatedAt || this.moment('9999-12-31').format(),
+            }
+            if (phoneNo) cond.phoneNo = { $like: '%' + phoneNo + '%' }
+            if (name) cond.name = { $like: '%' + name + '%' }
+            if (idCardNo) cond.idCardNo = { $like: '%' + idCardNo + '%' }
+            if (gender) cond.gender = gender
+            if (status) cond.gender = status
+            if (level) memberCond.memberLevelId = level
+            const result = await this.User.findAndCount({
+                where: cond,
+                include: [{
+                    where: memberCond,
+                    attributes: ['cardNo', [this.Sequelize.fn('SUM', this.Sequelize.col('member.loyaltyPoints.points')), 'total']],
+                    model: this.Member,
+                    include: [{
+                        model: this.MemberLevel,
+                    }, {
+                        model: this.LoyaltyPoint,
+                        duplicating: false,
+                        attributes: []
+                    }],
+                }],
+                group: ['member.id'],
+                offset: (index - 1) * size,
+                limit: size,
+
+            })
+            result.count = result.count.length
             return result
         }
 
@@ -67,9 +169,11 @@ module.exports = app => {
                     model: this.Member,
                     include: [{
                         model: this.Wechat,
+                    }, {
+                        model: this.MemberLevel
                     }],
-                    where: { id: id }
                 }],
+                where: { id }
             })
             return result
         }
@@ -101,10 +205,11 @@ module.exports = app => {
          * @param  {string} phoneNo
          * @param  {string} idCardNo
          * @param  {int} gender
+         * @param  {int} status
          * @param  {int} updator}
          * @return {object}
          */
-        async update({ id, name, phoneNo, idCardNo, gender, updator }) {
+        async update({ id, name, phoneNo, idCardNo, cardNo, gender, status, updator }) {
             const user = await this.User.findOne({
                 include: [{
                     model: this.Member,
@@ -125,12 +230,24 @@ module.exports = app => {
             })
             if (idCardNoCount > 0) throw new Error("身份证号已经存在")
 
+            //卡号判重
+            const cardNoCount = await this.Member.count({
+                where: { id: { $ne: user.memberId }, cardNo: cardNo }
+            })
+            if (cardNoCount > 0) throw new Error("卡号已经存在")
+
             const result = await this.User.update({
-                name: name,
-                phoneNo: phoneNo,
-                idCardNo: idCardNo,
-                gender: gender,
-                updator: updator,
+                name,
+                phoneNo,
+                idCardNo,
+                gender,
+                status,
+                updator,
+                member: {
+                    cardNo,
+                    status,
+                    updator
+                }
             }, { where: { id: user.id } })
             return result
         }

@@ -93,6 +93,8 @@ module.exports = app => {
   app.get('/member/findById', 'member.findById')
   app.get('/member/findTotal', 'member.findTotal')
   app.get('/member/findMembers', 'member.findMembers')
+  app.get('/member/findMembersBalance', 'member.findMembersBalance')
+  app.get('/member/findMembersPoints', 'member.findMembersPoints')
 
   /**
    * 会员等级设置api

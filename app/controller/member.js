@@ -47,11 +47,20 @@ module.exports = app => {
       this.success(result)
     }
 
-    async findMembers(){
+    async findMembers() {
       const result = await this.MemberSvr.findMembers(this.ctx.query)
       this.success(result)
     }
 
+    async findMembersBalance() {
+      const result = await this.MemberSvr.findMembersBalance(this.ctx.query)
+      this.success(result)
+    }
+
+    async findMembersPoints() {
+      const result = await this.MemberSvr.findMembersPoints(this.ctx.query)
+      this.success(result)
+    }
   }
   return MemberController;
 };

@@ -6,7 +6,9 @@ module.exports = app => {
             super(ctx)
             this.Balance = this.app.model.Balance
             this.Member = this.app.model.Member
+            this.User = this.app.model.User
             this.Helper = this.ctx.helper
+            this.moment = this.app.moment
         }
         /**
          * @description 根据memberId获取余额
@@ -17,38 +19,44 @@ module.exports = app => {
             const total = await this.Balance.sum('amount', {
                 where: { memberId: memberId, status: 1 }
             })
-            // const negative = await this.Balance.sum('amount', {
-            //     where: { memberId: memberId, isPositive: false, status: 1 }
-            // })
-            return total
+            return total || 0
         }
 
         /**
          * @description 获取余额明细
-         * @param  {int} {memberId
+         * @param  {int} {phoneNo
          * @param  {int} type
-         * @param  {int} status
+         * @param  {int} startCreatedAt
+         * @param  {int} endCreatedAt
          * @param  {int} pageIndex=1
          * @param  {int} pageSize=10}
          * @return {object}
          */
-        async findEntries({ memberId, type, status, pageIndex = 1, pageSize = 10 }) {
+        async findEntries({ phoneNo, type, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
-            if (memberId) {
-                cond.memberId = memberId
+            let member = await this.User.findOne({ where: { phoneNo: phoneNo } })
+
+            if (member && member.memberId) {
+                cond.memberId = member.memberId
+            }
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: endCreatedAt || this.moment('9999-12-31').format(),
             }
             if (type) {
                 cond.type = type
             }
-            if (status) {
-                cond.status = status
-            } else {
-                cond.status = { $in: [1, 2] }
-            }
+            cond.status = 1
             const result = await this.Balance.findAndCount({
                 where: cond,
                 order: 'createdAt DESC',
+                include: [
+                    {
+                        model: this.Member,
+                        include: [{ model: this.User }],
+                    }
+                ],
                 offset: (index - 1) * size,
                 limit: size
             })
