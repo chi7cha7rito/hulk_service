@@ -75,10 +75,10 @@ module.exports = app => {
          * @param  {} online
          * @param  {} url
          * @param  {} holder
-         * @param  {} updator}
+         * @param  {} operator}
          * @return {object}
          */
-        async update({ id, name, type, subType, description, online, url, holder, updator }) {
+        async update({ id, name, type, subType, description, online, url, holder, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: id } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const nameCount = await this.MatchConfig.count({ where: { name: name, id: { $ne: id } } })
@@ -95,7 +95,7 @@ module.exports = app => {
                 url: url,
                 online: online,
                 holder: holder,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -104,15 +104,15 @@ module.exports = app => {
          * @description 关闭赛事配置
          * @param  {} {id
          * @param  {} status
-         * @param  {} updator}
+         * @param  {} operator}
          */
-        async changeStatus({ id, status, updator }) {
+        async changeStatus({ id, status, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: id } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const result = await this.MatchConfig.update({
                 status: 2,
                 status: status,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -127,10 +127,10 @@ module.exports = app => {
          * @param  {} url
          * @param  {} holder
          * @param  {} status=1
-         * @param  {} creator}
+         * @param  {} operator}
          * @return {object}
          */
-        async create({ name, type, subType, description, online, url, holder, status = 1, creator }) {
+        async create({ name, type, subType, description, online, url, holder, status = 1, operator }) {
             const nameCount = await this.MatchConfig.count({ where: { name: name } })
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
@@ -146,7 +146,7 @@ module.exports = app => {
                 online: online,
                 holder: holder,
                 status: status,
-                creator: creator
+                creator: operator
             })
             return result
         }

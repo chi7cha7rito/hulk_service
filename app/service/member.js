@@ -209,7 +209,7 @@ module.exports = app => {
          * @param  {int} updator}
          * @return {object}
          */
-        async update({ id, name, phoneNo, idCardNo, cardNo, gender, status, updator }) {
+        async update({ id, name, phoneNo, idCardNo, cardNo, gender, status, operator }) {
             const classSelf = this
             const user = await this.User.findOne({
                 include: [{
@@ -244,12 +244,12 @@ module.exports = app => {
                     idCardNo,
                     gender,
                     status,
-                    updator,
+                    updator: operator,
                 }, { where: { id: user.id }, transaction: t }).then(function (result) {
                     return classSelf.Member.update({
                         cardNo,
                         status,
-                        updator
+                        updator: operator
                     }, { where: { id: user.member.id }, transaction: t }).then(function (result) {
                         return result
                     })
@@ -267,10 +267,10 @@ module.exports = app => {
          * @param  {string} wechatOpenId
          * @param  {string} nickName
          * @param  {string} headImgUrl
-         * @param  {int} creator}
+         * @param  {int} operator}
          * @return {object}
          */
-        async create({ name, phoneNo, idCardNo, gender, memberLevelId = 1, wechatOpenId, nickName, headImgUrl, creator = 1 }) {
+        async create({ name, phoneNo, idCardNo, gender, memberLevelId = 1, wechatOpenId, nickName, headImgUrl, operator }) {
             //手机号判重
             const phoneNoCount = await this.Member.count({
                 include: [
@@ -306,17 +306,17 @@ module.exports = app => {
                 phoneNo: phoneNo,
                 idCardNo: idCardNo,
                 gender: gender,
-                creator: creator,
+                creator: operator,
                 roleType: 3,
                 member: {
                     cardNo: phoneNo,
                     memberLevelId: memberLevelId,
-                    creator: creator,
+                    creator: operator,
                     wechat: {
                         wechatOpenId: wechatOpenId,
                         nickName: nickName,
                         headImgUrl: headImgUrl,
-                        creator: creator
+                        creator: operator
                     }
                 }
             }, {

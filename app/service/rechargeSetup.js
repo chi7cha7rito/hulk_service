@@ -32,12 +32,12 @@ module.exports = app => {
          * @param  {} reward
          * @param  {} remark
          * @param  {} status
-         * @param  {} updator}
+         * @param  {} operator}
          */
-        async update({ id, threshold, reward, remark, status, updator }) {
+        async update({ id, threshold, reward, remark, status, operator }) {
             const rec = await this.RechargeSetup.findById(id)
             if (!rec) throw new Error("返现记录不存在")
-            
+
             const setupCount = await this.RechargeSetup.count({
                 where: { threshold: threshold }
             })
@@ -46,7 +46,7 @@ module.exports = app => {
                 threshold: threshold,
                 reward: reward,
                 remark: remark,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -58,9 +58,9 @@ module.exports = app => {
          * @param  {} reward
          * @param  {} remark
          * @param  {} status
-         * @param  {} creator}
+         * @param  {} operator}
          */
-        async create({ threshold, reward, remark, status, creator }) {
+        async create({ threshold, reward, remark, status, operator }) {
             const setupCount = await this.RechargeSetup.count({
                 where: { threshold: threshold }
             })
@@ -70,7 +70,7 @@ module.exports = app => {
                 reward: reward,
                 remark: remark,
                 status: status,
-                creator: creator
+                creator: operator
             })
             return result
         }

@@ -57,14 +57,15 @@ module.exports = app => {
 
         /**
          * @description 取消报名
-         * @param  {} {id}
+         * @param  {} {id
+         * @param  {} operator}
          */
-        async del({ id }) {
+        async del({ id, operator }) {
             const attendedExist = await this.Attendance.count({
                 where: { id: id }
             })
             if (attendedExist == 0) throw new Error("参赛记录不存在")
-            const result = await this.Attendance.update({ status: 2 }, { where: { id: id } })
+            const result = await this.Attendance.update({ status: 2, updator: operator }, { where: { id: id } })
             return result
         }
 
@@ -153,7 +154,7 @@ module.exports = app => {
          * @param  {} payType
          * @param  {} couponId}
          */
-        async createOffline({ phoneNo, matchId, matchPriceId, payType, couponId, creator }) {
+        async createOffline({ phoneNo, matchId, matchPriceId, payType, couponId, operator }) {
             let classSelf = this
             //检查赛事
             const match = await this.Match.findOne({
@@ -207,7 +208,7 @@ module.exports = app => {
                     memberId,
                     payType,
                     status: 1,
-                    creator
+                    creator: operator
                 }, { transaction: t }).then(function (attendance) {
                     if (payType == 1) {
                         //扣余额
@@ -219,21 +220,21 @@ module.exports = app => {
                             sourceNo: attendance.id,
                             remark: "线下赛事报名门票费用",
                             status: 1,
-                            creator
+                            creator: operator
                         }, { transaction: t }).then(function (result) {
                             //消费返豪气
                             return classSelf.Sprit.create({
                                 memberId,
                                 type: 3,
                                 point: price.price * consume / 100,
-                                creator
+                                creator: operator
                             }, { transaction: t }).then(function (result) {
                                 //参赛返豪气
                                 return classSelf.Sprit.create({
                                     memberId,
                                     type: 1,
                                     point: apply,
-                                    creator
+                                    creator: operator
                                 })
                             })
                         })
@@ -247,28 +248,28 @@ module.exports = app => {
                             sourceNo: attendance.id,
                             remark: '线上赛事报名门票费用',
                             status: 1,
-                            creator
+                            creator: operator
                         }, { transaction: t }).then(function (result) {
                             //参赛返豪气
                             return classSelf.Sprit.create({
                                 memberId,
                                 type: 1,
                                 point: apply,
-                                creator
+                                creator: operator
                             })
                         })
                     } else if (payType == 3) {
                         //使用优惠券
                         return classSelf.Coupon.update({
                             status: 2,
-                            updator: creator
+                            updator: operator
                         }, { where: { id: couponId }, transaction: t }).then(function (resunt) {
                             //参赛返豪气
                             return classSelf.Sprit.create({
                                 memberId,
                                 type: 1,
                                 point: apply,
-                                creator
+                                creator: operator
                             })
                         })
                     } else {

@@ -64,9 +64,9 @@ module.exports = app => {
      * @param  {} roleType
      * @param  {} gender
      * @param  {} status
-     * @param  {} creator}
+     * @param  {} operator}
      */
-    async update({ id, phoneNo, name, idCardNo, roleType, gender, status, creator }) {
+    async update({ id, phoneNo, name, idCardNo, roleType, gender, status, operator }) {
       //手机号判重
       const phoneNoCount = await this.User.count({
         where: { phoneNo: phoneNo, id: { $ne: id } }
@@ -86,7 +86,7 @@ module.exports = app => {
         roleType,
         gender,
         status,
-        creator
+        creator: operator
       }, { where: { id } })
     }
 
@@ -98,9 +98,9 @@ module.exports = app => {
      * @param  {} roleType
      * @param  {} gender
      * @param  {} status
-     * @param  {} creator}
+     * @param  {} operator}
      */
-    async create({ phoneNo, name, idCardNo, roleType, gender, status, creator }) {
+    async create({ phoneNo, name, idCardNo, roleType, gender, status, operator }) {
       //手机号判重
       const phoneNoCount = await this.User.count({
         where: { phoneNo: phoneNo }
@@ -120,7 +120,7 @@ module.exports = app => {
         roleType,
         gender,
         status,
-        creator
+        creator: operator
       })
     }
   }

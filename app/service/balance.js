@@ -74,7 +74,7 @@ module.exports = app => {
          * @param  {int} status=1
          * @param  {int} creator=1}
          */
-        async create({ memberId, type, amount, source, sourceNo, remark, status, creator = 1 }) {
+        async create({ memberId, type, amount, source, sourceNo, remark, status, operator }) {
             const memberCount = await this.Member.count({
                 where: { id: memberId, status: 1 }
             })
@@ -87,7 +87,7 @@ module.exports = app => {
                 sourceNo: sourceNo,
                 remark: remark,
                 status: 1,
-                creator: creator
+                creator: operator
             })
             return result
         }

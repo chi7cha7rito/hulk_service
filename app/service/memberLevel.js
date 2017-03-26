@@ -27,7 +27,7 @@ module.exports = app => {
         * @param  {} status
         * @param  {} updator}
         */
-        async update({ id, name, threshold, apply, buyChip, consume, status, updator }) {
+        async update({ id, name, threshold, apply, buyChip, consume, status, operator }) {
             const nameCount = await this.MemberLevel.count({
                 where: { name: name, id: { $ne: id } }
             })
@@ -45,7 +45,7 @@ module.exports = app => {
                 buyChip: buyChip,
                 consume: consume,
                 status: status,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -60,7 +60,7 @@ module.exports = app => {
          * @param  {} status
          * @param  {} creator}
          */
-        async create({ name, threshold, apply, buyChip, consume, status, creator }) {
+        async create({ name, threshold, apply, buyChip, consume, status, operator }) {
             const nameCount = await this.MemberLevel.count({
                 where: { name: name }
             })
@@ -78,7 +78,7 @@ module.exports = app => {
                 buyChip: buyChip,
                 consume: consume,
                 status: status,
-                creator: creator
+                creator: operator
             })
             return result
         }

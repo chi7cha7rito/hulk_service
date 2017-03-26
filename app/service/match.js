@@ -94,10 +94,10 @@ module.exports = app => {
          * @param  {} openingDatetime
          * @param  {} matchConfigId
          * @param  {} perHand
-         * @param  {} updator}
+         * @param  {} operator}
          * @return {object}
          */
-        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, status, updator }) {
+        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, status, operator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
@@ -108,7 +108,7 @@ module.exports = app => {
                 matchConfigId: matchConfigId,
                 perHand: perHand,
                 status: status,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -119,12 +119,12 @@ module.exports = app => {
          * @param  {} status
          * @param  {} updator}
          */
-        async changeStatus({ id, status, updator }) {
+        async changeStatus({ id, status, operator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const result = await this.Match.update({
                 status: status,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -136,10 +136,10 @@ module.exports = app => {
          * @param  {} matchConfigId
          * @param  {} perHand
          * @param  {} status
-         * @param  {} creator}
+         * @param  {} operator}
          * @return {object}
          */
-        async create({ closingDatetime, openingDatetime, matchConfigId, perHand, status = 1, creator }) {
+        async create({ closingDatetime, openingDatetime, matchConfigId, perHand, status = 1, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
             if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.create({
@@ -148,7 +148,7 @@ module.exports = app => {
                 perHand: perHand,
                 matchConfigId: matchConfigId,
                 status: status,
-                creator: creator
+                creator: operator
             })
             return result
         }

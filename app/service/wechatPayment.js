@@ -41,9 +41,9 @@ module.exports = app => {
          * @param  {} spbill_create_ip
          * @param  {} total_fee
          * @param  {} trade_type
-         * @param  {} creator=1}
+         * @param  {} operator=1}
          */
-        async create({ memberId, appid, body, mch_id, nonce_str, notify_url, openid, attach, out_trade_no, spbill_create_ip, total_fee, trade_type, creator = 1 }) {
+        async create({ memberId, appid, body, mch_id, nonce_str, notify_url, openid, attach, out_trade_no, spbill_create_ip, total_fee, trade_type, operator}) {
             const memberCount = await this.Member.count({
                 where: { id: memberId, status: 1 }
             })
@@ -62,7 +62,7 @@ module.exports = app => {
                 total_fee: total_fee,
                 trade_type: trade_type,
                 status: 1,
-                creator: creator
+                creator: operator
             })
             return result
         }

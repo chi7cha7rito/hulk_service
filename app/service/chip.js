@@ -24,9 +24,9 @@ module.exports = app => {
          * @param  {} payType
          * @param  {} payAmount
          * @param  {} remark
-         * @param  {} creator}
+         * @param  {} operator}
          */
-        async create({ memberId, matchId, quantity, payType, payAmount, remark, creator }) {
+        async create({ memberId, matchId, quantity, payType, payAmount, remark, operator }) {
             const classSelf = this
             const member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel] })
             if (!member) throw new Error('会员不存在')
@@ -58,7 +58,7 @@ module.exports = app => {
                     payType: payType,
                     payAmount: payAmount,
                     remark: remark,
-                    creator: creator
+                    creator: operator
                 }, { transaction: t }).then(function (result) {
                     //重入返豪气
                     let chipId = result.id
@@ -83,7 +83,7 @@ module.exports = app => {
                                     sourceNo: chipId,
                                     remark: '购买筹码',
                                     status: 1,
-                                    creator: creator
+                                    creator: operator
                                 }, { transaction: t }).then(function (result) {
                                     return result
                                 })
@@ -98,7 +98,7 @@ module.exports = app => {
                                 sourceNo: chipId,
                                 remark: '购买筹码',
                                 status: 1,
-                                creator: creator
+                                creator: operator
                             }, { transaction: t }).then(function (result) {
                                 return result
                             })

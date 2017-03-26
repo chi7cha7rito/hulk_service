@@ -37,14 +37,14 @@ module.exports = app => {
         * @param  {} status
         * @param  {} updator}
         */
-        async changeStatus({ id, status, updator }) {
+        async changeStatus({ id, status, operator }) {
             const reward = await this.MatchReward.findById(id)
             if (!reward) throw new Error("记录不存在")
             if (reward.status == 3) throw new Error("该奖励已被删除")
 
             const result = await this.MatchReward.update({
                 status: status,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -54,9 +54,9 @@ module.exports = app => {
         * @param  {} {id
         * @param  {} ranking
         * @param  {} rewardPoints
-        * @param  {} updator}
+        * @param  {} operator}
         */
-        async update({ id, ranking, rewardPoints, updator }) {
+        async update({ id, ranking, rewardPoints, operator }) {
             const record = await this.MatchReward.findById(id)
             if (!record) throw new Error("记录不存在")
 
@@ -70,7 +70,7 @@ module.exports = app => {
             const result = await this.MatchReward.update({
                 ranking: ranking,
                 rewardPoints: rewardPoints,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -80,9 +80,9 @@ module.exports = app => {
          * @param  {} {matchConfigId
          * @param  {} ranking
          * @param  {} rewardPoints
-         * @param  {} creator}
+         * @param  {} operator}
          */
-        async create({ matchConfigId, ranking, rewardPoints, status = 1, creator }) {
+        async create({ matchConfigId, ranking, rewardPoints, status = 1, operator }) {
             const configCount = await this.MatchConfig.count({
                 where: { id: matchConfigId, status: 1 }
             })
@@ -97,7 +97,7 @@ module.exports = app => {
                 ranking: ranking,
                 rewardPoints: rewardPoints,
                 status: status,
-                creator: creator
+                creator: operator
             })
             return result
         }

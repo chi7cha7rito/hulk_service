@@ -48,16 +48,16 @@ module.exports = app => {
          * @description 修改状态
          * @param  {} {id
          * @param  {} status
-         * @param  {} updator}
+         * @param  {} operator}
          */
-        async changeStatus({ id, status, updator }) {
+        async changeStatus({ id, status, operator }) {
             const price = await this.MatchPrice.findById(id)
             if (!price) throw new Error("记录不存在")
             if (price.status == 3) throw new Error("该价格已被删除")
 
             const result = await this.MatchPrice.update({
                 status: status,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -67,9 +67,9 @@ module.exports = app => {
          * @param  {} {id
          * @param  {} type
          * @param  {} price
-         * @param  {} updator}
+         * @param  {} operator}
          */
-        async update({ id, type, price, updator }) {
+        async update({ id, type, price, operator }) {
             const record = await this.MatchPrice.findById(id)
             if (!record) throw new Error("记录不存在")
 
@@ -83,7 +83,7 @@ module.exports = app => {
             const result = await this.MatchPrice.update({
                 type: type,
                 price: price,
-                updator: updator
+                updator: operator
             }, { where: { id: id } })
             return result
         }
@@ -94,9 +94,9 @@ module.exports = app => {
          * @param  {} type
          * @param  {} price
          * @param  {} status
-         * @param  {} creator}
+         * @param  {} operator}
          */
-        async create({ matchConfigId, type, price, status, creator }) {
+        async create({ matchConfigId, type, price, status, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const priceCount = await this.MatchPrice.count({
@@ -108,7 +108,7 @@ module.exports = app => {
                 type: type,
                 price: price,
                 status: status,
-                creator: creator
+                creator: operator
             })
             return result
         }
