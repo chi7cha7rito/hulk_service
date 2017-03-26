@@ -28,7 +28,7 @@ module.exports = app => {
             type: INTEGER,
             allowNull: false,
             defaultValue: 1,
-            comment: '1:开始,2:结束'
+            comment: '1:开始,2:结束,3:删除'
         },
         creator: {
             type: INTEGER,

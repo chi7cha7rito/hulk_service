@@ -25,7 +25,7 @@ module.exports = app => {
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             const result = await this.Member.findAndCount({
                 order: 'total DESC',
-                attributes: ['id', 'user.name', [this.Sequelize.fn('SUM', this.Sequelize.col('sprits.point')), 'total']],
+                attributes: ['id', 'user.name','user.phoneNo', [this.Sequelize.fn('SUM', this.Sequelize.col('sprits.point')), 'total']],
                 include: [{
                     model: this.Sprit,
                     attributes: [],

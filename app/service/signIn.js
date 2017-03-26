@@ -6,9 +6,50 @@ module.exports = app => {
             super(ctx)
             this.SignIn = this.app.model.SignIn
             this.Member = this.app.model.Member
+            this.User = this.app.model.User
             this.Wechat = this.app.model.Wechat
+            this.Helper = this.ctx.helper
             this.Sequelize = this.app.model
         }
+
+        /**
+         * @description 查询签到
+         * @param  {} {startDatetime
+         * @param  {} endDatetime
+         * @param  {} pageIndex
+         * @param  {} pageSize}
+         */
+        async signInStats({ startDatetime, endDatetime, pageIndex = 1, pageSize = 10 }) {
+            if (!startDatetime) throw new Error('请输入开始时间')
+            if (!endDatetime) throw new Error('请输入结束时间')
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            const result = await this.Member.findAndCount({
+                order: 'total DESC',
+                attributes: ['id', 'user.name', 'user.phoneNo', [this.Sequelize.fn('COUNT', this.Sequelize.col('signIns.id')), 'total']],
+                include: [{
+                    model: this.SignIn,
+                    attributes: [],
+                    duplicating: false,
+                    where: {
+                        createdAt: {
+                            $gte: startDatetime,
+                            $lte: endDatetime
+                        }
+                    }
+                }, {
+                    model: this.User,
+                    duplicating: false,
+                    attributes: [],
+                }],
+                raw: true,
+                group: ['member.id'],
+                offset: (index - 1) * size,
+                limit: size,
+            })
+            result.count = result.count.length
+            return result
+        }
+
 
         /**
          * @description 签到

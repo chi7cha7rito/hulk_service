@@ -107,6 +107,7 @@ module.exports = app => {
    * 签到api
    */
   app.post('/signIn/create', 'signIn.create')
+  app.get('/signIn/signInStats', 'signIn.signInStats')
 
   /**
    * 筹码api
@@ -139,4 +140,11 @@ module.exports = app => {
    * 豪气api
    */
   app.get('/sprit/spritRanking', 'sprit.spritRanking')
+
+  /**
+   * 优惠券api
+   */
+  app.post('/coupon/create', 'coupon.create')
+  app.post('/coupon/update', 'coupon.update')
+  app.get('/coupon/findAll', 'coupon.findAll')
 };
