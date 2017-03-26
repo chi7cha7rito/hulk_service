@@ -210,6 +210,7 @@ module.exports = app => {
          * @return {object}
          */
         async update({ id, name, phoneNo, idCardNo, cardNo, gender, status, updator }) {
+            const classSelf = this
             const user = await this.User.findOne({
                 include: [{
                     model: this.Member,
@@ -236,20 +237,24 @@ module.exports = app => {
             })
             if (cardNoCount > 0) throw new Error("卡号已经存在")
 
-            const result = await this.User.update({
-                name,
-                phoneNo,
-                idCardNo,
-                gender,
-                status,
-                updator,
-                member: {
-                    cardNo,
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.User.update({
+                    name,
+                    phoneNo,
+                    idCardNo,
+                    gender,
                     status,
-                    updator
-                }
-            }, { where: { id: user.id } })
-            return result
+                    updator,
+                }, { where: { id: user.id }, transaction: t }).then(function (result) {
+                    return classSelf.Member.update({
+                        cardNo,
+                        status,
+                        updator
+                    }, { where: { id: user.member.id }, transaction: t }).then(function (result) {
+                        return result
+                    })
+                })
+            })
         }
 
         /**
