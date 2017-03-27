@@ -47,6 +47,13 @@ module.exports = app => {
             this.success(result)
         }
 
+        /**
+        * @description 获取指定ID的赛事配置
+        */
+        async findMatchConfigById() {
+            const result = await this.MatchConfigSvr.findMatchConfigById(this.ctx.query)
+            this.success(result)
+        }
 
     }
     return MatchConfigController;
