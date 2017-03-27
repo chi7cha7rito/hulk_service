@@ -87,7 +87,7 @@ module.exports = app => {
         async create({ phoneNo, type, subType, source, remark, operator }) {
             const member = await this.Member.findOne({
                 where: { status: 1 },
-                incule: [{ model: this.User, where: { phoneNo, status: 1 } }]
+                include: [{ model: this.User, where: { phoneNo, status: 1 } }]
             })
             if (!member) throw new Error("会员不存在或被冻结")
             const result = await this.Coupon.create({
