@@ -77,20 +77,21 @@ module.exports = app => {
 
         /**
          * @description 创建优惠券
-         * @param  {int} {memberId
+         * @param  {int} {phoneNo
          * @param  {int} type
          * @param  {int} subType
          * @param  {int} source
          * @param  {string} remark
          * @param  {int} operator}
          */
-        async create({ memberId, type, subType, source, remark, operator }) {
-            const memberCount = await this.Member.count({
-                where: { id: memberId, status: 1 }
+        async create({ phoneNo, type, subType, source, remark, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                incule: [{ model: this.User, where: { phoneNo, status: 1 } }]
             })
-            if (memberCount == 0) throw new Error("会员不存在或被冻结")
+            if (!member) throw new Error("会员不存在或被冻结")
             const result = await this.Coupon.create({
-                memberId,
+                memberId: member.id,
                 type,
                 subType,
                 source,
