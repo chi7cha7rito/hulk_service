@@ -76,7 +76,7 @@ module.exports = app => {
          * @param  {} operator}
          * @return {object}
          */
-        async update({ id, name, type, subType, description, online, url, holder, operator }) {
+        async update({ id, name, type, subType, description, online, url, holder, status,operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: id } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const nameCount = await this.MatchConfig.count({ where: { name: name, id: { $ne: id } } })
@@ -91,6 +91,7 @@ module.exports = app => {
                 url: url,
                 online: online,
                 holder: holder,
+                status:status,
                 updator: operator
             }, { where: { id: id } })
             return result
@@ -155,7 +156,6 @@ module.exports = app => {
                 where: { id },
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchType, as: 'SubType' },
                     { model: this.MatchPrice },
                     { model: this.MatchReward }],
             })
