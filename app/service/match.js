@@ -19,13 +19,13 @@ module.exports = app => {
          * @param  {} type
          * @param  {} startClosing
          * @param  {} endClosing
-         * @param  {} frequency
+         * @param  {} subType
          * @param  {} status
          * @param  {} pageIndex=1
          * @param  {} pageSize=10}
          * @return {object}
          */
-        async findMatches({ name, type, startClosing, endClosing, frequency, status, pageIndex = 1, pageSize = 10 }) {
+        async findMatches({ name, type, startClosing, endClosing, subType, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let configCond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
@@ -45,8 +45,8 @@ module.exports = app => {
             if (type) {
                 configCond.type = type
             }
-            if (frequency) {
-                configCond.frequency = frequency
+            if (subType) {
+                configCond.subType = subType
             }
             const result = await this.Match.findAndCount({
                 where: cond,
@@ -56,7 +56,6 @@ module.exports = app => {
                     where: configCond,
                     include: [
                         { model: this.MatchType, as: 'Type' },
-                        { model: this.MatchType, as: 'SubType' },
                         { model: this.MatchPrice },
                         { model: this.MatchReward },
                     ]
@@ -80,7 +79,6 @@ module.exports = app => {
                     model: this.MatchConfig,
                     include: [
                         { model: this.MatchType, as: 'Type' },
-                        { model: this.MatchType, as: 'SubType' },
                         { model: this.MatchPrice },
                         { model: this.MatchReward }
                     ]

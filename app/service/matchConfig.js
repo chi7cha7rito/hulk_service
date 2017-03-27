@@ -41,7 +41,6 @@ module.exports = app => {
                 where: cond,
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchType, as: 'SubType' },
                     { model: this.MatchPrice },
                     { model: this.MatchReward }],
                 distinct: true,
@@ -59,7 +58,6 @@ module.exports = app => {
             const result = await this.MatchConfig.findAll({
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchType, as: 'SubType' },
                     { model: this.MatchPrice },
                     { model: this.MatchReward }],
             })
@@ -85,8 +83,6 @@ module.exports = app => {
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
             if (typeCount == 0) throw new Error("赛事类型不存在")
-            const subTypeCount = await this.MatchType.count({ where: { id: subType } })
-            if (subTypeCount == 0) throw new Error("赛事子类型不存在")
             const result = await this.MatchConfig.update({
                 name: name,
                 type: type,
@@ -135,8 +131,6 @@ module.exports = app => {
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
             if (typeCount == 0) throw new Error("赛事类型不存在")
-            const subTypeCount = await this.MatchType.count({ where: { id: subType } })
-            if (subTypeCount == 0) throw new Error("赛事子类型不存在")
             const result = await this.MatchConfig.create({
                 name: name,
                 type: type,

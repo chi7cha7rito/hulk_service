@@ -29,7 +29,6 @@ module.exports = app => {
             classMethods: {
                 associate() {
                     app.model.MatchType.hasMany(app.model.MatchConfig, { as: 'Type', foreignKey: 'type' })
-                    app.model.MatchType.hasMany(app.model.MatchConfig, { as: 'SubType', foreignKey: 'subType' })
                 }
             }
         })

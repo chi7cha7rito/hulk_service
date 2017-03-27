@@ -31,7 +31,7 @@ module.exports = app => {
     points: {
       type: DECIMAL(10, 2),
       set: function (val) {
-        var type = this.getDataValue('type')
+        let type = this.getDataValue('type')
         let points = type % 2 == 0 ? -val : val
         this.setDataValue('points', points)
       }

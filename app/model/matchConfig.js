@@ -21,11 +21,17 @@ module.exports = app => {
     },
     subType: {
       type: INTEGER,
-      comment: '1:下午场,2:晚场,3:周末赛,4:月度会员杯赛---由matchType定义'
-    },
-    frequency: {
-      type: INTEGER,
-      comment: '1:平日赛,2:周赛,3:月度会员杯,4:年度会员杯'
+      allowNull: false,
+      get: function () {
+        let val = this.getDataValue('subType')
+        let str = ''
+        if (val == 1) str = '平日赛'
+        if (val == 2) str = '周末赛'
+        if (val == 3) str = '月度会员杯赛'
+        if (val == 4) str = '年度会员杯赛'
+        return { val, name: str }
+      },
+      comment: '1:平日赛,2:周末赛,3:月度会员杯赛,4:年度会员杯赛'
     },
     description: {
       type: TEXT,
@@ -62,7 +68,6 @@ module.exports = app => {
       classMethods: {
         associate() {
           app.model.MatchConfig.belongsTo(app.model.MatchType, { as: 'Type', foreignKey: 'type' })
-          app.model.MatchConfig.belongsTo(app.model.MatchType, { as: 'SubType', foreignKey: 'subType' })
           app.model.MatchConfig.hasMany(app.model.Match)
           app.model.MatchConfig.hasMany(app.model.MatchPrice)
           app.model.MatchConfig.hasMany(app.model.MatchReward)
