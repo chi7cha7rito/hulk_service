@@ -144,6 +144,23 @@ module.exports = app => {
             })
             return result
         }
+
+         /**
+         * @description 获取指定Id的赛事配置
+         * @param  {} {id }
+         * @return {object}
+         */
+        async findMatchConfigById({ id }) {
+            const result = await this.MatchConfig.findOne({
+                where: { id },
+                include: [
+                    { model: this.MatchType, as: 'Type' },
+                    { model: this.MatchType, as: 'SubType' },
+                    { model: this.MatchPrice },
+                    { model: this.MatchReward }],
+            })
+            return result
+        }
     }
 
     return MatchConfig;
