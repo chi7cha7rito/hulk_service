@@ -79,11 +79,12 @@ module.exports = app => {
          * @description 创建优惠券
          * @param  {int} {memberId
          * @param  {int} type
+         * @param  {int} subType
          * @param  {int} source
          * @param  {string} remark
          * @param  {int} operator}
          */
-        async create({ memberId, type, source, remark, operator }) {
+        async create({ memberId, type, subType, source, remark, operator }) {
             const memberCount = await this.Member.count({
                 where: { id: memberId, status: 1 }
             })
@@ -91,6 +92,7 @@ module.exports = app => {
             const result = await this.Coupon.create({
                 memberId,
                 type,
+                subType,
                 source,
                 remark,
                 status: 1,

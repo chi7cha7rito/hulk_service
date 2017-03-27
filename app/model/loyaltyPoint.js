@@ -52,9 +52,10 @@ module.exports = app => {
         if (val == 5) str = '手工调整'
         if (val == 6) str = '购买筹码'
         if (val == 7) str = '赛事门票'
+        if (val == 8) str = '余额购买'
         return { val, name: str }
       },
-      comment: '1:充值返现,2:比赛奖励,3:店内消费,4:商城消费,5:手工调整,6:购买筹码,7:赛事门票'
+      comment: '1:充值返现,2:比赛奖励,3:店内消费,4:商城消费,5:手工调整,6:购买筹码,7:赛事门票,8:余额购买'
     },
     sourceNo: {
       type: STRING,

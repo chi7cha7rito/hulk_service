@@ -7,9 +7,13 @@ module.exports = app => {
             this.SignIn = this.app.model.SignIn
             this.Member = this.app.model.Member
             this.User = this.app.model.User
+            this.MemberLevel = this.app.model.MemberLevel
+            this.Coupon = this.app.model.Coupon
+            this.User = this.app.model.User
             this.Wechat = this.app.model.Wechat
             this.Helper = this.ctx.helper
             this.Sequelize = this.app.model
+            this.moment = this.app.moment
         }
 
         /**
@@ -53,29 +57,74 @@ module.exports = app => {
 
         /**
          * @description 签到
-         * @param  {} memberId
+         * @param  {} {memberId
+         * @param  {} comment}
          */
         async create({ memberId, comment }) {
-            const member = await this.Member.findById(memberId)
+            const classSelf = this
+            const member = await classSelf.Member.findById(memberId, { include: [classSelf.MemberLevel, classSelf.User] })
             if (!member) throw new Error("会员不存在")
-            const today = await this.SignIn.count({
+            const today = await classSelf.SignIn.count({
                 where: {
                     $and: [
                         { memberId: memberId },
-                        this.Sequelize.where(
-                            this.Sequelize.fn('DATE', this.Sequelize.col('createdAt')),
-                            this.Sequelize.literal('CURRENT_DATE')
+                        classSelf.Sequelize.where(
+                            classSelf.Sequelize.fn('DATE', classSelf.Sequelize.col('createdAt')),
+                            classSelf.Sequelize.literal('CURRENT_DATE')
                         )
                     ]
                 }
             })
             if (today > 0) throw new Error("今天已经签到过")
-            const result = await this.SignIn.create({
-                comment: comment,
-                creator: member.userId,
-                memberId: member.id
+
+            const count = await classSelf.SignIn.count({
+                where: {
+                    memberId,
+                    createdAt: {
+                        $gte: classSelf.moment().startOf('month'),
+                        $lte: classSelf.moment().endOf('month')
+                    }
+                }
             })
-            return result
+            const coupon = await classSelf.Coupon.count({
+                where: {
+                    memberId,
+                    type: 1,
+                    subType: 2,
+                    source: 1,
+                    status: 1,
+                    createdAt: {
+                        $gte: classSelf.moment().startOf('month'),
+                        $lte: classSelf.moment().endOf('month')
+                    },
+                    creator: member.user.id
+                }
+            })
+
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.SignIn.create({
+                    comment: comment,
+                    creator: member.userId,
+                    memberId: member.id
+                }, { transaction: t }).then(function (result) {
+                    let curr = count + 1
+                    if (curr == member.memberLevel.weeklyTicket && coupon == 0) {
+                        return classSelf.Coupon.create({
+                            memberId,
+                            type: 1,
+                            subType: 2,
+                            source: 1,
+                            remark: '签到周票',
+                            status: 1,
+                            creator: member.user.id
+                        }, { transaction: t }).then(function (result) {
+                            return result
+                        })
+                    } else {
+                        return result
+                    }
+                })
+            })
         }
     }
     return SignIn;

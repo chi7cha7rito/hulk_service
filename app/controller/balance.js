@@ -15,6 +15,14 @@ module.exports = app => {
             this.success(result)
         }
 
+        /**
+        * @description 余额转积分
+        */
+        async buyPoints() {
+            const result = await this.BalanceSvr.buyPoints(this.ctx.request.body)
+            this.success(result)
+        }
+
         async wechatNotify() {
             const result = await this.BalanceSvr.wechatNotify(this.ctx.request.body)
             this.success(result)

@@ -5,6 +5,7 @@ module.exports = app => {
         constructor(ctx) {
             super(ctx)
             this.Balance = this.app.model.Balance
+            this.LoyaltyPoint = this.app.model.LoyaltyPoint
             this.Member = this.app.model.Member
             this.User = this.app.model.User
             this.Helper = this.ctx.helper
@@ -64,6 +65,49 @@ module.exports = app => {
         }
 
         /**
+         * @description 余额买积分
+         * @param  {} {memberId
+         * @param  {} amount
+         * @param  {} remark
+         * @param  {} operator}
+         */
+        async buyPoints({ memberId, amount, operator, remark }) {
+            const classSelf = this
+            const memberCount = await this.Member.count({
+                where: { id: memberId, status: 1 }
+            })
+            if (memberCount == 0) throw new Error("会员不存在或被冻结")
+
+            const total = await this.totalByMemberId({ memberId })
+            if (total < amount) throw new Error("帐户余额不足")
+
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.Balance.create({
+                    memberId,
+                    type: 2,
+                    amount,
+                    source: 11,
+                    remark,
+                    status: 1,
+                    creator: operator
+                }, { transaction: t }).then(function (result) {
+                    return classSelf.LoyaltyPoint.create({
+                        memberId,
+                        type: 1,
+                        points: amount,
+                        source: 8,
+                        sourceNo: result.id,
+                        remark,
+                        status: 1,
+                        creator: operator
+                    }, { transaction: t }).then(function (result) {
+                        return result
+                    })
+                })
+            })
+        }
+
+        /**
          * @description 创建余额记录
          * @param  {int} {memberId
          * @param  {int} type
@@ -79,6 +123,8 @@ module.exports = app => {
                 where: { id: memberId, status: 1 }
             })
             if (memberCount == 0) throw new Error("会员不存在或被冻结")
+            const total = await this.totalByMemberId({ memberId })
+            if (total < amount) throw new Error('帐户余额不足')
             const result = await this.Balance.create({
                 memberId: memberId,
                 type: type,

@@ -25,7 +25,7 @@ module.exports = app => {
     },
     frequency: {
       type: INTEGER,
-      comment: '1:平日赛,2:每周,3:每月,4:每年'
+      comment: '1:平日赛,2:周赛,3:月度会员杯,4:年度会员杯'
     },
     description: {
       type: TEXT,

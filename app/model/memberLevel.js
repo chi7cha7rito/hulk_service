@@ -34,6 +34,11 @@ module.exports = app => {
             defaultValue: 0,
             comment: '消费获得豪气'
         },
+        weeklyTicket: {
+            type: INTEGER,
+            defaultValue: 0,
+            comment: '每月签到多少次获得周票'
+        },
         status: {
             type: INTEGER,
             allowNull: false,
