@@ -17,6 +17,11 @@ module.exports = app => {
       this.success(result)
     }
 
+    async findById() {
+      const result = await this.UserSvr.findById(this.ctx.query);
+      this.success(result)
+    }
+
     async update() {
       const result = await this.UserSvr.update(this.ctx.request.body);
       this.success(result)

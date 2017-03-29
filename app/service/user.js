@@ -10,24 +10,30 @@ module.exports = app => {
 
     /**
      * @description 查找用户
-     * @param  {} {phoneNo
+     * @param  {} {name
+     * @param  {} phoneNo
      * @param  {} idCardNo
      * @param  {} gender
      * @param  {} status
      * @param  {} pageIndex
      * @param  {} pageSize}
      */
-    async findAll({ phoneNo, idCardNo, gender, status, pageIndex = 1, pageSize = 10 }) {
+    async findAll({ name, phoneNo, idCardNo, gender, status, pageIndex = 1, pageSize = 10 }) {
       let cond = {}
       let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+      if (name) {
+        cond.name = {
+          $like: '%' + name + '%'
+        }
+      }
       if (phoneNo) {
         cond.phoneNo = {
-          $like: phoneNo + '%'
+          $like: '%' + phoneNo + '%'
         }
       }
       if (idCardNo) {
         cond.idCardNo = {
-          $like: idCardNo + '%'
+          $like: '%' + idCardNo + '%'
         }
       }
       if (gender) {
@@ -35,7 +41,10 @@ module.exports = app => {
       }
       if (status) {
         cond.status = status
+      } else {
+        cond.status = { $ne: 3 }
       }
+      cond.roleType = { $ne: 3 }
       const result = await this.User.findAndCountAll({
         where: cond,
         offset: (index - 1) * size,
@@ -56,7 +65,16 @@ module.exports = app => {
     }
 
     /**
-     * @description 新建用户
+    * @description 根据Id非会员
+    * @param  {} {id}
+    */
+    async findById({ id }) {
+      const user = await this.User.findById(id)
+      return user;
+    }
+
+    /**
+     * @description 更新用户
      * @param  {} {id
      * @param  {} phoneNo
      * @param  {} name
@@ -91,7 +109,7 @@ module.exports = app => {
     }
 
     /**
-     * @description 新建拥有
+     * @description 新建用户
      * @param  {} {phoneNo
      * @param  {} name
      * @param  {} idCardNo

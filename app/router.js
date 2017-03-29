@@ -137,6 +137,7 @@ module.exports = app => {
   app.post('/user/update', 'user.update')
   app.get('/user/findAll', 'user.findAll')
   app.get('/user/findByPhoneNo', 'user.findByPhoneNo')
+  app.get('/user/findById', 'user.findById')
 
   /**
    * 豪气api
