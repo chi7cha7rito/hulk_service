@@ -60,6 +60,7 @@ module.exports = app => {
   app.get('/matchConfig/findMatchConfigs', 'matchConfig.findMatchConfigs')
   app.get('/matchConfig/findAll', 'matchConfig.findAll')
   app.get('/matchConfig/findMatchConfigById', 'matchConfig.findMatchConfigById')
+  app.post('/matchConfig/edit', 'matchConfig.edit')
 
   /**
    * 赛事价格api

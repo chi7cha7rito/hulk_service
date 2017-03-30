@@ -41,8 +41,8 @@ module.exports = app => {
                 where: cond,
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice },
-                    { model: this.MatchReward }],
+                    { model: this.MatchPrice,where: { status: { $ne: 3 } } },
+                    { model: this.MatchReward,where: { status: { $ne: 3 } }}],
                 distinct: true,
                 offset: (index - 1) * size,
                 limit: size
@@ -58,8 +58,8 @@ module.exports = app => {
             const result = await this.MatchConfig.findAll({
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice },
-                    { model: this.MatchReward }],
+                    { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                    { model: this.MatchReward, where: { status: { $ne: 3 } } }],
             })
             return result
         }
@@ -76,7 +76,7 @@ module.exports = app => {
          * @param  {} operator}
          * @return {object}
          */
-        async update({ id, name, type, subType, description, online, url, holder, status,operator }) {
+        async update({ id, name, type, subType, description, online, url, holder, status, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: id } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const nameCount = await this.MatchConfig.count({ where: { name: name, id: { $ne: id } } })
@@ -91,7 +91,7 @@ module.exports = app => {
                 url: url,
                 online: online,
                 holder: holder,
-                status:status,
+                status: status,
                 updator: operator
             }, { where: { id: id } })
             return result
@@ -145,19 +145,106 @@ module.exports = app => {
             })
             return result
         }
-
-         /**
-         * @description 获取指定Id的赛事配置
-         * @param  {} {id }
-         * @return {object}
+        
+        /**
+         * @description 更新赛事配置,赛事价格,赛事奖励配置
+         * @param  {} id
+         * @param  {} name
+         * @param  {} type
+         * @param  {} subType
+         * @param  {} description
+         * @param  {} online
+         * @param  {} url
+         * @param  {} holder
+         * @param  {} status=1
+         * @param  {} operator
+         * @param  {} priceList
+         * @param  {} rewardList
          */
+        async edit({ id, name, type, subType, description, online, url, holder, status = 1, operator, priceList, rewardList }) {
+            const configCount = await this.MatchConfig.count({ where: { id: id } })
+            if (configCount == 0) throw new Error("赛事配置不存在")
+            const nameCount = await this.MatchConfig.count({ where: { name: name, id: { $ne: id } } })
+            if (nameCount > 0) throw new Error("赛事名称已存在")
+            const typeCount = await this.MatchType.count({ where: { id: type } })
+            if (typeCount == 0) throw new Error("赛事类型不存在")
+            const result = await this.MatchConfig.update({
+                name: name,
+                type: type,
+                subType: subType,
+                description: description,
+                url: url,
+                online: online,
+                holder: holder,
+                status: status,
+                updator: operator
+            }, { where: { id: id } })
+
+            //handle the prices
+            if (priceList && priceList.length) {
+                //first update original prices status to deleted
+                let orginalPrices = await this.MatchPrice.findAll({ where: { matchConfigId: id } })
+                for (let index = 0; index < orginalPrices.length; index++) {
+                    let element = orginalPrices[index];
+                    await this.MatchPrice.update({
+                        status: 3,
+                        updator: operator
+                    }, { where: { id: element.id } })
+                }
+
+                //then create new price
+                for (let index = 0; index < priceList.length; index++) {
+                    let oPrice = priceList[index];
+                    await this.MatchPrice.create({
+                        matchConfigId: id,
+                        type: oPrice.type,
+                        price: oPrice.price,
+                        points: oPrice.points,
+                        status: oPrice.status,
+                        creator: operator
+                    })
+                }
+            }
+
+            if (rewardList && rewardList.length) {
+                //first update original reward status to deleted
+                let orginalRewards = await this.MatchReward.findAll({ where: { matchConfigId: id } })
+                for (let index = 0; index < orginalRewards.length; index++) {
+                    let element = orginalRewards[index];
+                    await this.MatchReward.update({
+                        status: 3,
+                        updator: operator
+                    }, { where: { id: element.id } })
+                }
+
+                //then create new rewards
+                for (let index = 0; index < rewardList.length; index++) {
+                    let oReward = rewardList[index];
+                    await this.MatchReward.create({
+                        matchConfigId: id,
+                        ranking: oReward.ranking,
+                        rewardPoints: oReward.rewardPoints,
+                        status: oReward.status,
+                        creator: operator
+                    })
+                }
+            }
+
+            return result
+        }
+
+        /**
+        * @description 获取指定Id的赛事配置
+        * @param  {} {id }
+        * @return {object}
+        */
         async findMatchConfigById({ id }) {
             const result = await this.MatchConfig.findOne({
                 where: { id },
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice },
-                    { model: this.MatchReward }],
+                    { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                    { model: this.MatchReward, where: { status: { $ne: 3 } } }],
             })
             return result
         }
