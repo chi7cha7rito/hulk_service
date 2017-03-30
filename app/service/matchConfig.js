@@ -22,7 +22,7 @@ module.exports = app => {
          * @param  {} pageSize=10}
          * @return {object}
          */
-        async findMatchConfigs({ name, type, holder, status, pageIndex = 1, pageSize = 10 }) {
+        async findMatchConfigs({ name, type, subType, holder, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             if (name) {
@@ -31,6 +31,11 @@ module.exports = app => {
             if (type) {
                 cond.type = type
             }
+
+            if (subType) {
+                cond.subType = subType
+            }
+
             if (holder) {
                 cond.holder = { $like: '%' + holder + '%' }
             }
