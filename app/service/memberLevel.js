@@ -17,6 +17,15 @@ module.exports = app => {
         }
 
         /**
+        * @description 查询所有会员等级
+        * @param  {} {id}
+        */
+        async findById({ id }) {
+            const result = await this.MemberLevel.findById(id);
+            return result
+        }
+
+        /**
         * @description 更新会员等级
         * @param  {} {id
         * @param  {} name
@@ -34,7 +43,7 @@ module.exports = app => {
             if (nameCount > 0) throw new Error("存在重复的等级名称")
 
             const thresholdCount = await this.MemberLevel.count({
-                where: { threshold: threshold, id: { $ne: id, } }
+                where: { threshold: threshold, id: { $ne: id } }
             })
             if (thresholdCount > 0) throw new Error("存在重复的晋升金额")
 

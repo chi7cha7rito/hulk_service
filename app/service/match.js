@@ -56,7 +56,7 @@ module.exports = app => {
                     where: configCond,
                     include: [
                         { model: this.MatchType, as: 'Type' },
-                        { model: this.MatchPrice },
+                        { model: this.MatchPrice, where: { status: { $ne: 3 } } },
                         { model: this.MatchReward },
                     ]
                 }],

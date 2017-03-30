@@ -33,6 +33,7 @@ module.exports = app => {
   app.post('/rechargeSetup/create', 'rechargeSetup.create')
   app.post('/rechargeSetup/update', 'rechargeSetup.update')
   app.get('/rechargeSetup/findAll', 'rechargeSetup.findAll')
+  app.get('/rechargeSetup/findById', 'rechargeSetup.findById')
   app.get('/rechargeSetup/findMax', 'rechargeSetup.findMax')
 
   /**
@@ -105,6 +106,7 @@ module.exports = app => {
   app.post('/memberLevel/create', 'memberLevel.create')
   app.post('/memberLevel/update', 'memberLevel.update')
   app.get('/memberLevel/findAll', 'memberLevel.findAll')
+  app.get('/memberLevel/findById', 'memberLevel.findById')
 
   /**
    * 签到api

@@ -16,6 +16,11 @@ module.exports = app => {
             this.success(result)
         }
 
+        async findById() {
+            const result = await this.RechargeSetupSvr.findById(this.ctx.query)
+            this.success(result)
+        }
+
         async findMax() {
             const result = await this.RechargeSetupSvr.findMax(this.ctx.query)
             this.success(result)
