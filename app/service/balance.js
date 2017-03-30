@@ -11,6 +11,7 @@ module.exports = app => {
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
         }
+
         /**
          * @description 根据memberId获取余额
          * @param  {int} memberId
@@ -19,6 +20,24 @@ module.exports = app => {
         async totalByMemberId({ memberId }) {
             const total = await this.Balance.sum('amount', {
                 where: { memberId: memberId, status: 1 }
+            })
+            return total || 0
+        }
+
+        /**
+        * @description 根据手机号获取余额
+        * @param  {int} phoneNo
+        * @return {decimal} 余额
+        */
+        async totalByPhoneNo({ phoneNo }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+
+            const total = await this.Balance.sum('amount', {
+                where: { memberId: member.id, status: 1 }
             })
             return total || 0
         }
@@ -71,28 +90,29 @@ module.exports = app => {
          * @param  {} remark
          * @param  {} operator}
          */
-        async buyPoints({ memberId, amount, operator, remark }) {
+        async buyPoints({ phoneNo, amount, operator, remark }) {
             const classSelf = this
-            const memberCount = await this.Member.count({
-                where: { id: memberId, status: 1 }
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
             })
-            if (memberCount == 0) throw new Error("会员不存在或被冻结")
+            if (!member) throw new Error("会员不存在或被冻结")
 
-            const total = await this.totalByMemberId({ memberId })
+            const total = await this.totalByMemberId({ memberId: member.id })
             if (total < amount) throw new Error("帐户余额不足")
 
             return classSelf.app.model.transaction(function (t) {
                 return classSelf.Balance.create({
-                    memberId,
+                    memberId: member.id,
                     type: 2,
                     amount,
-                    source: 11,
+                    source: 8,
                     remark,
                     status: 1,
                     creator: operator
                 }, { transaction: t }).then(function (result) {
                     return classSelf.LoyaltyPoint.create({
-                        memberId,
+                        memberId: member.id,
                         type: 1,
                         points: amount,
                         source: 8,
@@ -108,6 +128,48 @@ module.exports = app => {
         }
 
         /**
+         * @description 余额扣减
+         * @param  {} {phoneNo
+         * @param  {} type
+         * @param  {} amount
+         * @param  {} source
+         * @param  {} sourceNo
+         * @param  {} remark
+         * @param  {} operator}
+         */
+        async decrease({ phoneNo, type, amount, source, sourceNo, remark, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+            const total = await this.totalByMemberId({ memberId: member.id })
+            if (total < amount) throw new Error('帐户余额不足')
+            const result = await this.create({ memberId: member.id, type, amount, source, sourceNo, remark, status: 1, operator })
+            return result
+        }
+
+        /**
+        * @description 余额增加
+        * @param  {} {phoneNo
+        * @param  {} type
+        * @param  {} amount
+        * @param  {} source
+        * @param  {} sourceNo
+        * @param  {} remark
+        * @param  {} operator}
+        */
+        async increase({ phoneNo, type, amount, source, sourceNo, remark, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+            const result = await this.create({ memberId: member.id, type, amount, source, sourceNo, remark, status: 1, operator })
+            return result
+        }
+
+        /**
          * @description 创建余额记录
          * @param  {int} {memberId
          * @param  {int} type
@@ -119,12 +181,6 @@ module.exports = app => {
          * @param  {int} creator=1}
          */
         async create({ memberId, type, amount, source, sourceNo, remark, status, operator }) {
-            const memberCount = await this.Member.count({
-                where: { id: memberId, status: 1 }
-            })
-            if (memberCount == 0) throw new Error("会员不存在或被冻结")
-            const total = await this.totalByMemberId({ memberId })
-            if (total < amount) throw new Error('帐户余额不足')
             const result = await this.Balance.create({
                 memberId: memberId,
                 type: type,
@@ -132,7 +188,7 @@ module.exports = app => {
                 source: source,
                 sourceNo: sourceNo,
                 remark: remark,
-                status: 1,
+                status: status,
                 creator: operator
             })
             return result

@@ -8,10 +8,18 @@ module.exports = app => {
         }
 
         /**
-         * @description 创建充值记录
+         * @description 余额增加
          */
-        async create() {
-            const result = await this.BalanceSvr.create(this.ctx.request.body)
+        async increase() {
+            const result = await this.BalanceSvr.increase(this.ctx.request.body)
+            this.success(result)
+        }
+
+        /**
+        * @description 余额扣减
+        */
+        async decrease() {
+            const result = await this.BalanceSvr.decrease(this.ctx.request.body)
             this.success(result)
         }
 
@@ -42,6 +50,15 @@ module.exports = app => {
         */
         async totalByMemberId() {
             const result = await this.BalanceSvr.totalByMemberId(this.ctx.query)
+            this.success(result)
+
+        }
+
+        /**
+        * @description 根据phoneNo查询余额
+        */
+        async totalByPhoneNo() {
+            const result = await this.BalanceSvr.totalByPhoneNo(this.ctx.query)
             this.success(result)
 
         }

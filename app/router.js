@@ -14,11 +14,13 @@ module.exports = app => {
   /**
    * 帐户api
    */
-  app.post('/balance/create', 'balance.create')
+  app.post('/balance/increase', 'balance.increase')
+  app.post('/balance/decrease', 'balance.decrease')
   app.post('/balance/buyPoints', 'balance.buyPoints')
   app.post('/balance/wechatNotify', 'balance.wechatNotify')
   app.get('/balance/findEntries', 'balance.findEntries')
   app.get('/balance/totalByMemberId', 'balance.totalByMemberId')
+  app.get('/balance/totalByPhoneNo', 'balance.totalByPhoneNo')
 
   /**
    * 微信支付api
@@ -39,9 +41,10 @@ module.exports = app => {
   /**
    * 积分api
    */
-  app.post('/point/create', 'loyaltyPoint.create')
+  app.post('/point/decrease', 'loyaltyPoint.decrease')
   app.get('/point/findEntries', 'loyaltyPoint.findEntries')
   app.get('/point/totalByMemberId', 'loyaltyPoint.totalByMemberId')
+  app.get('/point/totalByPhoneNo', 'loyaltyPoint.totalByPhoneNo')
 
   /**
    * 配置api

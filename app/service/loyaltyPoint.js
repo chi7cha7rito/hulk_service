@@ -19,6 +19,24 @@ module.exports = app => {
         }
 
         /**
+        * @description 根据手机号获取积分
+        * @param  {int} phoneNo
+        * @return {decimal} 余额
+        */
+        async totalByPhoneNo({ phoneNo }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+
+            const total = await this.LoyaltyPoint.sum('points', {
+                where: { memberId: member.id, status: 1 }
+            })
+            return total || 0
+        }
+
+        /**
          * @description 获取积分明细
          * @param  {int} {memberId
          * @param  {int} type
@@ -59,6 +77,28 @@ module.exports = app => {
         }
 
         /**
+         * @description 积分扣减
+         * @param  {} {phoneNo
+         * @param  {} type
+         * @param  {} points
+         * @param  {} source
+         * @param  {} sourceNo
+         * @param  {} remark
+         * @param  {} operator}
+         */
+        async decrease({ phoneNo, type, points, source, sourceNo, remark, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+            const total = await this.totalByMemberId({ memberId: member.id })
+            if (total < amount) throw new Error('帐户余额不足')
+            const result = await this.create({ memberId: member.id, type, points, source, sourceNo, remark, status: 1, operator })
+            return result
+        }
+
+        /**
          * @description 创建积分记录
          * @param  {int} {memberId
          * @param  {int} type
@@ -70,10 +110,6 @@ module.exports = app => {
          * @param  {int} operator}
          */
         async create({ memberId, type, points, source, sourceNo, remark, status = 1, operator }) {
-            const memberCount = await this.Member.count({ where: { id: memberId } })
-            if (memberCount == 0) throw new Error("会员不存在")
-            const total = await this.totalByMemberId({ memberId })
-            if (total < points) throw new Error('帐户积分不足')
             const result = await this.LoyaltyPoint.create({
                 memberId: memberId,
                 type: type,

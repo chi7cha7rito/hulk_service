@@ -8,10 +8,10 @@ module.exports = app => {
         }
 
         /**
-         * @description 创建积分记录
-         */
-        async create() {
-            const result = await this.LoyaltyPointSvr.create(this.ctx.request.body);
+        * @description 积分扣减
+        */
+        async decrease() {
+            const result = await this.LoyaltyPointSvr.decrease(this.ctx.request.body)
             this.success(result)
         }
 
@@ -28,6 +28,14 @@ module.exports = app => {
         */
         async totalByMemberId() {
             const result = await this.LoyaltyPointSvr.totalByMemberId(this.ctx.query)
+            this.success(result)
+        }
+
+        /**
+        * @description 根据phoneNo查询积分余额
+        */
+        async totalByPhoneNo() {
+            const result = await this.LoyaltyPointSvr.totalByPhoneNo(this.ctx.query)
             this.success(result)
         }
     }
