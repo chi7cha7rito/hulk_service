@@ -17,6 +17,14 @@ module.exports = app => {
         }
 
         /**
+         * @description 查询返现记录
+         */
+        async findById({ id }) {
+            const result = await this.RechargeSetup.findById(id);
+            return result
+        }
+
+        /**
          * @description 查找最大返现值
          * @param  {} {val}
          */
@@ -39,13 +47,14 @@ module.exports = app => {
             if (!rec) throw new Error("返现记录不存在")
 
             const setupCount = await this.RechargeSetup.count({
-                where: { threshold: threshold }
+                where: { threshold: threshold, id: { $ne: id, } }
             })
             if (setupCount > 0) throw new Error("存在重复的返现记录")
             const result = await this.RechargeSetup.update({
-                threshold: threshold,
-                reward: reward,
-                remark: remark,
+                threshold,
+                reward,
+                remark,
+                status,
                 updator: operator
             }, { where: { id: id } })
             return result
