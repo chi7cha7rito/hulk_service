@@ -56,13 +56,20 @@ module.exports = app => {
         }
 
         /**
-        * @description 添加赛事配置
+        * @description 编辑赛事配置
         */
         async edit() {
             const result = await this.MatchConfigSvr.edit(this.ctx.request.body)
             this.success(result)
         }
 
+        /**
+        * @description 添加赛事配置
+        */
+        async add() {
+            const result = await this.MatchConfigSvr.add(this.ctx.request.body)
+            this.success(result)
+        }
     }
     return MatchConfigController;
 };

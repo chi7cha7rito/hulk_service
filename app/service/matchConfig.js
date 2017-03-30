@@ -41,8 +41,8 @@ module.exports = app => {
                 where: cond,
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice,where: { status: { $ne: 3 } } },
-                    { model: this.MatchReward,where: { status: { $ne: 3 } }}],
+                    { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                    { model: this.MatchReward, where: { status: { $ne: 3 } } }],
                 distinct: true,
                 offset: (index - 1) * size,
                 limit: size
@@ -145,7 +145,7 @@ module.exports = app => {
             })
             return result
         }
-        
+
         /**
          * @description 更新赛事配置,赛事价格,赛事奖励配置
          * @param  {} id
@@ -156,81 +156,113 @@ module.exports = app => {
          * @param  {} online
          * @param  {} url
          * @param  {} holder
-         * @param  {} status=1
+         * @param  {} status
          * @param  {} operator
          * @param  {} priceList
          * @param  {} rewardList
          */
         async edit({ id, name, type, subType, description, online, url, holder, status = 1, operator, priceList, rewardList }) {
+            var classSelf = this;
+
             const configCount = await this.MatchConfig.count({ where: { id: id } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const nameCount = await this.MatchConfig.count({ where: { name: name, id: { $ne: id } } })
             if (nameCount > 0) throw new Error("赛事名称已存在")
             const typeCount = await this.MatchType.count({ where: { id: type } })
             if (typeCount == 0) throw new Error("赛事类型不存在")
-            const result = await this.MatchConfig.update({
-                name: name,
-                type: type,
-                subType: subType,
-                description: description,
-                url: url,
-                online: online,
-                holder: holder,
-                status: status,
-                updator: operator
-            }, { where: { id: id } })
 
-            //handle the prices
-            if (priceList && priceList.length) {
-                //first update original prices status to deleted
-                let orginalPrices = await this.MatchPrice.findAll({ where: { matchConfigId: id } })
-                for (let index = 0; index < orginalPrices.length; index++) {
-                    let element = orginalPrices[index];
-                    await this.MatchPrice.update({
-                        status: 3,
-                        updator: operator
-                    }, { where: { id: element.id } })
-                }
-
-                //then create new price
-                for (let index = 0; index < priceList.length; index++) {
-                    let oPrice = priceList[index];
-                    await this.MatchPrice.create({
-                        matchConfigId: id,
-                        type: oPrice.type,
-                        price: oPrice.price,
-                        points: oPrice.points,
-                        status: oPrice.status,
-                        creator: operator
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.MatchConfig.update({
+                    name: name,
+                    type: type,
+                    subType: subType,
+                    description: description,
+                    url: url,
+                    online: online,
+                    holder: holder,
+                    status: status,
+                    updator: operator
+                }, { where: { id: id }, transaction: t }).then(function (result) {
+                    return classSelf.MatchPrice.destroy({
+                        where: {
+                            matchConfigId: id
+                        },
+                        transaction: t
+                    }).then(function (result) {
+                        priceList.forEach(oPrice => {
+                            oPrice.matchConfigId = id;
+                        })
+                        return classSelf.MatchPrice.bulkCreate(priceList, { transaction: t }).then(function (result) {
+                            return classSelf.MatchReward.destroy({
+                                where: { matchConfigId: id },
+                                transaction: t
+                            }).then(function (result) {
+                                rewardList.forEach(oReward => {
+                                    oReward.matchConfigId = id;
+                                })
+                                return classSelf.MatchReward.bulkCreate(rewardList, { transaction: t }).then(function (result) {
+                                    return result;
+                                })
+                            })
+                        })
                     })
-                }
-            }
+                })
+            })
+        }
 
-            if (rewardList && rewardList.length) {
-                //first update original reward status to deleted
-                let orginalRewards = await this.MatchReward.findAll({ where: { matchConfigId: id } })
-                for (let index = 0; index < orginalRewards.length; index++) {
-                    let element = orginalRewards[index];
-                    await this.MatchReward.update({
-                        status: 3,
-                        updator: operator
-                    }, { where: { id: element.id } })
-                }
 
-                //then create new rewards
-                for (let index = 0; index < rewardList.length; index++) {
-                    let oReward = rewardList[index];
-                    await this.MatchReward.create({
-                        matchConfigId: id,
-                        ranking: oReward.ranking,
-                        rewardPoints: oReward.rewardPoints,
-                        status: oReward.status,
-                        creator: operator
+        /**
+         * @description 添加赛事配置,赛事价格,赛事奖励配置
+         * @param  {} id
+         * @param  {} name
+         * @param  {} type
+         * @param  {} subType
+         * @param  {} description
+         * @param  {} online
+         * @param  {} url
+         * @param  {} holder
+         * @param  {} status
+         * @param  {} operator
+         * @param  {} priceList
+         * @param  {} rewardList
+         */
+        async add({ name, type, subType, description, online, url, holder, status = 1, operator, priceList, rewardList }) {
+            var classSelf = this;
+            let matchConfigId;
+
+            const nameCount = await this.MatchConfig.count({ where: { name: name } })
+            if (nameCount > 0) throw new Error("赛事名称已存在")
+            const typeCount = await this.MatchType.count({ where: { id: type } })
+            if (typeCount == 0) throw new Error("赛事类型不存在")
+
+
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.MatchConfig.create({
+                    name: name,
+                    type: type,
+                    subType: subType,
+                    description: description,
+                    url: url,
+                    online: online,
+                    holder: holder,
+                    status: status,
+                    updator: operator
+                }, { transaction: t }).then(function (result) {
+                    matchConfigId = result.id;
+                    priceList.forEach(oPrice => {
+                        oPrice.matchConfigId = matchConfigId;
                     })
-                }
-            }
-
-            return result
+                    return classSelf.MatchPrice.bulkCreate(priceList, { transaction: t })
+                        .then(function (result) {
+                            rewardList.forEach(oReward => {
+                                oReward.matchConfigId = matchConfigId;
+                            })
+                            return classSelf.MatchReward.bulkCreate(rewardList, { transaction: t }).then(function (result) {
+                                return result;
+                            })
+                        })
+                })
+            })
         }
 
         /**
