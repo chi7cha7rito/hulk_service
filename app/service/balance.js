@@ -121,6 +121,7 @@ module.exports = app => {
                         status: 1,
                         creator: operator
                     }, { transaction: t }).then(function (result) {
+                        //todo:sms
                         return result
                     })
                 })
@@ -146,6 +147,9 @@ module.exports = app => {
             const total = await this.totalByMemberId({ memberId: member.id })
             if (total < amount) throw new Error('帐户余额不足')
             const result = await this.create({ memberId: member.id, type, amount, source, sourceNo, remark, status: 1, operator })
+            if (result) {
+                //todo:sms
+            }
             return result
         }
 
@@ -166,6 +170,9 @@ module.exports = app => {
             })
             if (!member) throw new Error("会员不存在或被冻结")
             const result = await this.create({ memberId: member.id, type, amount, source, sourceNo, remark, status: 1, operator })
+            if (result) {
+                //todo:sms
+            }
             return result
         }
 

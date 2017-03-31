@@ -43,7 +43,7 @@ module.exports = app => {
          * @param  {} trade_type
          * @param  {} operator=1}
          */
-        async create({ memberId, appid, body, mch_id, nonce_str, notify_url, openid, attach, out_trade_no, spbill_create_ip, total_fee, trade_type, operator}) {
+        async create({ memberId, appid, body, mch_id, nonce_str, notify_url, openid, attach, out_trade_no, spbill_create_ip, total_fee, trade_type, operator }) {
             const memberCount = await this.Member.count({
                 where: { id: memberId, status: 1 }
             })
@@ -107,8 +107,12 @@ module.exports = app => {
                                 sourceNo: entry.id,
                                 status: 1,  //状态正常
                                 remark: "充值积分返现",
+                            }, { transaction: t }).then(function (result) {
+                                //todo:sms
+                                return result
                             })
                         } else {
+                            //todo:sms
                             return balance
                         }
                     })

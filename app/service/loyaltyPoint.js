@@ -95,6 +95,9 @@ module.exports = app => {
             const total = await this.totalByMemberId({ memberId: member.id })
             if (total < amount) throw new Error('帐户余额不足')
             const result = await this.create({ memberId: member.id, type, points, source, sourceNo, remark, status: 1, operator })
+            if(result){
+                //todo:sms
+            }
             return result
         }
 

@@ -57,6 +57,13 @@ module.exports = app => {
             }
             let matchConfigCond = {}
             let userCond = {}
+
+            if (phoneNo) {
+                userCond.phoneNo = { $like: '%' + phoneNo + '%' }
+            }
+            if (matchName) {
+                matchConfigCond.name = { $like: '%' + matchName + '%' }
+            }
             const result = await this.Attendance.findAndCount({
                 include: [{
                     model: this.Match,
@@ -174,6 +181,9 @@ module.exports = app => {
                                 type: 1,
                                 point: apply,
                                 creator: member.user.id
+                            }, { transaction: t }).then(function (result) {
+                                //todo:sms
+                                return result
                             })
                         })
                     })
@@ -270,6 +280,9 @@ module.exports = app => {
                                     type: 1,
                                     point: apply,
                                     creator: operator
+                                }, { transaction: t }).then(function (result) {
+                                    //todo:sms
+                                    return result
                                 })
                             })
                         })
@@ -291,6 +304,9 @@ module.exports = app => {
                                 type: 1,
                                 point: apply,
                                 creator: operator
+                            }, { transaction: t }).then(function (result) {
+                                //todo:sms
+                                return result
                             })
                         })
                     } else if (payType == 3) {

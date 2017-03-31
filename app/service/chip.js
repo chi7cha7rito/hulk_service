@@ -85,6 +85,7 @@ module.exports = app => {
                                     status: 1,
                                     creator: operator
                                 }, { transaction: t }).then(function (result) {
+                                    //todo:sms
                                     return result
                                 })
                             })
@@ -100,6 +101,7 @@ module.exports = app => {
                                 status: 1,
                                 creator: operator
                             }, { transaction: t }).then(function (result) {
+                                //todo:sms
                                 return result
                             })
                         } else {
