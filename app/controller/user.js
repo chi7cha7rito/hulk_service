@@ -27,6 +27,11 @@ module.exports = app => {
       this.success(result)
     }
 
+    async resetPwd() {
+      const result = await this.UserSvr.resetPwd(this.ctx.request.body);
+      this.success(result)
+    }
+
     async create() {
       const result = await this.UserSvr.create(this.ctx.request.body);
       this.success(result)

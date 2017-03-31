@@ -37,7 +37,40 @@ module.exports = app => {
             return result
         }
 
-
+        /**
+         * @description 查询参赛名单
+         * @param  {} {phoneNo
+         * @param  {} matchName
+         * @param  {} openingStart
+         * @param  {} openingEnd
+         * @param  {} pageIndex=1
+         * @param  {} pageSize=10}
+         */
+        async findAll({ phoneNo, matchName, openingStart, openingEnd, pageIndex = 1, pageSize = 10 }) {
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            let cond = {}
+            let matchCond = {
+                openingDatetime: {
+                    $gte: startClosing || this.moment('1971-01-01').format(),
+                    $lte: endClosing || this.moment('9999-12-31').format(),
+                }
+            }
+            let matchConfigCond = {}
+            let userCond = {}
+            const result = await this.Attendance.findAndCount({
+                include: [{
+                    model: this.Match,
+                    where: matchCond,
+                    include: [{ model: this.MatchConfig, where: matchConfigCond }]
+                }, {
+                    model: this.Member,
+                    include: [{ model: this.User, where: userCond }]
+                }],
+                offset: (index - 1) * size,
+                limit: size
+            })
+            return result
+        }
 
         /**
          * @description 查询成绩

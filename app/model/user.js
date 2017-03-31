@@ -38,6 +38,9 @@ module.exports = app => {
       },
       comment: '0:未知,1:男,2:女'
     },
+    password: {
+      type: STRING
+    },
     roleType: {
       type: INTEGER,
       allowNull: false,

@@ -1,5 +1,5 @@
 'use strict';
-
+const md5 = require('md5')
 module.exports = app => {
   class User extends app.Service {
     constructor(ctx) {
@@ -47,6 +47,7 @@ module.exports = app => {
       cond.roleType = { $ne: 3 }
       const result = await this.User.findAndCountAll({
         where: cond,
+        attributes: { exclude: ['password'] },
         offset: (index - 1) * size,
         limit: size
       })
@@ -55,13 +56,17 @@ module.exports = app => {
 
     /**
      * @description 根据手机号查找非会员
-     * @param  {} {phoneNo}
+     * @param  {} {phoneNo,
+     * @param  {} password}
+     * }
      */
-    async findByPhoneNo({ phoneNo }) {
+    async findByPhoneNo({ phoneNo, password }) {
       const user = await this.User.findOne({
-        where: { phoneNo: phoneNo, roleType: { $ne: 3 } },
+        where: { phoneNo: phoneNo, password: md5(password), roleType: { $ne: 3 } },
+        attributes: { exclude: ['password'] }
       })
-      return user;
+      if (!user) throw new Error("账号不存在或密码错误")
+      return user
     }
 
     /**
@@ -69,7 +74,7 @@ module.exports = app => {
     * @param  {} {id}
     */
     async findById({ id }) {
-      const user = await this.User.findById(id)
+      const user = await this.User.findOne({ where: { id }, attributes: { exclude: ['password'] } })
       return user;
     }
 
@@ -97,7 +102,7 @@ module.exports = app => {
       })
       if (idCardNoCount > 0) throw new Error("身份证号已经存在")
 
-      return this.User.update({
+      const result = await this.User.update({
         phoneNo,
         name,
         idCardNo,
@@ -106,6 +111,26 @@ module.exports = app => {
         status,
         creator: operator
       }, { where: { id } })
+      return result
+    }
+
+    /**
+     * @description 充值密码
+     * @param  {} {phoneNo
+     * @param  {} password
+     * @param  {} comfirmPwd
+     * @param  {} operator}
+     */
+    async resetPwd({ phoneNo, password, comfirmPwd, operator }) {
+      const admin = await this.User.findOne({ where: { id: operator, roleType: 1 } })
+      if (!admin) throw new Error("只有管理员能重置密码")
+      const user = await this.User.findOne({ where: { phoneNo } })
+      if (!user) throw new Error("用户不存在")
+      const result = await this.User.update({
+        password: md5(password),
+        updator: operator
+      }, { where: { id: user.id } })
+      return result
     }
 
     /**
@@ -118,7 +143,9 @@ module.exports = app => {
      * @param  {} status
      * @param  {} operator}
      */
-    async create({ phoneNo, name, idCardNo, roleType, gender, status, operator }) {
+    async create({ phoneNo, name, idCardNo, roleType, gender, password, comfirmPwd, status, operator }) {
+      const admin = await this.User.findOne({ where: { id: operator, roleType: 1 } })
+      if (!admin) throw new Error("只有管理员才能新建用户")
       //手机号判重
       const phoneNoCount = await this.User.count({
         where: { phoneNo: phoneNo }
@@ -131,16 +158,19 @@ module.exports = app => {
       })
       if (idCardNoCount > 0) throw new Error("身份证号已经存在")
 
-      return this.User.create({
+      if (password != comfirmPwd) throw new Error("密码和确认密码不一致")
+      const result = this.User.create({
         phoneNo,
         name,
         idCardNo,
         roleType,
+        password: md5(password),
         gender,
         status,
         creator: operator
       })
-    }
+      return result
+}
   }
-  return User
+return User
 }
