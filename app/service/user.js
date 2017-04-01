@@ -65,7 +65,7 @@ module.exports = app => {
         where: { phoneNo: phoneNo, password: md5(password), roleType: { $ne: 3 } },
         attributes: { exclude: ['password'] }
       })
-      if (!user) throw new Error("账号不存在或密码错误")
+      if (user==null) throw new Error("账号不存在或密码错误")
       return user
     }
 
@@ -109,19 +109,33 @@ module.exports = app => {
         roleType,
         gender,
         status,
-        creator: operator
+        updator: operator
       }, { where: { id } })
       return result
     }
 
     /**
-     * @description 充值密码
+     * @description 重置密码
      * @param  {} {phoneNo
      * @param  {} password
      * @param  {} comfirmPwd
      * @param  {} operator}
      */
-    async resetPwd({ phoneNo, password, comfirmPwd, operator }) {
+    async resetPwd({ phoneNo, operator }) {
+      let defaultPassword = "123456";
+      const admin = await this.User.findOne({ where: { id: operator, roleType: 1 } })
+      if (!admin) throw new Error("只有管理员能重置密码")
+      const user = await this.User.findOne({ where: { phoneNo } })
+      if (!user) throw new Error("用户不存在")
+      const result = await this.User.update({
+        password: md5(md5(defaultPassword)),
+        updator: operator
+      }, { where: { id: user.id } })
+      return result
+    }
+
+
+    async editPwd({ phoneNo, password, comfirmPwd, operator }) {
       const admin = await this.User.findOne({ where: { id: operator, roleType: 1 } })
       if (!admin) throw new Error("只有管理员能重置密码")
       const user = await this.User.findOne({ where: { phoneNo } })
@@ -144,6 +158,8 @@ module.exports = app => {
      * @param  {} operator}
      */
     async create({ phoneNo, name, idCardNo, roleType, gender, password, comfirmPwd, status, operator }) {
+      let defaultPassword = "123456";
+
       const admin = await this.User.findOne({ where: { id: operator, roleType: 1 } })
       if (!admin) throw new Error("只有管理员才能新建用户")
       //手机号判重
@@ -158,19 +174,22 @@ module.exports = app => {
       })
       if (idCardNoCount > 0) throw new Error("身份证号已经存在")
 
-      if (password != comfirmPwd) throw new Error("密码和确认密码不一致")
+      // if (password != comfirmPwd) throw new Error("密码和确认密码不一致")
+
+
       const result = this.User.create({
         phoneNo,
         name,
         idCardNo,
         roleType,
-        password: md5(password),
+        password: md5(md5(defaultPassword)),
         gender,
         status,
         creator: operator
       })
+
       return result
-}
+    }
   }
-return User
+  return User
 }
