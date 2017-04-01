@@ -59,6 +59,24 @@ module.exports = app => {
         }
 
         /**
+         * @description 查找所有有效的会员，即status=1
+         * @param  {} {phoneNo}
+         */
+        async findAllMembers({phoneNo}){
+            let cond = {}
+
+            if (phoneNo) cond.phoneNo = { $like: '%' + phoneNo + '%' }
+
+            cond.status='1'
+
+            const result = await this.User.findAndCount({
+                where: cond
+            })
+
+            return result
+        }
+
+        /**
          * @description 查找会员余额
          * @param  {} {phoneNo
          * @param  {} name

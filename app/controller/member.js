@@ -53,6 +53,11 @@ module.exports = app => {
       this.success(result)
     }
 
+    async findAllMembers() {
+      const result = await this.MemberSvr.findAllMembers(this.ctx.query)
+      this.success(result)
+    }
+
     async findMembersBalance() {
       const result = await this.MemberSvr.findMembersBalance(this.ctx.query)
       this.success(result)
