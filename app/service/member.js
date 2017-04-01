@@ -179,6 +179,24 @@ module.exports = app => {
         }
 
         /**
+        * @description:根据会员phoneNo查询会员
+        * @param {int} phoneNo
+        * @return {object} 会员信息
+        */
+        async findByPhoneNo({ phoneNo }) {
+            const result = await this.User.findOne({
+                include: [{
+                    model: this.Member,
+                    include: [{
+                        model: this.MemberLevel
+                    }],
+                }],
+                where: { phoneNo }
+            })
+            return result
+        }
+
+        /**
         * @description:根据微信openid查询会员
         * @param {string} wechatOpenId
         * @return {object} 会员信息
