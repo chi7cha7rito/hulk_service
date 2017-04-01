@@ -55,6 +55,25 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取可用免费门票
+         * @param  {} {phoneNo}
+         */
+        async findFreeTicketsByPhoneNo({ phoneNo }) {
+            const result = await this.Coupon.findAll({
+                where: { type: 1, status: 1 },
+                order: 'createdAt DESC',
+                include: [
+                    {
+                        model: this.Member,
+                        include: [{ model: this.User, where: { phoneNo }, attributes: [] }],
+                        attributes: []
+                    }
+                ]
+            })
+            return result
+        }
+
+        /**
          * @description 更改优惠券状态
          * @param  {int} {id
          * @param  {int} status

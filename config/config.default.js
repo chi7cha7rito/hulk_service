@@ -27,8 +27,12 @@ module.exports = appInfo => {
     dialect: 'mysql' // support: mysql, mariadb, postgres, mssql
   }
 
-  config.sms = {
-
+  config.sendSmsApi = {
+    secretCode: 'http://127.0.0.1:7002/alidayu/secretCode',
+    balancePlus: 'http://127.0.0.1:7003/alidayu/balancePlus',
+    balanceMinus: 'http://127.0.0.1:7003/alidayu/balanceMinus',
+    loyaltyPointPlus: 'http://127.0.0.1:7003/alidayu/loyaltyPointPlus',
+    loyaltyPointMinus: 'http://127.0.0.1:7003/alidayu/loyaltyPointMinus'
   }
 
   // 微信token过期时间配置,6000秒

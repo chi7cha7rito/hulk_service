@@ -6,6 +6,7 @@ module.exports = app => {
       super(ctx)
       this.MemberSvr = this.service.member
       this.BalanceSvr = this.service.balance
+      this.CouponSvr = this.service.coupon
       this.LoyaltyPointSvr = this.service.loyaltyPoint
     }
 
@@ -60,6 +61,20 @@ module.exports = app => {
     async findMembersPoints() {
       const result = await this.MemberSvr.findMembersPoints(this.ctx.query)
       this.success(result)
+    }
+
+    async findAccountInfo() {
+      const balance = await this.BalanceSvr.totalByPhoneNo(this.ctx.query)
+      const points = await this.LoyaltyPointSvr.totalByPhoneNo(this.ctx.query)
+      const coupon = await this.CouponSvr.findFreeTicketsByPhoneNo(this.ctx.query)
+      const user = await this.MemberSvr.findByPhoneNo(this.ctx.query)
+      this.success({
+        balance, points, coupon, name: user.name,
+        memberLevel: {
+          id: user.member.memberLevel.id,
+          name: user.member.memberLevel.name
+        }
+      })
     }
   }
   return MemberController;
