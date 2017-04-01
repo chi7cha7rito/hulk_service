@@ -9,6 +9,7 @@ module.exports = app => {
             this.User = this.app.model.User
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
+            this.SmsSenderSvr = this.service.smsSender
         }
 
         async totalByMemberId({ memberId }) {
@@ -93,11 +94,40 @@ module.exports = app => {
             })
             if (!member) throw new Error("会员不存在或被冻结")
             const total = await this.totalByMemberId({ memberId: member.id })
-            if (total < amount) throw new Error('帐户余额不足')
+            points = parseFloat(points)
+            if (total < points) throw new Error('可用积分不足')
             const result = await this.create({ memberId: member.id, type, points, source, sourceNo, remark, status: 1, operator })
-            if(result){
-                //todo:sms
+            //非手工调整需要短信通知
+            if (result && source.toString() !== '5') {
+                this.SmsSenderSvr.loyaltyPointMinus({
+                    phoneNo: member.user.phoneNo,
+                    name: member.user.name,
+                    points: points,
+                    avlPts: total - points
+                })
             }
+            return result
+        }
+
+        /**
+         * @description 积分增加
+         * @param  {} {phoneNo
+         * @param  {} type
+         * @param  {} points
+         * @param  {} source
+         * @param  {} sourceNo
+         * @param  {} remark
+         * @param  {} operator}
+         */
+        async increase({ phoneNo, type, points, source, sourceNo, remark, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+            const total = await this.totalByMemberId({ memberId: member.id })
+            points = parseFloat(points)
+            const result = await this.create({ memberId: member.id, type, points, source, sourceNo, remark, status: 1, operator })
             return result
         }
 

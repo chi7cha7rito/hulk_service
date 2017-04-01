@@ -43,6 +43,7 @@ module.exports = app => {
    * 积分api
    */
   app.post('/point/decrease', 'loyaltyPoint.decrease')
+  app.post('/point/increase', 'loyaltyPoint.increase')
   app.get('/point/findEntries', 'loyaltyPoint.findEntries')
   app.get('/point/totalByMemberId', 'loyaltyPoint.totalByMemberId')
   app.get('/point/totalByPhoneNo', 'loyaltyPoint.totalByPhoneNo')

@@ -16,6 +16,14 @@ module.exports = app => {
         }
 
         /**
+         * @description 积分扣减
+         */
+        async increase() {
+            const result = await this.LoyaltyPointSvr.increase(this.ctx.request.body)
+            this.success(result)
+        }
+
+        /**
          * @description 查询积分记录
          */
         async findEntries() {
