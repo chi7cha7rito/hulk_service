@@ -10,6 +10,9 @@ module.exports = app => {
             this.WechatPayment = this.app.model.WechatPayment
             this.RechargeSetup = this.app.model.RechargeSetup
             this.LoyaltyPoint = this.app.model.LoyaltyPoint
+            this.BalanceSvr = this.service.balance
+            this.LoyaltyPointSvr = this.service.loyaltyPoint
+            this.SmsSenderSvr = this.service.smsSender
             this.Helper = this.ctx.helper
         }
 
@@ -74,13 +77,14 @@ module.exports = app => {
          * @param  {} time_end
          * @param  {} status}
          */
-        async notify({ name, out_trade_no, transaction_id, time_end, status }) {
+        async notify({ out_trade_no, transaction_id, time_end, status }) {
             const classSelf = this;
             const entry = await this.WechatPayment.findOne({
                 where: { out_trade_no: out_trade_no }
             })
             if (!entry) throw new Error("找不到该条微信充值记录")
             const member = await this.Member.findOne({ where: { id: entry.memberId }, include: [this.User] })
+            const amount = entry.total_fee ? (entry.total_fee / 100) : 0
             //微信充值回调transaction
             return classSelf.app.model.transaction(function (t) {
                 return classSelf.WechatPayment.update({
@@ -91,13 +95,20 @@ module.exports = app => {
                     return classSelf.Balance.create({
                         memberId: entry.memberId,
                         type: 1,  //充值
-                        amount: entry.total_fee ? (entry.total_fee / 100) : 0,
+                        amount: amount,
                         source: 1,  //微信充值
                         sourceNo: entry.id,
                         remark: "微信公众号充值",
                         status: 1,
                     }, { transaction: t }).then(async (balance) => {
-                        const max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: entry.total_fee ? (entry.total_fee / 100) : 0 }, status: 1 } })
+                        const max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: amount }, status: 1 } })
+                        let totalBalance = await classSelf.BalanceSvr.totalByMemberId({ memberId: member.id })
+                        classSelf.SmsSenderSvr.balancePlus({
+                            phoneNo: member.user.phoneNo,
+                            name: member.user.name,
+                            amount: amount,
+                            avlAmt: totalBalance + amount
+                        })
                         if (max) {
                             return classSelf.LoyaltyPoint.create({
                                 memberId: entry.memberId,
@@ -107,12 +118,17 @@ module.exports = app => {
                                 sourceNo: entry.id,
                                 status: 1,  //状态正常
                                 remark: "充值积分返现",
-                            }, { transaction: t }).then(function (points) {
-                                //todo:sms
+                            }, { transaction: t }).then(async (points) => {
+                                let totalPoints = await classSelf.LoyaltyPointSvr.totalByMemberId({ memberId: member.id })
+                                classSelf.SmsSenderSvr.loyaltyPointPlus({
+                                    phoneNo: member.user.phoneNo,
+                                    name: member.user.name,
+                                    points: max,
+                                    avlPts: totalPoints + max
+                                })
                                 return points
                             })
                         } else {
-                            //todo:sms
                             return balance
                         }
                     })

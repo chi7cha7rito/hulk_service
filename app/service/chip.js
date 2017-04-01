@@ -15,6 +15,7 @@ module.exports = app => {
             this.LoyaltyPoint = this.app.model.LoyaltyPoint
             this.BalanceSvr = this.service.balance
             this.LoyaltyPointSvr = this.service.loyaltyPoint
+            this.SmsSenderSvr = this.service.smsSender
         }
 
         /**
@@ -86,7 +87,12 @@ module.exports = app => {
                                     status: 1,
                                     creator: operator
                                 }, { transaction: t }).then(function (result) {
-                                    //todo:sms
+                                    classSelf.SmsSenderSvr.balanceMinus({
+                                        phoneNo: member.user.phoneNo,
+                                        name: member.user.name,
+                                        amount: payAmount,
+                                        avlAmt: balance - payAmount
+                                    })
                                     return result
                                 })
                             })
@@ -102,7 +108,12 @@ module.exports = app => {
                                 status: 1,
                                 creator: operator
                             }, { transaction: t }).then(function (result) {
-                                //todo:sms
+                                classSelf.SmsSenderSvr.loyaltyPointMinus({
+                                    phoneNo: member.user.phoneNo,
+                                    name: member.user.name,
+                                    points: payAmount,
+                                    avlPts: point - payAmount
+                                })
                                 return result
                             })
                         } else {

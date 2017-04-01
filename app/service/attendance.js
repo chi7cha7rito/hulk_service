@@ -19,6 +19,7 @@ module.exports = app => {
             this.BalanceSvr = this.service.balance
             this.LoyaltyPointSvr = this.service.loyaltyPoint
             this.MatchPriceSvr = this.service.matchPrice
+            this.SmsSenderSvr = this.service.smsSender
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
         }
@@ -188,7 +189,12 @@ module.exports = app => {
                                 point: apply,
                                 creator: member.user.id
                             }, { transaction: t }).then(function (result) {
-                                //todo:sms
+                                classSelf.SmsSenderSvr.balanceMinus({
+                                    phoneNo: member.user.phoneNo,
+                                    name: member.user.name,
+                                    amount: price.price,
+                                    avlAmt: balance - price.price
+                                })
                                 return result
                             })
                         })
@@ -287,7 +293,12 @@ module.exports = app => {
                                     point: apply,
                                     creator: operator
                                 }, { transaction: t }).then(function (result) {
-                                    //todo:sms
+                                    classSelf.SmsSenderSvr.balanceMinus({
+                                        phoneNo: member.user.phoneNo,
+                                        name: member.user.name,
+                                        amount: price.price,
+                                        avlAmt: balance - price.price
+                                    })
                                     return result
                                 })
                             })
@@ -311,7 +322,12 @@ module.exports = app => {
                                 point: apply,
                                 creator: operator
                             }, { transaction: t }).then(function (result) {
-                                //todo:sms
+                                classSelf.SmsSenderSvr.loyaltyPointMinus({
+                                    phoneNo: member.user.phoneNo,
+                                    name: member.user.name,
+                                    points: price.price,
+                                    avlPts: point - price.price
+                                })
                                 return result
                             })
                         })

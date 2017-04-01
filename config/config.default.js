@@ -6,7 +6,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + 'hulkclub'
 
   // service调用token
-  config.hulk_token = "abcd1234"
+  config.hulk_token = "hulk_club_20170312"
 
   // // 数据库配置
   // config.sequelize = {
@@ -29,10 +29,10 @@ module.exports = appInfo => {
 
   config.sendSmsApi = {
     secretCode: 'http://127.0.0.1:7002/alidayu/secretCode',
-    balancePlus: 'http://127.0.0.1:7003/alidayu/balancePlus',
-    balanceMinus: 'http://127.0.0.1:7003/alidayu/balanceMinus',
-    loyaltyPointPlus: 'http://127.0.0.1:7003/alidayu/loyaltyPointPlus',
-    loyaltyPointMinus: 'http://127.0.0.1:7003/alidayu/loyaltyPointMinus'
+    balancePlus: 'http://127.0.0.1:7002/alidayu/balancePlus',
+    balanceMinus: 'http://127.0.0.1:7002/alidayu/balanceMinus',
+    loyaltyPointPlus: 'http://127.0.0.1:7002/alidayu/loyaltyPointPlus',
+    loyaltyPointMinus: 'http://127.0.0.1:7002/alidayu/loyaltyPointMinus'
   }
 
   // 微信token过期时间配置,6000秒
