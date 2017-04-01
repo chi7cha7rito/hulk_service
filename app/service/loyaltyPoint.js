@@ -109,6 +109,28 @@ module.exports = app => {
         }
 
         /**
+         * @description 积分增加
+         * @param  {} {phoneNo
+         * @param  {} type
+         * @param  {} points
+         * @param  {} source
+         * @param  {} sourceNo
+         * @param  {} remark
+         * @param  {} operator}
+         */
+        async increase({ phoneNo, type, points, source, sourceNo, remark, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+            const total = await this.totalByMemberId({ memberId: member.id })
+            points = parseFloat(points)
+            const result = await this.create({ memberId: member.id, type, points, source, sourceNo, remark, status: 1, operator })
+            return result
+        }
+
+        /**
          * @description 创建积分记录
          * @param  {int} {memberId
          * @param  {int} type
