@@ -9,6 +9,7 @@ module.exports = app => {
   app.post('/attendance/createOffline', 'attendance.createOffline')
   app.post('/attendance/del', 'attendance.del')
   app.get('/attendance/findAttendances', 'attendance.findAttendances')
+  app.get('/attendance/findAll', 'attendance.findAll')
   app.get('/attendance/findRankingByMemberId', 'attendance.findRankingByMemberId')
 
   /**
@@ -47,12 +48,13 @@ module.exports = app => {
   app.get('/point/totalByPhoneNo', 'loyaltyPoint.totalByPhoneNo')
 
   /**
-   * 配置api
+   * 赛事api
    */
   app.post('/match/create', 'match.create')
   app.post('/match/update', 'match.update')
   app.post('/match/changeStatus', 'match.changeStatus')
   app.get('/match/findMatches', 'match.findMatches')
+  app.get('/match/findAvailable', 'match.findAvailable')
   app.get('/match/findMatchById', 'match.findMatchById')
 
   /**

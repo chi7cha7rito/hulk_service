@@ -7,6 +7,7 @@ module.exports = app => {
             this.Match = this.app.model.Match
             this.MatchConfig = this.app.model.MatchConfig
             this.MatchReward = this.app.model.MatchReward
+            this.MatchType = this.app.model.MatchType
             this.User = this.app.model.User
             this.Member = this.app.model.Member
             this.MemberLevel = this.app.model.MemberLevel
@@ -19,6 +20,7 @@ module.exports = app => {
             this.LoyaltyPointSvr = this.service.loyaltyPoint
             this.MatchPriceSvr = this.service.matchPrice
             this.Helper = this.ctx.helper
+            this.moment = this.app.moment
         }
 
         /**
@@ -51,8 +53,8 @@ module.exports = app => {
             let cond = {}
             let matchCond = {
                 openingDatetime: {
-                    $gte: startClosing || this.moment('1971-01-01').format(),
-                    $lte: endClosing || this.moment('9999-12-31').format(),
+                    $gte: openingStart || this.moment('1971-01-01').format(),
+                    $lte: openingEnd || this.moment('9999-12-31').format(),
                 }
             }
             let matchConfigCond = {}
@@ -68,7 +70,11 @@ module.exports = app => {
                 include: [{
                     model: this.Match,
                     where: matchCond,
-                    include: [{ model: this.MatchConfig, where: matchConfigCond }]
+                    include: [{
+                        model: this.MatchConfig,
+                        where: matchConfigCond,
+                        include: [{ model: this.MatchType, as: 'Type' }]
+                    }]
                 }, {
                     model: this.Member,
                     include: [{ model: this.User, where: userCond }]

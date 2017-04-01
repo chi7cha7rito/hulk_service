@@ -80,7 +80,7 @@ module.exports = app => {
                 where: { out_trade_no: out_trade_no }
             })
             if (!entry) throw new Error("找不到该条微信充值记录")
-
+            const member = await this.Member.findOne({ where: { id: entry.memberId }, include: [this.User] })
             //微信充值回调transaction
             return classSelf.app.model.transaction(function (t) {
                 return classSelf.WechatPayment.update({
@@ -107,9 +107,9 @@ module.exports = app => {
                                 sourceNo: entry.id,
                                 status: 1,  //状态正常
                                 remark: "充值积分返现",
-                            }, { transaction: t }).then(function (result) {
+                            }, { transaction: t }).then(function (points) {
                                 //todo:sms
-                                return result
+                                return points
                             })
                         } else {
                             //todo:sms

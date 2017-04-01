@@ -68,6 +68,31 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取当天可参赛赛事
+         * @return {object}
+         */
+        async findAvailable() {
+            let cond = {}
+            cond.closingDatetime = {
+                $gte: this.moment().format(),
+                $lte: this.moment().endOf('day').format(),
+            }
+            cond.status = 1
+            const result = await this.Match.findAll({
+                where: cond,
+                order: 'openingDatetime DESC',
+                include: [{
+                    model: this.MatchConfig,
+                    include: [
+                        { model: this.MatchType, as: 'Type' },
+                        { model: this.MatchPrice, where: { status: 1 } },
+                    ]
+                }],
+            })
+            return result
+        }
+
+        /**
          * @description 获取赛事
          * @param  {} {id }
          * @return {object}

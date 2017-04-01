@@ -40,6 +40,14 @@ module.exports = app => {
         }
 
         /**
+        * @description 查找当天可参赛赛事
+        */
+        async findAvailable() {
+            const result = await this.MatchSvr.findAvailable(this.ctx.query)
+            this.success(result)
+        }
+
+        /**
          * @description 查找赛事
          */
         async findMatchById() {

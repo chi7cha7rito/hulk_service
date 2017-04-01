@@ -8,14 +8,27 @@ module.exports = appInfo => {
   // service调用token
   config.hulk_token = "abcd1234"
 
+  // // 数据库配置
+  // config.sequelize = {
+  //   port: '3306',
+  //   host: 'localhost',
+  //   username: 'root',
+  //   password: '1qaz!QAZ',
+  //   database: 'hulk',
+  //   dialect: 'mysql' // support: mysql, mariadb, postgres, mssql
+  // }
   // 数据库配置
   config.sequelize = {
     port: '3306',
-    host: 'localhost',
+    host: '115.159.94.198',
     username: 'root',
-    password: '1qaz!QAZ',
+    password: 'hulk@2017',
     database: 'hulk',
     dialect: 'mysql' // support: mysql, mariadb, postgres, mssql
+  }
+
+  config.sms = {
+
   }
 
   // 微信token过期时间配置,6000秒

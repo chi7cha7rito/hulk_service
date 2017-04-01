@@ -7,6 +7,7 @@ module.exports = app => {
             this.Chip = this.app.model.Chip
             this.MemberLevel = this.app.model.MemberLevel
             this.Member = this.app.model.Member
+            this.User = this.app.model.User
             this.Match = this.app.model.Match
             this.MatchConfig = this.app.model.MatchConfig
             this.Sprit = this.app.model.Sprit
@@ -28,7 +29,7 @@ module.exports = app => {
          */
         async create({ memberId, matchId, quantity, payType, payAmount, remark, operator }) {
             const classSelf = this
-            const member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel] })
+            const member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel, this.User] })
             if (!member) throw new Error('会员不存在')
             const match = await classSelf.Match.findOne({ where: { id: matchId }, include: [this.MatchConfig] })
             if (!match) throw new Error('赛事不存在')

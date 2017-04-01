@@ -6,6 +6,7 @@ module.exports = app => {
             super(ctx)
             this.Balance = this.app.model.Balance
             this.LoyaltyPoint = this.app.model.LoyaltyPoint
+            this.RechargeSetup = this.app.model.RechargeSetup
             this.Member = this.app.model.Member
             this.User = this.app.model.User
             this.Helper = this.ctx.helper
@@ -188,7 +189,9 @@ module.exports = app => {
          * @param  {int} creator=1}
          */
         async create({ memberId, type, amount, source, sourceNo, remark, status, operator }) {
-            const result = await this.Balance.create({
+            const classSelf = this
+            const max = await this.RechargeSetup.max('reward', { where: { threshold: { $lte: amount }, status: 1 } })
+            return classSelf.Balance.create({
                 memberId: memberId,
                 type: type,
                 amount: amount,
@@ -197,8 +200,24 @@ module.exports = app => {
                 remark: remark,
                 status: status,
                 creator: operator
+            }, { transaction: t }).then(function (result) {
+                if (type == 1) {
+                    return classSelf.LoyaltyPoint.create({
+                        memberId: memberId,
+                        type: 1,    //获取
+                        points: max,
+                        source: 1,  //充值返现
+                        sourceNo: result.id,
+                        status: 1,  //状态正常
+                        remark: "充值积分返现",
+                    }, { transaction: t }).then(function (result) {
+                        //todo:sms
+                        return result
+                    })
+                } else {
+                    return result
+                }
             })
-            return result
         }
     }
     return Balance;

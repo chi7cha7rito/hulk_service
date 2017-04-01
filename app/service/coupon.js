@@ -12,7 +12,7 @@ module.exports = app => {
         }
 
         /**
-         * @description 获取余额明细
+         * @description 获取优惠券明细
          * @param  {int} {phoneNo
          * @param  {int} type
          * @param  {int} source
