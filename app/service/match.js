@@ -74,8 +74,8 @@ module.exports = app => {
         async findAvailable() {
             let cond = {}
             cond.closingDatetime = {
-                $gte: this.moment().format(),
-                $lte: this.moment().endOf('day').format(),
+                $gte: this.moment().format()
+                // $lte: this.moment().endOf('day').format(),
             }
             cond.status = 1
             const result = await this.Match.findAll({
