@@ -118,6 +118,10 @@ module.exports = app => {
             return result
         }
 
+        async award({ memberId, matchId, matchRewardId }) {
+
+        }
+
         /**
          * @description 线上报名参加
          * @param  {} {matchId

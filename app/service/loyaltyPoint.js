@@ -97,7 +97,8 @@ module.exports = app => {
             points = parseFloat(points)
             if (total < points) throw new Error('可用积分不足')
             const result = await this.create({ memberId: member.id, type, points, source, sourceNo, remark, status: 1, operator })
-            if (result) {
+            //非手工调整需要短信通知
+            if (result && source.toString() !== '5') {
                 this.SmsSenderSvr.loyaltyPointMinus({
                     phoneNo: member.user.phoneNo,
                     name: member.user.name,
