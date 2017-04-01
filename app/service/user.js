@@ -65,7 +65,7 @@ module.exports = app => {
         where: { phoneNo: phoneNo, password: md5(password), roleType: { $ne: 3 } },
         attributes: { exclude: ['password'] }
       })
-      if (user==null) throw new Error("账号不存在或密码错误")
+      if (!user) throw new Error("账号不存在或密码错误")
       return user
     }
 
