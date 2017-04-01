@@ -68,7 +68,13 @@ module.exports = app => {
       const points = await this.LoyaltyPointSvr.totalByPhoneNo(this.ctx.query)
       const coupon = await this.CouponSvr.findFreeTicketsByPhoneNo(this.ctx.query)
       const user = await this.MemberSvr.findByPhoneNo(this.ctx.query)
-      this.success({ balance, points, coupon, name: user.name, level: user.member.memberLevel.name })
+      this.success({
+        balance, points, coupon, name: user.name,
+        memberLevel: {
+          id: user.member.memberLevel.id,
+          name: user.member.memberLevel.name
+        }
+      })
     }
   }
   return MemberController;
