@@ -142,6 +142,8 @@ module.exports = app => {
    */
   app.post('/user/create', 'user.create')
   app.post('/user/update', 'user.update')
+  app.post('/user/resetPwd', 'user.resetPwd')
+  app.post('/user/editPwd', 'user.editPwd')
   app.get('/user/findAll', 'user.findAll')
   app.get('/user/findByPhoneNo', 'user.findByPhoneNo')
   app.get('/user/findById', 'user.findById')
