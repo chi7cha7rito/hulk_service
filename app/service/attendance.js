@@ -118,7 +118,55 @@ module.exports = app => {
             return result
         }
 
-        async award({ memberId, matchId, matchRewardId }) {
+        /**
+         * @description 颁奖
+         * @param  {} {id
+         * @param  {} memberId
+         * @param  {} matchId
+         * @param  {} matchRewardId
+         * @param  {} operator}
+         */
+        async award({ id, memberId, matchId, matchRewardId, operator }) {
+            const attendance = await this.Attendance.findOne({ where: { id } })
+            if (!attendance) throw new Error("您没有报名参加该赛事")
+            const member = await this.Member.findOne({ where: { id: memberId, status: 1 }, include: [this.User] })
+            if (!member) throw new Error("会员不存在或已冻结")
+            const match = await this.Match.findOne({ where: { id: matchId } })
+            if (!match) throw new Error("赛事不存在")
+            const reward = await this.MatchReward.findOne({ where: { id: matchRewardId } })
+            if (!reward) throw new Error("赛事奖励不存在")
+            const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
+            const classSelf = this
+            return classSelf.app.model.transaction(function (t) {
+                return classSelf.Attendance.update({
+                    result: reward.ranking,
+                    rewards: reward.rewardPoints,
+                    updator: operator
+                }, { where: { id }, transaction: t }).then(function (result) {
+                    if (reward.rewardPoints) {
+                        return classSelf.LoyaltyPoint.create({
+                            memberId,
+                            type: 1,
+                            points: reward.rewardPoints,
+                            source: 2,
+                            sourceNo: id,
+                            remark: '比赛奖励',
+                            status: 1,
+                            creator: operator
+                        }, { transaction: t }).then(function (result) {
+                            classSelf.SmsSenderSvr.loyaltyPointPlus({
+                                phoneNo: member.user.phoneNo,
+                                name: member.user.name,
+                                points: reward.rewardPoints,
+                                avlPts: point + reward.rewardPoints
+                            })
+                            return result
+                        })
+                    } else {
+                        return result
+                    }
+                })
+            })
 
         }
 
@@ -141,10 +189,10 @@ module.exports = app => {
             if (!price) throw new Error('赛事价格不存在')
             //检查会员
             const member = await this.Member.findOne({
-                where: { id: memberId },
+                where: { id: memberId, status: 1 },
                 include: [{ all: true }]
             })
-            if (!member) throw new Error("会员不存在")
+            if (!member) throw new Error("会员不存在或已冻结")
             const apply = member.memberLevel.apply || 0
             const consume = member.memberLevel.consume || 0
 
@@ -232,12 +280,12 @@ module.exports = app => {
             const member = await this.Member.findOne({
                 include: [{
                     model: this.User,
-                    where: { phoneNo }
+                    where: { phoneNo, status: 1 }
                 }, {
                     model: this.MemberLevel
                 }]
             })
-            if (!member) throw new Error("会员不存在")
+            if (!member) throw new Error("会员不存在或已冻结")
             const apply = member.memberLevel.apply || 0
             const consume = member.memberLevel.consume || 0
             const memberId = member.id

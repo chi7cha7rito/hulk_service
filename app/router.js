@@ -8,6 +8,7 @@ module.exports = app => {
   app.post('/attendance/createOnline', 'attendance.createOnline')
   app.post('/attendance/createOffline', 'attendance.createOffline')
   app.post('/attendance/del', 'attendance.del')
+  app.post('/attendance/award', 'attendance.award')
   app.get('/attendance/findAttendances', 'attendance.findAttendances')
   app.get('/attendance/findAll', 'attendance.findAll')
   app.get('/attendance/findRankingByMemberId', 'attendance.findRankingByMemberId')

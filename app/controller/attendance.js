@@ -32,6 +32,14 @@ module.exports = app => {
         }
 
         /**
+        * @description 颁奖
+        */
+        async award() {
+            const result = await this.AttendanceSvr.award(this.ctx.request.body)
+            this.success(result)
+        }
+
+        /**
          * @description 根据matchId查找参赛者
          */
         async findAttendances() {
