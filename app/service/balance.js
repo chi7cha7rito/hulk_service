@@ -8,6 +8,7 @@ module.exports = app => {
             this.LoyaltyPoint = this.app.model.LoyaltyPoint
             this.RechargeSetup = this.app.model.RechargeSetup
             this.MemberLevel = this.app.model.MemberLevel
+            this.Sprit = this.app.model.Sprit
             this.SmsSenderSvr = this.service.smsSender
             this.LoyaltyPointSvr = this.service.loyaltyPoint
             this.Member = this.app.model.Member
@@ -296,6 +297,23 @@ module.exports = app => {
                             }
                         }
                     } else if (type == 2) {
+                        if (member.memberLevel.consume) {
+                            return classSelf.Sprit.create({
+                                memberId,
+                                type: 3, //余额消费
+                                point: amount * member.memberLevel.consume / 100,
+                                creator: operator
+                            }, { transaction: t }).then(function (result) {
+                                let totalBalance = await classSelf.totalByMemberId({ memberId })
+                                classSelf.SmsSenderSvr.balanceMinus({
+                                    phoneNo: member.user.phoneNo,
+                                    name: member.user.name,
+                                    amount: amount,
+                                    avlAmt: totalBalance - amount
+                                })
+                                return result
+                            })
+                        }
                         let totalBalance = await classSelf.totalByMemberId({ memberId })
                         classSelf.SmsSenderSvr.balanceMinus({
                             phoneNo: member.user.phoneNo,
