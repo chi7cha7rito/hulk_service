@@ -222,7 +222,7 @@ module.exports = app => {
                             return classSelf.Member.update({
                                 memberLevelId: memberLevel.id,
                                 updator: operator
-                            }, { where: { id: memberId }, transaction: t }).then(function (result) {
+                            }, { where: { id: memberId }, transaction: t }).then(async (result) => {
                                 if (max) {
                                     return classSelf.LoyaltyPoint.create({
                                         memberId: memberId,
@@ -297,14 +297,14 @@ module.exports = app => {
                             }
                         }
                     } else if (type == 2) {
+                        let totalBalance = await classSelf.totalByMemberId({ memberId })
                         if (member.memberLevel.consume) {
                             return classSelf.Sprit.create({
                                 memberId,
                                 type: 3, //余额消费
                                 point: amount * member.memberLevel.consume / 100,
                                 creator: operator
-                            }, { transaction: t }).then(function (result) {
-                                let totalBalance = await classSelf.totalByMemberId({ memberId })
+                            }, { transaction: t }).then(async (result) => {
                                 classSelf.SmsSenderSvr.balanceMinus({
                                     phoneNo: member.user.phoneNo,
                                     name: member.user.name,
@@ -313,15 +313,15 @@ module.exports = app => {
                                 })
                                 return result
                             })
+                        } else {
+                            classSelf.SmsSenderSvr.balanceMinus({
+                                phoneNo: member.user.phoneNo,
+                                name: member.user.name,
+                                amount: amount,
+                                avlAmt: totalBalance - amount
+                            })
+                            return result
                         }
-                        let totalBalance = await classSelf.totalByMemberId({ memberId })
-                        classSelf.SmsSenderSvr.balanceMinus({
-                            phoneNo: member.user.phoneNo,
-                            name: member.user.name,
-                            amount: amount,
-                            avlAmt: totalBalance - amount
-                        })
-                        return result
                     }
                 })
             })
