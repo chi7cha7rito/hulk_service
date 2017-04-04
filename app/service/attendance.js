@@ -241,9 +241,9 @@ module.exports = app => {
             const apply = member.memberLevel.apply || 0
             const consume = member.memberLevel.consume || 0
             const memberId = member.id
-            const balance = 0
-            const point = 0
-            const coupon = {}
+            let balance = 0
+            let point = 0
+            let coupon = {}
             if (payType == 1) {
                 balance = await this.BalanceSvr.totalByMemberId({ memberId })
                 if (balance < price.price) throw new Error("帐户余额不足")
@@ -251,7 +251,7 @@ module.exports = app => {
                 point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
                 if (point < price.price) throw new Error("帐户积分不足")
             } else if (payType == 3) {
-                coupon = await this.Coupon.findOne({ where: { id: couponId, type: 1, subType: match.matchConfig.subType, status: 1 } })
+                coupon = await this.Coupon.findOne({ where: { id: couponId, type: 1, subType: match.matchConfig.subType.val, status: 1 } })
                 if (!coupon) throw new Error("免费赛事门票不存在")
             } else {
                 throw new Error('支付方式不存在')
