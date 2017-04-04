@@ -24,6 +24,6 @@ module.exports = app => {
   app.beforeStart(function* () {
     // 应用会等待这个函数执行完成才启动
     // app.model.sync({force:true})
-    app.model.sync()
+    // app.model.sync()
   })
 }
