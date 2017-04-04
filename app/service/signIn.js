@@ -108,7 +108,7 @@ module.exports = app => {
                     memberId: member.id
                 }, { transaction: t }).then(function (result) {
                     let curr = count + 1
-                    if (curr == member.memberLevel.weeklyTicket && coupon == 0) {
+                    if (member.memberLevel.weeklyTicket && curr == member.memberLevel.weeklyTicket && coupon == 0) {
                         return classSelf.Coupon.create({
                             memberId,
                             type: 1,
