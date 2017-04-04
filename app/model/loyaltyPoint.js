@@ -43,7 +43,7 @@ module.exports = app => {
     source: {
       type: INTEGER,
       get: function () {
-        let val = this.getDataValue('type')
+        let val = this.getDataValue('source')
         let str = ''
         if (val == 1) str = '充值返现'
         if (val == 2) str = '比赛奖励'
