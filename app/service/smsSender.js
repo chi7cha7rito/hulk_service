@@ -100,8 +100,8 @@ module.exports = app => {
                         phoneNo,
                         name,
                         datetime: this.moment().format('M月D日 H:mm'),
-                        points: this._.round(amount, 2),
-                        avlPts: this._.round(avlAmt, 2)
+                        points: this._.round(points, 2),
+                        avlPts: this._.round(avlPts, 2)
                     },
                     // 明确告诉 HttpClient 以 JSON 格式处理响应 body
                     dataType: 'json'
@@ -134,8 +134,8 @@ module.exports = app => {
                         phoneNo,
                         name,
                         datetime: this.moment().format('M月D日 H:mm'),
-                        points: this._.round(amount, 2),
-                        avlPts: this._.round(avlAmt, 2)
+                        points: this._.round(points, 2),
+                        avlPts: this._.round(avlPts, 2)
                     },
                     // 明确告诉 HttpClient 以 JSON 格式处理响应 body
                     dataType: 'json'
