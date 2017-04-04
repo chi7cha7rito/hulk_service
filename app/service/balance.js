@@ -216,7 +216,7 @@ module.exports = app => {
                 }, { transaction: t }).then(async (result) => {
                     if (type == 1) {
                         let totalBalance = await classSelf.totalByMemberId({ memberId })
-                        let memberLevel = await this.MemberLevel.findOne({ order: 'threshold DESC', where: { threshold: { $lte: amount }, status: 1 } })
+                        let memberLevel = await classSelf.MemberLevel.findOne({ order: 'threshold DESC', where: { threshold: { $lte: amount }, status: 1 } })
                         if (member.memberLevel.threshold < memberLevel.threshold) {
                             return classSelf.Member.update({
                                 memberLevelId: memberLevel.id,
