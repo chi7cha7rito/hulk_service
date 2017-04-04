@@ -7,6 +7,7 @@ module.exports = app => {
             this.sendSmsApi = this.app.config.sendSmsApi
             this.token = md5(this.app.config.hulk_token)
             this.moment = this.app.moment
+            this._ = this.app._
         }
 
         /**
@@ -30,8 +31,8 @@ module.exports = app => {
                         phoneNo,
                         name,
                         datetime: this.moment().format('M月D日 H:mm'),
-                        amount,
-                        avlAmt
+                        amount: this._.round(amount, 2),
+                        avlAmt: this._.round(avlAmt, 2)
                     },
                     // 明确告诉 HttpClient 以 JSON 格式处理响应 body
                     dataType: 'json'
@@ -65,8 +66,8 @@ module.exports = app => {
                         phoneNo,
                         name,
                         datetime: this.moment().format('M月D日 H:mm'),
-                        amount,
-                        avlAmt
+                        amount: this._.round(amount, 2),
+                        avlAmt: this._.round(avlAmt, 2)
                     },
                     // 明确告诉 HttpClient 以 JSON 格式处理响应 body
                     dataType: 'json'
@@ -99,8 +100,8 @@ module.exports = app => {
                         phoneNo,
                         name,
                         datetime: this.moment().format('M月D日 H:mm'),
-                        points,
-                        avlPts
+                        points: this._.round(amount, 2),
+                        avlPts: this._.round(avlAmt, 2)
                     },
                     // 明确告诉 HttpClient 以 JSON 格式处理响应 body
                     dataType: 'json'
@@ -133,8 +134,8 @@ module.exports = app => {
                         phoneNo,
                         name,
                         datetime: this.moment().format('M月D日 H:mm'),
-                        points,
-                        avlPts
+                        points: this._.round(amount, 2),
+                        avlPts: this._.round(avlAmt, 2)
                     },
                     // 明确告诉 HttpClient 以 JSON 格式处理响应 body
                     dataType: 'json'
