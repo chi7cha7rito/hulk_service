@@ -64,6 +64,7 @@ module.exports = app => {
             }
             cond.status = 1
             const result = await this.LoyaltyPoint.findAndCount({
+                order: 'createdAt DESC',
                 where: cond,
                 include: [
                     {
