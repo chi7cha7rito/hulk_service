@@ -50,10 +50,10 @@ module.exports = app => {
         async findEntries({ phoneNo, type, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
-            let member = await this.User.findOne({ where: { phoneNo: phoneNo } })
+            let user = await this.User.findOne({ where: { phoneNo: phoneNo }, include: [this.Member] })
 
-            if (member && member.memberId) {
-                cond.memberId = member.memberId
+            if (user && user.member.id) {
+                cond.memberId = user.member.id
             }
             cond.createdAt = {
                 $gte: startCreatedAt || this.moment('1971-01-01').format(),
