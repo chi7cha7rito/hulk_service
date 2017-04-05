@@ -16,6 +16,48 @@ module.exports = app => {
             this.BalanceSvr = this.service.balance
             this.LoyaltyPointSvr = this.service.loyaltyPoint
             this.SmsSenderSvr = this.service.smsSender
+            this.Helper = this.ctx.helper
+            this.Sequelize = this.app.model
+            this.moment = this.app.moment
+        }
+
+        /**
+         * @description 赛事重入统计
+         * @param  {} {matchName
+         * @param  {} startOpening
+         * @param  {} endOpening}
+         */
+        async matchChipStats({ matchName, startOpening, endOpening, pageIndex = 1, pageSize = 10 }) {
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            const result = await this.Chip.findAndCount({
+                order: 'match.openingDatetime DESC',
+                attributes: ['id', 'match.openingDatetime', 'match.perHand', 'match.matchConfig.name', [this.Sequelize.fn('SUM', this.Sequelize.col('quantity')), 'totalQty'], [this.Sequelize.fn('SUM', this.Sequelize.col('payAmount')), 'totalAmount']],
+                include: [{
+                    model: this.Match,
+                    duplicating: false,
+                    attributes: [],
+                    where: {
+                        openingDatetime: {
+                            $gte: startOpening || this.moment('1971-01-01').format(),
+                            $lte: endOpening || this.moment('9999-12-31').format()
+                        }
+                    },
+                    include: [{
+                        model: this.MatchConfig,
+                        duplicating: false,
+                        attributes: [],
+                        where: {
+                            name: { $like: `%${matchName || ''}%` }
+                        }
+                    }]
+                }],
+                raw: true,
+                group: ['matchId'],
+                offset: (index - 1) * size,
+                limit: size,
+            })
+            result.count = result.count.length
+            return result
         }
 
         /**

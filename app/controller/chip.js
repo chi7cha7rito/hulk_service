@@ -6,10 +6,17 @@ module.exports = app => {
             super(ctx)
             this.ChipSvr = this.service.chip
         }
+    
         async create() {
             const result = await this.ChipSvr.create(this.ctx.request.body);
             this.success(result)
         }
+
+         async matchChipStats() {
+            const result = await this.ChipSvr.matchChipStats(this.ctx.query);
+            this.success(result)
+        }
+        
     }
     return ChipController;
 };

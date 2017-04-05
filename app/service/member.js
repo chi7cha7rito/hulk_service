@@ -62,13 +62,13 @@ module.exports = app => {
          * @description 查找所有有效的会员，即status=1
          * @param  {} {phoneNo}
          */
-        async findAllMembers({phoneNo}){
+        async findAllMembers({ phoneNo }) {
             let cond = {}
 
             if (phoneNo) cond.phoneNo = { $like: '%' + phoneNo + '%' }
 
-            cond.status='1'
-
+            cond.status = 1
+            cond.roleType = 3
             const result = await this.User.findAndCount({
                 where: cond
             })

@@ -129,6 +129,7 @@ module.exports = app => {
    * 筹码api
    */
   app.post('/chip/create', 'chip.create')
+  app.get('/chip/matchChipStats', 'chip.matchChipStats')
 
   /**
    * 微信token api
