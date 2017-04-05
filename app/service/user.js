@@ -134,16 +134,22 @@ module.exports = app => {
       return result
     }
 
-
-    async editPwd({ phoneNo, password, comfirmPwd, operator }) {
-      const admin = await this.User.findOne({ where: { id: operator, roleType: 1 } })
-      if (!admin) throw new Error("只有管理员能重置密码")
-      const user = await this.User.findOne({ where: { phoneNo } })
-      if (!user) throw new Error("用户不存在")
+    /**
+     * @description 重置密码
+     * @param  {} {id
+     * @param  {} originalPwd
+     * @param  {} newPwd
+     * @param  {} comfirmPwd
+     * @param  {} operator}
+     */
+    async editPwd({ id, originalPwd, newPwd, confirmPwd, operator }) {
+      if(newPwd != confirmPwd) throw new Error("新密码与确认密码不一致")
+      const user = await this.User.findOne({ where: { id ,password: md5(originalPwd)} })
+      if (!user) throw new Error("用户不存在或原始密码不正确")
       const result = await this.User.update({
-        password: md5(password),
+        password: md5(newPwd),
         updator: operator
-      }, { where: { id: user.id } })
+      }, { where: { id } })
       return result
     }
 

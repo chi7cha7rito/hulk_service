@@ -33,7 +33,7 @@ module.exports = app => {
     }
 
     async editPwd() {
-      const result = await this.UserSvr.resetPwd(this.ctx.request.body);
+      const result = await this.UserSvr.editPwd(this.ctx.request.body);
       this.success(result)
     }
 
