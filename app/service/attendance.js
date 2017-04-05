@@ -99,7 +99,7 @@ module.exports = app => {
                 offset: (index - 1) * size,
                 limit: size,
                 distinct: true,
-                include: [{ model: this.Match, include: [this.matchConfig] }]
+                include: [{ model: this.Match, include: [this.MatchConfig] }]
             })
             return result
         }
