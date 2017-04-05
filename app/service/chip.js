@@ -29,15 +29,16 @@ module.exports = app => {
          * @param  {} operator}
          */
         async create({ memberId, matchId, quantity, payType, payAmount, remark, operator }) {
-            const classSelf = this
-            const member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel, this.User] })
+            const classSelf = this;
+            let member,match,balance;
+            member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel, this.User] })
             if (!member) throw new Error('会员不存在')
-            const match = await classSelf.Match.findOne({ where: { id: matchId }, include: [this.MatchConfig] })
+            match = await classSelf.Match.findOne({ where: { id: matchId }, include: [this.MatchConfig] })
             if (!match) throw new Error('赛事不存在')
             //查询余额
             if (payType == 1) {
                 //余额支付
-                const balance = await this.BalanceSvr.totalByMemberId({ memberId })
+                balance = await this.BalanceSvr.totalByMemberId({ memberId })
                 if (balance < payAmount) throw new Error("帐户余额不足")
             } else if (payType == 2) {
                 //积分支付
