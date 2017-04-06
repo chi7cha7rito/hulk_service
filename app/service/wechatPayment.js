@@ -115,7 +115,7 @@ module.exports = app => {
                                 type: 1,    //获取
                                 points: max,
                                 source: 1,  //充值返现
-                                sourceNo: entry.id,
+                                sourceNo: balance.id,
                                 status: 1,  //状态正常
                                 remark: "充值积分返现",
                             }, { transaction: t }).then(async (points) => {

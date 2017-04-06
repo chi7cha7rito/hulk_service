@@ -214,7 +214,7 @@ module.exports = app => {
                     remark: remark,
                     status: status,
                     creator: operator
-                }, { transaction: t }).then(async (result) => {
+                }, { transaction: t }).then(async (balance) => {
                     if (type == 1) {
                         let totalBalance = await classSelf.totalByMemberId({ memberId })
                         let memberLevel = await classSelf.MemberLevel.findOne({ order: 'threshold DESC', where: { threshold: { $lte: amount }, status: 1 } })
@@ -229,7 +229,7 @@ module.exports = app => {
                                         type: 1,    //获取
                                         points: max,
                                         source: 1,  //充值返现
-                                        sourceNo: result.id,
+                                        sourceNo: balance.id,
                                         status: 1,  //状态正常
                                         remark: "充值积分返现",
                                         creator: operator
@@ -266,7 +266,7 @@ module.exports = app => {
                                     type: 1,    //获取
                                     points: max,
                                     source: 1,  //充值返现
-                                    sourceNo: result.id,
+                                    sourceNo: balance.id,
                                     status: 1,  //状态正常
                                     remark: "充值积分返现",
                                     creator: operator
