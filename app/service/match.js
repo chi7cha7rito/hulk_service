@@ -11,6 +11,7 @@ module.exports = app => {
             this.MatchType = this.app.model.MatchType
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
+            this._ = this.app._
         }
 
         /**
@@ -49,7 +50,7 @@ module.exports = app => {
             if (subType) {
                 configCond.subType = subType
             }
-            if (applyOnline != undefined) {
+            if (this._.isBoolean(applyOnline)) {
                 cond.applyOnline = applyOnline
             }
             const result = await this.Match.findAndCount({
