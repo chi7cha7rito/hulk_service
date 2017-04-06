@@ -72,7 +72,7 @@ module.exports = app => {
          */
         async create({ memberId, matchId, quantity, payType, payAmount, remark, operator }) {
             const classSelf = this;
-            let member,match,balance;
+            let member, match, balance;
             member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel, this.User] })
             if (!member) throw new Error('会员不存在')
             match = await classSelf.Match.findOne({ where: { id: matchId }, include: [this.MatchConfig] })
@@ -117,7 +117,8 @@ module.exports = app => {
                             return classSelf.Sprit.create({
                                 memberId: memberId,
                                 type: 3,
-                                point: payAmount * consume / 100
+                                point: payAmount * consume / 100,
+                                creator: operator
                             }, { transaction: t }).then(function (result) {
                                 //扣减余额
                                 return classSelf.Balance.create({
