@@ -135,39 +135,53 @@ module.exports = app => {
             if (!match) throw new Error("赛事不存在")
             const reward = await this.MatchReward.findOne({ where: { id: matchRewardId } })
             if (!reward) throw new Error("赛事奖励不存在")
+            const result = classSelf.Attendance.update({
+                result: reward.ranking,
+                rewards: reward.rewardPoints,
+                updator: operator
+            }, { where: { id } })
+            return result
+        }
+
+
+        /**
+         * @description 发放奖励
+         * @param  {} {id
+         * @param  {} operator}
+         */
+        async issueReward({ id, operator }) {
+            const attendance = await this.Attendance.findOne({ where: { id } })
+            if (!attendance) throw new Error("您没有报名参加该赛事")
+            if (!attendance.result) throw new Error('比赛名次不存在')
+            if (attendance.issue) throw new Error('已发放过奖励')
+            const member = await this.Member.findOne({ where: { id: attendance.memberId }, include: [this.User] })
             const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
             const classSelf = this
             return classSelf.app.model.transaction(function (t) {
                 return classSelf.Attendance.update({
-                    result: reward.ranking,
-                    rewards: reward.rewardPoints,
+                    issue: true,
                     updator: operator
                 }, { where: { id }, transaction: t }).then(function (result) {
-                    if (reward.rewardPoints) {
-                        return classSelf.LoyaltyPoint.create({
-                            memberId,
-                            type: 1,
-                            points: reward.rewardPoints,
-                            source: 2,
-                            sourceNo: id,
-                            remark: '比赛奖励',
-                            status: 1,
-                            creator: operator
-                        }, { transaction: t }).then(function (result) {
-                            classSelf.SmsSenderSvr.loyaltyPointPlus({
-                                phoneNo: member.user.phoneNo,
-                                name: member.user.name,
-                                points: reward.rewardPoints,
-                                avlPts: point + reward.rewardPoints
-                            })
-                            return result
+                    return classSelf.LoyaltyPoint.create({
+                        memberId: member.id,
+                        type: 1,
+                        points: attendance.rewards,
+                        source: 2,
+                        sourceNo: id,
+                        remark: '比赛奖励',
+                        status: 1,
+                        creator: operator
+                    }, { transaction: t }).then(function (result) {
+                        classSelf.SmsSenderSvr.loyaltyPointPlus({
+                            phoneNo: member.user.phoneNo,
+                            name: member.user.name,
+                            points: attendance.rewards,
+                            avlPts: point + attendance.rewards
                         })
-                    } else {
                         return result
-                    }
+                    })
                 })
             })
-
         }
 
         /**

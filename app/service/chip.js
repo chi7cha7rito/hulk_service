@@ -7,6 +7,7 @@ module.exports = app => {
             this.Chip = this.app.model.Chip
             this.MemberLevel = this.app.model.MemberLevel
             this.Member = this.app.model.Member
+            this.Attendance = this.app.model.Attendance
             this.User = this.app.model.User
             this.Match = this.app.model.Match
             this.MatchConfig = this.app.model.MatchConfig
@@ -72,11 +73,13 @@ module.exports = app => {
          */
         async create({ memberId, matchId, quantity, payType, payAmount, remark, operator }) {
             const classSelf = this;
-            let member, match, balance;
-            member = await classSelf.Member.findOne({ where: { id: memberId }, include: [this.MemberLevel, this.User] })
-            if (!member) throw new Error('会员不存在')
-            match = await classSelf.Match.findOne({ where: { id: matchId }, include: [this.MatchConfig] })
-            if (!match) throw new Error('赛事不存在')
+            let member, match, balance, attendance;
+            member = await classSelf.Member.findOne({ where: { id: memberId, status: 1 }, include: [this.MemberLevel, this.User] })
+            if (!member) throw new Error('会员不存在或已冻结')
+            match = await classSelf.Match.findOne({ where: { id: matchId, status: 1 }, include: [this.MatchConfig] })
+            if (!match) throw new Error('赛事不存在或已结束')
+            attendance = await classSelf.Attendance.findOne({ where: { matchId, memberId } })
+            if (!attendance) throw new Error('该会员未参赛，无法重入')
             //查询余额
             if (payType == 1) {
                 //余额支付
@@ -92,7 +95,7 @@ module.exports = app => {
 
             const buyChip = member.memberLevel.buyChip || 0
             const consume = member.memberLevel.consume || 0
-            //报名事务
+            //买筹码事务
             return classSelf.app.model.transaction(function (t) {
                 //买筹码
                 return classSelf.Chip.create({

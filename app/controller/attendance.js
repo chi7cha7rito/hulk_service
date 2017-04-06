@@ -40,6 +40,14 @@ module.exports = app => {
         }
 
         /**
+       * @description 发放奖励
+       */
+        async issueReward() {
+            const result = await this.AttendanceSvr.issueReward(this.ctx.request.body)
+            this.success(result)
+        }
+
+        /**
          * @description 根据matchId查找参赛者
          */
         async findAttendances() {

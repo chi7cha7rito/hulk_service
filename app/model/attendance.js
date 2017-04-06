@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE } = app.Sequelize
+  const { STRING, INTEGER, DATE, BOOLEAN } = app.Sequelize
   return app.model.define('attendance', {
     id: {
       type: INTEGER,
@@ -16,9 +16,14 @@ module.exports = app => {
     rewards: {
       type: STRING,
     },
-    payType:{
-       type: INTEGER,
-       comment:'1:余额,2:积分,3:优惠券'
+    issue: {
+      type: BOOLEAN,
+      defaultValue: false,
+      comment: '是否发放奖励'
+    },
+    payType: {
+      type: INTEGER,
+      comment: '1:余额,2:积分,3:优惠券'
     },
     status: {
       type: INTEGER,
