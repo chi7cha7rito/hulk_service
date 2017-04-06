@@ -4,6 +4,7 @@ module.exports = app => {
     class Match extends app.Service {
         constructor(ctx) {
             super(ctx)
+            this.Attendance = this.app.model.Attendance
             this.MatchConfig = this.app.model.MatchConfig
             this.Match = this.app.model.Match
             this.MatchPrice = this.app.model.MatchPrice
@@ -51,10 +52,10 @@ module.exports = app => {
                 configCond.subType = subType
             }
             if (applyOnline) {
-                applyOnline = applyOnline=="true"
+                applyOnline = applyOnline == "true"
                 cond.applyOnline = applyOnline
             }
-            
+
             const result = await this.Match.findAndCount({
                 where: cond,
                 order: 'openingDatetime DESC',
@@ -156,6 +157,10 @@ module.exports = app => {
         async changeStatus({ id, status, operator }) {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
+            if (status.toString() === '3') {
+                const attendance = await this.Attendance.count({ matchId: id })
+                if (attendance > 0) throw new Error('已有人参赛，无法删除')
+            }
             const result = await this.Match.update({
                 status: status,
                 updator: operator
