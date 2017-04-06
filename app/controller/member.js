@@ -37,7 +37,15 @@ module.exports = app => {
     async findTotal() {
       const totalBalance = await this.BalanceSvr.totalByMemberId(this.ctx.query)
       const totalPoints = await this.LoyaltyPointSvr.totalByMemberId(this.ctx.query)
-      this.success({ balance: totalBalance, points: totalPoints })
+      const user = await this.MemberSvr.findById(this.ctx.query)
+      this.success({
+        balance: totalBalance,
+        points: totalPoints,
+        memberLevel: {
+          id: user.member.memberLevel.id,
+          name: user.member.memberLevel.name
+        }
+      })
     }
 
     /**
