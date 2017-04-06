@@ -34,10 +34,11 @@ module.exports = app => {
         * @param  {} buyChip
         * @param  {} consume
         * @param  {} applyOnline
+        * @param  {} weeklyTicket
         * @param  {} status
         * @param  {} updator}
         */
-        async update({ id, name, threshold, apply, buyChip, consume, applyOnline, status, operator }) {
+        async update({ id, name, threshold, apply, buyChip, consume, applyOnline, weeklyTicket, status, operator }) {
             const nameCount = await this.MemberLevel.count({
                 where: { name, id: { $ne: id } }
             })
@@ -55,6 +56,7 @@ module.exports = app => {
                 buyChip,
                 consume,
                 applyOnline,
+                weeklyTicket,
                 status,
                 updator: operator
             }, { where: { id: id } })
@@ -69,10 +71,11 @@ module.exports = app => {
          * @param  {} buyChip
          * @param  {} consume
          * @param  {} applyOnline
+         * @param  {} weeklyTicket
          * @param  {} status
          * @param  {} creator}
          */
-        async create({ name, threshold, apply, buyChip, consume, applyOnline, status, operator }) {
+        async create({ name, threshold, apply, buyChip, consume, weeklyTicket, applyOnline, status, operator }) {
             const nameCount = await this.MemberLevel.count({
                 where: { name }
             })
@@ -90,6 +93,7 @@ module.exports = app => {
                 buyChip,
                 consume,
                 applyOnline,
+                weeklyTicket,
                 status,
                 creator: operator
             })
