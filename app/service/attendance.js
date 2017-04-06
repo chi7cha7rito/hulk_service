@@ -127,6 +127,7 @@ module.exports = app => {
          * @param  {} operator}
          */
         async award({ id, memberId, matchId, matchRewardId, operator }) {
+            const classSelf = this
             const attendance = await this.Attendance.findOne({ where: { id } })
             if (!attendance) throw new Error("您没有报名参加该赛事")
             const member = await this.Member.findOne({ where: { id: memberId, status: 1 }, include: [this.User] })
@@ -149,13 +150,13 @@ module.exports = app => {
          * @param  {} {id
          * @param  {} operator}
          */
-        async issueReward({ id, operator }) {
+        async issueReward({ id,memberId, operator }) {
             const attendance = await this.Attendance.findOne({ where: { id } })
             if (!attendance) throw new Error("您没有报名参加该赛事")
             if (!attendance.result) throw new Error('比赛名次不存在')
             if (attendance.issue) throw new Error('已发放过奖励')
-            const member = await this.Member.findOne({ where: { id: attendance.memberId }, include: [this.User] })
-            const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
+            let member = await this.Member.findOne({ where: { id: memberId }, include: [this.User] })
+            let point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
             const classSelf = this
             return classSelf.app.model.transaction(function (t) {
                 return classSelf.Attendance.update({
