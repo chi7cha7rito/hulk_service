@@ -50,9 +50,11 @@ module.exports = app => {
             if (subType) {
                 configCond.subType = subType
             }
-            if (this._.isBoolean(applyOnline)) {
+            if (applyOnline) {
+                applyOnline = applyOnline=="true"
                 cond.applyOnline = applyOnline
             }
+            
             const result = await this.Match.findAndCount({
                 where: cond,
                 order: 'openingDatetime DESC',
