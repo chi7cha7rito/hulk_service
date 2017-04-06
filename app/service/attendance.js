@@ -183,7 +183,7 @@ module.exports = app => {
                 include: [this.MatchConfig]
             })
             if (!match) throw new Error("赛事不存在或已结束")
-
+            if (!match.applyOnline) throw new Error("该赛事无法线上报名")
             //查找线上价格
             const price = await this.MatchPriceSvr.findActivePrice({ matchConfigId: match.matchConfigId, type: 1 })
             if (!price) throw new Error('赛事价格不存在')
@@ -193,6 +193,7 @@ module.exports = app => {
                 include: [{ all: true }]
             })
             if (!member) throw new Error("会员不存在或已冻结")
+            if (!member.memberLevel.applyOnline) throw new Error("该会员等级无法线上报名此项赛事")
             const apply = member.memberLevel.apply || 0
             const consume = member.memberLevel.consume || 0
 

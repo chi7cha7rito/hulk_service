@@ -24,6 +24,11 @@ module.exports = app => {
             defaultValue: 0,
             comment: '每手价格(元)'
         },
+        applyOnline: {
+            type: BOOLEAN,
+            defaultValue: false,
+            comment: '是否可线上报名'
+        },
         status: {
             type: INTEGER,
             allowNull: false,

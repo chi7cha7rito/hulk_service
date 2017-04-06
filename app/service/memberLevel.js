@@ -33,27 +33,29 @@ module.exports = app => {
         * @param  {} apply
         * @param  {} buyChip
         * @param  {} consume
+        * @param  {} applyOnline
         * @param  {} status
         * @param  {} updator}
         */
-        async update({ id, name, threshold, apply, buyChip, consume, status, operator }) {
+        async update({ id, name, threshold, apply, buyChip, consume, applyOnline, status, operator }) {
             const nameCount = await this.MemberLevel.count({
-                where: { name: name, id: { $ne: id } }
+                where: { name, id: { $ne: id } }
             })
             if (nameCount > 0) throw new Error("存在重复的等级名称")
 
             const thresholdCount = await this.MemberLevel.count({
-                where: { threshold: threshold, id: { $ne: id } }
+                where: { threshold, id: { $ne: id } }
             })
             if (thresholdCount > 0) throw new Error("存在重复的晋升金额")
 
             const result = await this.MemberLevel.update({
-                name: name,
-                threshold: threshold,
-                apply: apply,
-                buyChip: buyChip,
-                consume: consume,
-                status: status,
+                name,
+                threshold,
+                apply,
+                buyChip,
+                consume,
+                applyOnline,
+                status,
                 updator: operator
             }, { where: { id: id } })
             return result
@@ -66,27 +68,29 @@ module.exports = app => {
          * @param  {} apply
          * @param  {} buyChip
          * @param  {} consume
+         * @param  {} applyOnline
          * @param  {} status
          * @param  {} creator}
          */
-        async create({ name, threshold, apply, buyChip, consume, status, operator }) {
+        async create({ name, threshold, apply, buyChip, consume, applyOnline, status, operator }) {
             const nameCount = await this.MemberLevel.count({
-                where: { name: name }
+                where: { name }
             })
             if (nameCount > 0) throw new Error("存在重复的等级名称")
 
             const thresholdCount = await this.MemberLevel.count({
-                where: { threshold: threshold }
+                where: { threshold }
             })
             if (thresholdCount > 0) throw new Error("存在重复的晋升金额")
 
             const result = await this.MemberLevel.create({
-                name: name,
-                threshold: threshold,
-                apply: apply,
-                buyChip: buyChip,
-                consume: consume,
-                status: status,
+                name,
+                threshold,
+                apply,
+                buyChip,
+                consume,
+                applyOnline,
+                status,
                 creator: operator
             })
             return result

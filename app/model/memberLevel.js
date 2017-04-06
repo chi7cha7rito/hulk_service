@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-    const { STRING, INTEGER, DECIMAL } = app.Sequelize
+    const { STRING, INTEGER, DECIMAL, BOOLEAN } = app.Sequelize
     return app.model.define('memberLevel', {
         id: {
             type: INTEGER,
@@ -38,6 +38,11 @@ module.exports = app => {
             type: INTEGER,
             defaultValue: 0,
             comment: '每月签到多少次获得周票'
+        },
+        applyOnline: {
+            type: BOOLEAN,
+            defaultValue: false,
+            comment: '是否可线上报名'
         },
         status: {
             type: INTEGER,

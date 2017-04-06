@@ -20,12 +20,13 @@ module.exports = app => {
          * @param  {} startClosing
          * @param  {} endClosing
          * @param  {} subType
+         * @param  {} applyOnline
          * @param  {} status
          * @param  {} pageIndex=1
          * @param  {} pageSize=10}
          * @return {object}
          */
-        async findMatches({ name, type, startClosing, endClosing, subType, status, pageIndex = 1, pageSize = 10 }) {
+        async findMatches({ name, type, startClosing, endClosing, subType, applyOnline, status, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let configCond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
@@ -47,6 +48,9 @@ module.exports = app => {
             }
             if (subType) {
                 configCond.subType = subType
+            }
+            if (applyOnline != undefined) {
+                cond.applyOnline = applyOnline
             }
             const result = await this.Match.findAndCount({
                 where: cond,
@@ -119,22 +123,24 @@ module.exports = app => {
          * @param  {} openingDatetime
          * @param  {} matchConfigId
          * @param  {} perHand
+         * @param  {} applyOnline
          * @param  {} operator}
          * @return {object}
          */
-        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, status, operator }) {
-            const matchCount = await this.Match.count({ where: { id: id } })
+        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, applyOnline, status, operator }) {
+            const matchCount = await this.Match.count({ where: { id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
             if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.update({
-                closingDatetime: closingDatetime,
-                openingDatetime: openingDatetime,
-                matchConfigId: matchConfigId,
-                perHand: perHand,
-                status: status,
+                closingDatetime,
+                openingDatetime,
+                matchConfigId,
+                perHand,
+                applyOnline,
+                status,
                 updator: operator
-            }, { where: { id: id } })
+            }, { where: { id } })
             return result
         }
 
@@ -160,19 +166,21 @@ module.exports = app => {
          * @param  {} openingDatetime
          * @param  {} matchConfigId
          * @param  {} perHand
+         * @param  {} applyOnline
          * @param  {} status
          * @param  {} operator}
          * @return {object}
          */
-        async create({ closingDatetime, openingDatetime, matchConfigId, perHand, status = 1, operator }) {
+        async create({ closingDatetime, openingDatetime, matchConfigId, applyOnline, perHand, status = 1, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
             if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.create({
-                closingDatetime: closingDatetime,
-                openingDatetime: openingDatetime,
-                perHand: perHand,
-                matchConfigId: matchConfigId,
-                status: status,
+                closingDatetime,
+                openingDatetime,
+                perHand,
+                matchConfigId,
+                applyOnline,
+                status,
                 creator: operator
             })
             return result
