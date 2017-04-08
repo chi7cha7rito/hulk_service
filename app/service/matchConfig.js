@@ -61,6 +61,7 @@ module.exports = app => {
          */
         async findAll() {
             const result = await this.MatchConfig.findAll({
+                where: { status: 1 },
                 include: [
                     { model: this.MatchType, as: 'Type' },
                     { model: this.MatchPrice, where: { status: { $ne: 3 } } },
