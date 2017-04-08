@@ -100,6 +100,7 @@ module.exports = app => {
                         sourceNo: entry.id,
                         remark: "微信公众号充值",
                         status: 1,
+                        creator: member.user.id
                     }, { transaction: t }).then(async (balance) => {
                         const max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: amount }, status: 1 } })
                         let totalBalance = await classSelf.BalanceSvr.totalByMemberId({ memberId: member.id })
@@ -118,6 +119,7 @@ module.exports = app => {
                                 sourceNo: balance.id,
                                 status: 1,  //状态正常
                                 remark: "充值积分返现",
+                                creator: member.user.id
                             }, { transaction: t }).then(async (points) => {
                                 let totalPoints = await classSelf.LoyaltyPointSvr.totalByMemberId({ memberId: member.id })
                                 classSelf.SmsSenderSvr.loyaltyPointPlus({

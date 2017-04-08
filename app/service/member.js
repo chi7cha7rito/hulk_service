@@ -40,7 +40,7 @@ module.exports = app => {
             if (name) cond.name = { $like: '%' + name + '%' }
             if (idCardNo) cond.idCardNo = { $like: '%' + idCardNo + '%' }
             if (gender) cond.gender = gender
-            if (status) cond.gender = status
+            if (status) cond.status = status
             if (level) memberCond.memberLevelId = level
             const result = await this.User.findAndCount({
                 where: cond,
