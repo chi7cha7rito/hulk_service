@@ -40,7 +40,7 @@ module.exports = app => {
                     where: {
                         openingDatetime: {
                             $gte: startOpening || this.moment('1971-01-01').format(),
-                            $lte: endOpening || this.moment('9999-12-31').format()
+                            $lte: (endOpening && this.moment(endOpening).endOf('day')) || this.moment('9999-12-31').format()
                         }
                     },
                     include: [{

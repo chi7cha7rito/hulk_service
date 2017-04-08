@@ -57,7 +57,7 @@ module.exports = app => {
             }
             cond.createdAt = {
                 $gte: startCreatedAt || this.moment('1971-01-01').format(),
-                $lte: endCreatedAt || this.moment('9999-12-31').format(),
+                $lte: (endCreatedAt && this.moment(endCreatedAt).endOf('day')) || this.moment('9999-12-31').format(),
             }
             if (type) {
                 cond.type = type

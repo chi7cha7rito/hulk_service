@@ -37,7 +37,7 @@ module.exports = app => {
                     where: {
                         createdAt: {
                             $gte: startDatetime,
-                            $lte: endDatetime
+                            $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
                         }
                     }
                 }, {

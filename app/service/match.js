@@ -35,7 +35,7 @@ module.exports = app => {
 
             cond.closingDatetime = {
                 $gte: startClosing || this.moment('1971-01-01').format(),
-                $lte: endClosing || this.moment('9999-12-31').format(),
+                $lte: (endClosing && this.moment(endClosing).endOf('day')) || this.moment('9999-12-31').format(),
             }
             if (status) {
                 cond.status = status

@@ -10,6 +10,7 @@ module.exports = app => {
             this.Sprit = this.app.model.Sprit
             this.Helper = this.ctx.helper
             this.Sequelize = this.app.model
+            this.moment = this.app.moment
         }
 
         /**
@@ -33,7 +34,7 @@ module.exports = app => {
                     where: {
                         createdAt: {
                             $gte: startDatetime,
-                            $lte: endDatetime
+                            $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
                         }
                     }
                 }, {

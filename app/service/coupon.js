@@ -17,11 +17,13 @@ module.exports = app => {
          * @param  {int} type
          * @param  {int} source
          * @param  {int} status
+         * @param  {int} startCreatedAt
+         * @param  {int} endCreatedAt
          * @param  {int} pageIndex=1
          * @param  {int} pageSize=10}
          * @return {object}
          */
-        async findAll({ phoneNo, type, source, status, pageIndex = 1, pageSize = 10 }) {
+        async findAll({ phoneNo, type, source, status, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             let member = await this.User.findOne({ where: { phoneNo: phoneNo } })
@@ -34,6 +36,10 @@ module.exports = app => {
             }
             if (source) {
                 cond.source = source
+            }
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: (endCreatedAt && this.moment(endCreatedAt).endOf('day')) || this.moment('9999-12-31').format(),
             }
             if (status) {
                 cond.status = status

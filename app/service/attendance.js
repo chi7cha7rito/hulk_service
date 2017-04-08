@@ -55,7 +55,7 @@ module.exports = app => {
             let matchCond = {
                 openingDatetime: {
                     $gte: openingStart || this.moment('1971-01-01').format(),
-                    $lte: openingEnd || this.moment('9999-12-31').format(),
+                    $lte: (openingEnd && this.moment(openingEnd).endOf('day')) || this.moment('9999-12-31').format(),
                 }
             }
             let matchConfigCond = {}
