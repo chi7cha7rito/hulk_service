@@ -33,7 +33,8 @@
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
     "autod": "autod",
-    "prod": "EGG_SERVER_ENV=prod npm start"
+    "prod": "EGG_SERVER_ENV=prod npm start",
+    "daemon": "EGG_SERVER_ENV=prod nohup node dispatch.js&"
   },
   "ci": {
     "version": "6"
