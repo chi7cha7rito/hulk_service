@@ -32,6 +32,14 @@ module.exports = app => {
         }
 
         /**
+        * @description 查询积分记录
+        */
+        async findAll() {
+            const result = await this.LoyaltyPointSvr.findAll(this.ctx.query)
+            this.success(result)
+        }
+
+        /**
         * @description 根据memberId查询积分余额
         */
         async totalByMemberId() {

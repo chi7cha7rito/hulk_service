@@ -42,7 +42,14 @@ module.exports = app => {
         async findEntries() {
             const result = await this.BalanceSvr.findEntries(this.ctx.query)
             this.success(result)
+        }
 
+        /**
+        * @description 查询余额记录
+        */
+        async findAll() {
+            const result = await this.BalanceSvr.findAll(this.ctx.query)
+            this.success(result)
         }
 
         /**
