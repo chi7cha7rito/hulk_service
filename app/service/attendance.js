@@ -132,8 +132,8 @@ module.exports = app => {
             if (!attendance) throw new Error("您没有报名参加该赛事")
             const member = await this.Member.findOne({ where: { id: memberId, status: 1 }, include: [this.User] })
             if (!member) throw new Error("会员不存在或已冻结")
-            const match = await this.Match.findOne({ where: { id: matchId, status: 1 } })
-            if (!match) throw new Error("赛事不存在或已结束")
+            const match = await this.Match.findOne({ where: { id: matchId } })
+            if (!match) throw new Error("赛事不存在")
             const reward = await this.MatchReward.findOne({ where: { id: matchRewardId } })
             if (!reward) throw new Error("赛事奖励不存在")
             const result = classSelf.Attendance.update({

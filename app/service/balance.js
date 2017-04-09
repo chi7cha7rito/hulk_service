@@ -293,7 +293,7 @@ module.exports = app => {
                                     amount: amount,
                                     avlAmt: totalBalance + amount
                                 })
-                                return result
+                                return balance
                             }
                         }
                     } else if (type == 2) {
@@ -320,7 +320,7 @@ module.exports = app => {
                                 amount: amount,
                                 avlAmt: totalBalance - amount
                             })
-                            return result
+                            return balance
                         }
                     }
                 })
