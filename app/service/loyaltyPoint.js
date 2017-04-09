@@ -79,6 +79,43 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取积分明细
+         * @param  {int} {memberId
+         * @param  {int} type
+         * @param  {int} startCreatedAt
+         * @param  {int} endCreatedAt}
+         * @return {object}
+         */
+        async findEntries({ phoneNo, type, startCreatedAt, endCreatedAt }) {
+            let cond = {}
+            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
+            let user = await this.User.findOne({ where: { phoneNo: phoneNo }, include: [this.Member] })
+
+            if (user && user.member.id) {
+                cond.memberId = user.member.id
+            }
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: (endCreatedAt && this.moment(endCreatedAt).endOf('day')) || this.moment('9999-12-31').format(),
+            }
+            if (type) {
+                cond.type = type
+            }
+            cond.status = 1
+            const result = await this.LoyaltyPoint.findAndCount({
+                order: 'createdAt DESC',
+                where: cond,
+                include: [
+                    {
+                        model: this.Member,
+                        include: [{ model: this.User }],
+                    }
+                ]
+            })
+            return result
+        }
+
+        /**
          * @description 积分扣减
          * @param  {} {phoneNo
          * @param  {} type

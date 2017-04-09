@@ -89,6 +89,42 @@ module.exports = app => {
         }
 
         /**
+         * @description 获取余额明细
+         * @param  {int} {phoneNo
+         * @param  {int} type
+         * @param  {int} startCreatedAt
+         * @param  {int} endCreatedAt}
+         * @return {object}
+         */
+        async findAll({ phoneNo, type, startCreatedAt, endCreatedAt }) {
+            let cond = {}
+            let user = await this.User.findOne({ where: { phoneNo: phoneNo }, include: [this.Member] })
+
+            if (user && user.member.id) {
+                cond.memberId = user.member.id
+            }
+            cond.createdAt = {
+                $gte: startCreatedAt || this.moment('1971-01-01').format(),
+                $lte: (endCreatedAt && this.moment(endCreatedAt).endOf('day')) || this.moment('9999-12-31').format(),
+            }
+            if (type) {
+                cond.type = type
+            }
+            cond.status = 1
+            const result = await this.Balance.findAll({
+                where: cond,
+                order: 'createdAt DESC',
+                include: [
+                    {
+                        model: this.Member,
+                        include: [{ model: this.User }],
+                    }
+                ]
+            })
+            return result
+        }
+
+        /**
          * @description 余额买积分
          * @param  {} {memberId
          * @param  {} amount

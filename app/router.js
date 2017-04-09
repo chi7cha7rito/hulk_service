@@ -22,6 +22,7 @@ module.exports = app => {
   app.post('/balance/buyPoints', 'balance.buyPoints')
   app.post('/balance/wechatNotify', 'balance.wechatNotify')
   app.get('/balance/findEntries', 'balance.findEntries')
+  app.get('/balance/findAll', 'balance.findAll')
   app.get('/balance/totalByMemberId', 'balance.totalByMemberId')
   app.get('/balance/totalByPhoneNo', 'balance.totalByPhoneNo')
 
@@ -47,6 +48,7 @@ module.exports = app => {
   app.post('/point/decrease', 'loyaltyPoint.decrease')
   app.post('/point/increase', 'loyaltyPoint.increase')
   app.get('/point/findEntries', 'loyaltyPoint.findEntries')
+  app.get('/point/findAll', 'loyaltyPoint.findAll')
   app.get('/point/totalByMemberId', 'loyaltyPoint.totalByMemberId')
   app.get('/point/totalByPhoneNo', 'loyaltyPoint.totalByPhoneNo')
 
