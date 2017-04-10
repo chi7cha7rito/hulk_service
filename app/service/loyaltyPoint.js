@@ -86,9 +86,8 @@ module.exports = app => {
          * @param  {int} endCreatedAt}
          * @return {object}
          */
-        async findEntries({ phoneNo, type, startCreatedAt, endCreatedAt }) {
+        async findAll({ phoneNo, type, startCreatedAt, endCreatedAt }) {
             let cond = {}
-            let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             let user = await this.User.findOne({ where: { phoneNo: phoneNo }, include: [this.Member] })
 
             if (user && user.member.id) {
@@ -102,7 +101,7 @@ module.exports = app => {
                 cond.type = type
             }
             cond.status = 1
-            const result = await this.LoyaltyPoint.findAndCount({
+            const result = await this.LoyaltyPoint.findAll({
                 order: 'createdAt DESC',
                 where: cond,
                 include: [
