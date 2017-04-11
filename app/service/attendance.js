@@ -139,6 +139,7 @@ module.exports = app => {
             const result = classSelf.Attendance.update({
                 result: reward.ranking,
                 rewards: reward.rewardPoints,
+                rewardsRemark: reward.remark,
                 updator: operator
             }, { where: { id } })
             return result
@@ -163,24 +164,28 @@ module.exports = app => {
                     issue: true,
                     updator: operator
                 }, { where: { id }, transaction: t }).then(function (result) {
-                    return classSelf.LoyaltyPoint.create({
-                        memberId: member.id,
-                        type: 1,
-                        points: attendance.rewards,
-                        source: 2,
-                        sourceNo: id,
-                        remark: '比赛奖励',
-                        status: 1,
-                        creator: operator
-                    }, { transaction: t }).then(function (result) {
-                        classSelf.SmsSenderSvr.loyaltyPointPlus({
-                            phoneNo: member.user.phoneNo,
-                            name: member.user.name,
+                    if (attendance.rewards) {
+                        return classSelf.LoyaltyPoint.create({
+                            memberId: member.id,
+                            type: 1,
                             points: attendance.rewards,
-                            avlPts: point + attendance.rewards
+                            source: 2,
+                            sourceNo: id,
+                            remark: '比赛奖励',
+                            status: 1,
+                            creator: operator
+                        }, { transaction: t }).then(function (result) {
+                            classSelf.SmsSenderSvr.loyaltyPointPlus({
+                                phoneNo: member.user.phoneNo,
+                                name: member.user.name,
+                                points: attendance.rewards,
+                                avlPts: point + attendance.rewards
+                            })
+                            return result
                         })
+                    } else {
                         return result
-                    })
+                    }
                 })
             })
         }

@@ -14,7 +14,10 @@ module.exports = app => {
       comment: '比赛成绩,同比赛奖励的ranking'
     },
     rewards: {
-      type: STRING,
+      type: DECIMAL(10, 2)
+    },
+    rewardsRemark: {
+      type: STRING
     },
     issue: {
       type: BOOLEAN,
