@@ -10,6 +10,11 @@ module.exports = app => {
             const result = await this.SpritSvr.spritRanking(this.ctx.query);
             this.success(result)
         }
+
+        async totalByMemberId() {
+            const result = await this.SpritSvr.totalByMemberId(this.ctx.query);
+            this.success(result)
+        }
     }
     return SpritController;
 };

@@ -62,13 +62,14 @@ module.exports = app => {
             if (!endDatetime) throw new Error('请输入结束时间')
             const result = await this.Sprit.sum('point', {
                 where: {
-                    memberId: memberId, createdAt: {
+                    memberId: memberId,
+                    createdAt: {
                         $gte: startDatetime,
                         $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
                     }
                 }
             })
-            return result
+            return result || 0
         }
 
         /**

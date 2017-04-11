@@ -163,6 +163,7 @@ module.exports = app => {
    * 豪气api
    */
   app.get('/sprit/spritRanking', 'sprit.spritRanking')
+  app.get('/sprit/totalByMemberId', 'sprit.totalByMemberId')
 
   /**
    * 优惠券api
