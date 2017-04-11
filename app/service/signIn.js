@@ -7,6 +7,7 @@ module.exports = app => {
             this.SignIn = this.app.model.SignIn
             this.Member = this.app.model.Member
             this.User = this.app.model.User
+            this.Balance = this.app.model.Balance
             this.MemberLevel = this.app.model.MemberLevel
             this.Coupon = this.app.model.Coupon
             this.User = this.app.model.User
@@ -76,7 +77,17 @@ module.exports = app => {
                 }
             })
             if (today > 0) throw new Error("今天已经签到过")
-
+            const consumeCount = await classSelf.Balance.count({
+                where: {
+                    memberId,
+                    createdAt: {
+                        $gte: this.moment().startOf('day'),
+                        $lte: classSelf.moment().endOf('day')
+                    }
+                }
+            })
+            if (consumeCount == 0) throw new Error("今天还未到店消费,无法签到")
+            
             const count = await classSelf.SignIn.count({
                 where: {
                     memberId,
