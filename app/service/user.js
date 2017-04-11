@@ -63,11 +63,45 @@ module.exports = app => {
      */
     async findByPhoneNo({ phoneNo, password }) {
       const user = await this.User.findOne({
-        where: { phoneNo: phoneNo, password: md5(password), roleType: { $ne: 3 } },
-        attributes: { exclude: ['password'] }
+        where: { phoneNo: phoneNo,roleType: { $ne: 3 } }  
       })
-      if (!user) throw new Error("账号不存在或密码错误")
-      return user
+
+      if(user){
+         let loginError=user.loginError;
+         let status=user.status;
+         if(status=="2"){
+           throw new Error("账号已冻结，请联系管理员")
+         }
+         if(user.password!=md5(password)){
+            loginError=loginError+1;
+
+            if(loginError=="3"){
+              let result= await this.User.update({
+                  loginError: loginError,
+                  status:2
+              }, { where: { id: user.id } })
+            }
+            else{
+              let result= await this.User.update({
+                  loginError: loginError,
+              }, { where: { id: user.id } })
+            }
+            
+            throw new Error("密码错误")
+         }
+         else{
+          let result= await this.User.update({
+            loginError: 0,
+            status:1
+          }, { where: { id: user.id } })
+          
+          let tmpUser=JSON.parse(JSON.stringify(user))
+          delete tmpUser.password;
+          return tmpUser;
+         }   
+      }else{
+          throw new Error("账号不存在")
+      }
     }
 
     /**
@@ -129,6 +163,8 @@ module.exports = app => {
       if (!user) throw new Error("用户不存在")
       const result = await this.User.update({
         password: md5(md5(this.defaultPassword)),
+        status:1,
+        loginError:0,
         updator: operator
       }, { where: { id: user.id } })
       return result
