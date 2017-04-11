@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE, BOOLEAN } = app.Sequelize
+  const { STRING, INTEGER, DATE, BOOLEAN, DECIMAL } = app.Sequelize
   return app.model.define('attendance', {
     id: {
       type: INTEGER,
