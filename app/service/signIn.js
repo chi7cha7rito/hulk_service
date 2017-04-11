@@ -80,6 +80,7 @@ module.exports = app => {
             const consumeCount = await classSelf.Balance.count({
                 where: {
                     memberId,
+                    type: 2,    //消费
                     createdAt: {
                         $gte: this.moment().startOf('day'),
                         $lte: classSelf.moment().endOf('day')
@@ -87,7 +88,7 @@ module.exports = app => {
                 }
             })
             if (consumeCount == 0) throw new Error("今天还未到店消费,无法签到")
-            
+
             const count = await classSelf.SignIn.count({
                 where: {
                     memberId,
