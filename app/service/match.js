@@ -67,6 +67,9 @@ module.exports = app => {
                         { model: this.MatchPrice, where: { status: { $ne: 3 } } },
                         { model: this.MatchReward },
                     ]
+                }, {
+                    model: this.Attendance,
+                    attributes: ['id'],
                 }],
                 distinct: true,
                 offset: (index - 1) * size,

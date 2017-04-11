@@ -26,7 +26,9 @@ module.exports = app => {
          * @description 赛事重入统计
          * @param  {} {matchName
          * @param  {} startOpening
-         * @param  {} endOpening}
+         * @param  {} endOpening
+         * @param  {} pageIndex
+         * @param  {} pageSize}
          */
         async matchChipStats({ matchName, startOpening, endOpening, pageIndex = 1, pageSize = 10 }) {
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
@@ -58,6 +60,49 @@ module.exports = app => {
                 limit: size,
             })
             result.count = result.count.length
+            return result
+        }
+
+        /**
+         * @description 获取重入信息
+         * @param  {} {matchName
+         * @param  {} startOpening
+         * @param  {} endOpening}
+         */
+        async findAll({ matchName, startOpening, endOpening }) {
+            const result = await this.Chip.findAll({
+                order: 'match.openingDatetime DESC',
+                attributes: ['id', 'match.openingDatetime', 'match.perHand', 'match.matchConfig.name', 'quantity', 'payAmount','member.user.name'],
+                include: [{
+                    model: this.Match,
+                    duplicating: false,
+                    attributes: [],
+                    where: {
+                        openingDatetime: {
+                            $gte: startOpening || this.moment('1971-01-01').format(),
+                            $lte: (endOpening && this.moment(endOpening).endOf('day')) || this.moment('9999-12-31').format()
+                        }
+                    },
+                    include: [{
+                        model: this.MatchConfig,
+                        duplicating: false,
+                        attributes: [],
+                        where: {
+                            name: { $like: `%${matchName || ''}%` }
+                        }
+                    }]
+                }, {
+                    model: this.Member,
+                    duplicating: false,
+                    attributes: [],
+                    include: [{
+                        model: this.User,
+                        duplicating: false,
+                        attributes: [],
+                    }]
+                }],
+                raw: true
+            })
             return result
         }
 
