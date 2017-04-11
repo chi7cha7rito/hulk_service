@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-  const { INTEGER, DECIMAL } = app.Sequelize
+  const { INTEGER, DECIMAL, STRING } = app.Sequelize
   return app.model.define('matchReward', {
     id: {
       type: INTEGER,
