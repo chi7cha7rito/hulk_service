@@ -12,8 +12,13 @@ module.exports = app => {
             this.success(result)
         }
 
-         async matchChipStats() {
+        async matchChipStats() {
             const result = await this.ChipSvr.matchChipStats(this.ctx.query);
+            this.success(result)
+        }
+
+        async findAll() {
+            const result = await this.ChipSvr.findAll(this.ctx.query);
             this.success(result)
         }
         

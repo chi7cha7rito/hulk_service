@@ -133,6 +133,7 @@ module.exports = app => {
    */
   app.post('/chip/create', 'chip.create')
   app.get('/chip/matchChipStats', 'chip.matchChipStats')
+  app.get('/chip/findAll', 'chip.findAll')
 
   /**
    * 微信token api
