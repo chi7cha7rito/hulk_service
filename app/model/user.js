@@ -54,6 +54,10 @@ module.exports = app => {
       },
       comment: '1:管理员,2:员工,3:会员'
     },
+    loginError: {
+      type: INTEGER,
+      defaultValue: 0
+    },
     status: {
       type: INTEGER,
       allowNull: false,

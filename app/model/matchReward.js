@@ -18,6 +18,10 @@ module.exports = app => {
       type: DECIMAL(10, 2),
       comment: '赛事奖励积分'
     },
+    remark: {
+      type: STRING,
+      comment: '奖励备注'
+    },
     status: {
       type: INTEGER,
       allowNull: false,
