@@ -6,6 +6,7 @@ module.exports = app => {
             super(ctx)
             this.MatchConfig = this.app.model.MatchConfig
             this.MatchPrice = this.app.model.MatchPrice
+            this.MemberLevel = this.app.model.MemberLevel
             this.Helper = this.ctx.helper
         }
 
@@ -16,6 +17,7 @@ module.exports = app => {
         async findAll({ matchConfigId }) {
             const result = await this.MatchPrice.findAll({
                 where: { matchConfigId: matchConfigId, status: { $ne: 3 } },
+                include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
             })
             return result
         }
@@ -27,7 +29,8 @@ module.exports = app => {
          */
         async findActivePrice({ matchConfigId, type }) {
             const result = await this.MatchPrice.findOne({
-                where: { matchConfigId, type, status: 1 }
+                where: { matchConfigId, type, status: 1 },
+                include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
             })
             return result
         }
@@ -39,7 +42,8 @@ module.exports = app => {
          */
         async findActivePriceById({ id }) {
             const result = await this.MatchPrice.findOne({
-                where: { id, status: 1 }
+                where: { id, status: 1 },
+                include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
             })
             return result
         }
@@ -67,9 +71,10 @@ module.exports = app => {
          * @param  {} {id
          * @param  {} type
          * @param  {} price
+         * @param  {} limitation
          * @param  {} operator}
          */
-        async update({ id, type, price, operator }) {
+        async update({ id, type, price, limitation, operator }) {
             const record = await this.MatchPrice.findById(id)
             if (!record) throw new Error("记录不存在")
 
@@ -81,8 +86,9 @@ module.exports = app => {
             }
 
             const result = await this.MatchPrice.update({
-                type: type,
-                price: price,
+                type,
+                price,
+                limitation,
                 updator: operator
             }, { where: { id: id } })
             return result
@@ -93,10 +99,11 @@ module.exports = app => {
          * @param  {} {matchConfigId
          * @param  {} type
          * @param  {} price
+         * @param  {} limitation
          * @param  {} status
          * @param  {} operator}
          */
-        async create({ matchConfigId, type, price, status, operator }) {
+        async create({ matchConfigId, type, price, limitation, status, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId } })
             if (configCount == 0) throw new Error("赛事配置不存在")
             const priceCount = await this.MatchPrice.count({
@@ -104,10 +111,11 @@ module.exports = app => {
             })
             if (priceCount > 0) throw new Error("该类型价格已经存在")
             const result = await this.MatchPrice.create({
-                matchConfigId: matchConfigId,
-                type: type,
-                price: price,
-                status: status,
+                matchConfigId,
+                type,
+                price,
+                limitation,
+                status,
                 creator: operator
             })
             return result

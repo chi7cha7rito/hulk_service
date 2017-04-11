@@ -12,18 +12,7 @@ module.exports = app => {
     type: {
       type: INTEGER,
       allowNull: false,
-      get: function () {
-        let val = this.getDataValue('type')
-        let str = ''
-        if (val == 1) str = '线上价格'
-        if (val == 2) str = '原价'
-        if (val == 3) str = '高级会员价'
-        if (val == 4) str = '豪客价'
-        if (val == 5) str = '豪爵价'
-        if (val == 6) str = '优惠价'
-        return { val, name: str }
-      },
-      comment: '1:线上价格,2:原价,3:高级会员价,4:豪客价,5:豪爵价,6:优惠价'
+      comment: 'memberLevel,99:优惠'
     },
     price: {
       defaultValue: 0,
@@ -32,6 +21,10 @@ module.exports = app => {
     points: {
       defaultValue: 0,
       type: DECIMAL(10, 2)
+    },
+    limitation: {
+      type: INTEGER,
+      defaultValue: 0
     },
     status: {
       type: INTEGER,
@@ -48,6 +41,7 @@ module.exports = app => {
   }, {
       classMethods: {
         associate() {
+          app.model.MatchPrice.belongsTo(app.model.MemberLevel, { as: 'Type', foreignKey: 'type' })
           app.model.MatchPrice.belongsTo(app.model.MatchConfig)
         }
       }

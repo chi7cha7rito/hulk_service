@@ -72,11 +72,11 @@ module.exports = app => {
         async findAll({ matchName, startOpening, endOpening }) {
             const result = await this.Chip.findAll({
                 order: 'match.openingDatetime DESC',
-                attributes: ['id', 'match.openingDatetime', 'match.perHand', 'match.matchConfig.name', 'quantity', 'payAmount','member.user.name'],
+                attributes: ['id', 'quantity', 'payAmount'],
                 include: [{
                     model: this.Match,
                     duplicating: false,
-                    attributes: [],
+                    attributes: ['openingDatetime', 'perHand'],
                     where: {
                         openingDatetime: {
                             $gte: startOpening || this.moment('1971-01-01').format(),
@@ -86,7 +86,7 @@ module.exports = app => {
                     include: [{
                         model: this.MatchConfig,
                         duplicating: false,
-                        attributes: [],
+                        attributes: ['name'],
                         where: {
                             name: { $like: `%${matchName || ''}%` }
                         }
@@ -98,8 +98,8 @@ module.exports = app => {
                     include: [{
                         model: this.User,
                         duplicating: false,
-                        attributes: [],
-                    }]
+                        attributes: ['name'],
+                    }],
                 }],
                 raw: true
             })

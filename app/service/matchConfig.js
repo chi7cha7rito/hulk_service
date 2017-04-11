@@ -8,6 +8,7 @@ module.exports = app => {
             this.MatchType = this.app.model.MatchType
             this.MatchPrice = this.app.model.MatchPrice
             this.MatchReward = this.app.model.MatchReward
+            this.MemberLevel = this.app.model.MemberLevel
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
         }
@@ -46,7 +47,11 @@ module.exports = app => {
                 where: cond,
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                    { 
+                        model: this.MatchPrice, 
+                        where: { status: { $ne: 3 } },
+                        include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
+                    },
                     { model: this.MatchReward, where: { status: { $ne: 3 } } }],
                 distinct: true,
                 offset: (index - 1) * size,
@@ -64,7 +69,11 @@ module.exports = app => {
                 where: { status: 1 },
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                    { 
+                        model: this.MatchPrice, 
+                        where: { status: { $ne: 3 } },
+                        include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
+                    },
                     { model: this.MatchReward, where: { status: { $ne: 3 } } }],
             })
             return result
@@ -281,7 +290,11 @@ module.exports = app => {
                 where: { id },
                 include: [
                     { model: this.MatchType, as: 'Type' },
-                    { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                    { 
+                        model: this.MatchPrice, 
+                        where: { status: { $ne: 3 } } ,
+                        include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
+                    },
                     { model: this.MatchReward, where: { status: { $ne: 3 } } }],
             })
             return result

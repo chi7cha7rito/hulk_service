@@ -10,6 +10,7 @@ module.exports = app => {
             this.MatchPrice = this.app.model.MatchPrice
             this.MatchReward = this.app.model.MatchReward
             this.MatchType = this.app.model.MatchType
+            this.MemberLevel = this.app.model.MemberLevel
             this.Helper = this.ctx.helper
             this.moment = this.app.moment
             this._ = this.app._
@@ -64,7 +65,11 @@ module.exports = app => {
                     where: configCond,
                     include: [
                         { model: this.MatchType, as: 'Type' },
-                        { model: this.MatchPrice, where: { status: { $ne: 3 } } },
+                        {
+                            model: this.MatchPrice,
+                            where: { status: { $ne: 3 } },
+                            include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
+                        },
                         { model: this.MatchReward },
                     ]
                 }, {
@@ -96,7 +101,11 @@ module.exports = app => {
                     model: this.MatchConfig,
                     include: [
                         { model: this.MatchType, as: 'Type' },
-                        { model: this.MatchPrice, where: { status: 1 } },
+                        {
+                            model: this.MatchPrice,
+                            where: { status: 1 },
+                            include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
+                        },
                     ]
                 }],
             })
@@ -115,7 +124,10 @@ module.exports = app => {
                     model: this.MatchConfig,
                     include: [
                         { model: this.MatchType, as: 'Type' },
-                        { model: this.MatchPrice },
+                        {
+                            model: this.MatchPrice,
+                            include: [{ model: this.MemberLevel, as: 'Type', attributes: ['id', 'name'] }]
+                        },
                         { model: this.MatchReward }
                     ]
                 }],
@@ -131,10 +143,11 @@ module.exports = app => {
          * @param  {} matchConfigId
          * @param  {} perHand
          * @param  {} applyOnline
+         * @param  {} limitation
          * @param  {} operator}
          * @return {object}
          */
-        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, applyOnline, status, operator }) {
+        async update({ id, closingDatetime, openingDatetime, matchConfigId, perHand, applyOnline, limitation, status, operator }) {
             const matchCount = await this.Match.count({ where: { id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
@@ -145,6 +158,7 @@ module.exports = app => {
                 matchConfigId,
                 perHand,
                 applyOnline,
+                limitation,
                 status,
                 updator: operator
             }, { where: { id } })
@@ -178,11 +192,12 @@ module.exports = app => {
          * @param  {} matchConfigId
          * @param  {} perHand
          * @param  {} applyOnline
+         * @param  {} limitation
          * @param  {} status
          * @param  {} operator}
          * @return {object}
          */
-        async create({ closingDatetime, openingDatetime, matchConfigId, applyOnline, perHand, status = 1, operator }) {
+        async create({ closingDatetime, openingDatetime, matchConfigId, applyOnline, limitation, perHand, status = 1, operator }) {
             const configCount = await this.MatchConfig.count({ where: { id: matchConfigId, status: 1 } })
             if (configCount == 0) throw new Error("赛事配置不存在或禁用")
             const result = await this.Match.create({
@@ -191,6 +206,7 @@ module.exports = app => {
                 perHand,
                 matchConfigId,
                 applyOnline,
+                limitation,
                 status,
                 creator: operator
             })

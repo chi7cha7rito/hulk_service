@@ -60,8 +60,8 @@ module.exports = app => {
             classMethods: {
                 associate() {
                     app.model.MemberLevel.hasMany(app.model.Member)
+                    app.model.MemberLevel.hasMany(app.model.MatchPrice, { as: 'Type', foreignKey: 'type' })
                 }
-
             }
         })
 }

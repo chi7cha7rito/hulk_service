@@ -29,6 +29,10 @@ module.exports = app => {
             defaultValue: false,
             comment: '是否可线上报名'
         },
+        limitation: {
+            type: INTEGER,
+            defaultValue: 0
+        },
         status: {
             type: INTEGER,
             allowNull: false,
