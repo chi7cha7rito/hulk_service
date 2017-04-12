@@ -289,7 +289,7 @@ module.exports = app => {
                     matchId: matchId,
                     memberId: memberId,
                     payType: 1,
-                    matchPriceId,
+                    priceType: price.type,
                     matchPrice: price.price,
                     status: 1,
                     creator: member.user.id
@@ -407,7 +407,7 @@ module.exports = app => {
                     matchId,
                     memberId,
                     payType,
-                    matchPriceId,
+                    priceType: price.type,
                     matchPrice: price.price,
                     status: 1,
                     creator: operator
