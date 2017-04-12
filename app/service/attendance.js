@@ -193,9 +193,10 @@ module.exports = app => {
         /**
          * @description 线上报名参加
          * @param  {} {matchId
+         * @param  {} priceId
          * @param  {} memberId}
          */
-        async createOnline({ matchId, memberId }) {
+        async createOnline({ matchId, memberId, matchPriceId }) {
             let classSelf = this
             //检查赛事
             const match = await this.Match.findOne({
@@ -204,9 +205,17 @@ module.exports = app => {
             })
             if (!match) throw new Error("赛事不存在或已结束")
             if (!match.applyOnline) throw new Error("该赛事无法线上报名")
-            //查找线上价格
-            const price = await this.MatchPriceSvr.findActivePrice({ matchConfigId: match.matchConfigId, type: 1 })
+
+            //检查报名人数
+            if (match.limitation) {
+                const attendances = await this.Attendance.count({ where: { matchId } })
+                if (attendances >= match.limitation) throw new Error('参赛人数已满')
+            }
+
+            //查找价格
+            const price = await this.MatchPriceSvr.findActivePriceById({ id: matchPriceId })
             if (!price) throw new Error('赛事价格不存在')
+
             //检查会员
             const member = await this.Member.findOne({
                 where: { id: memberId, status: 1 },
@@ -234,6 +243,7 @@ module.exports = app => {
                     matchId: matchId,
                     memberId: memberId,
                     payType: 1,
+                    matchPriceId,
                     status: 1,
                     creator: member.user.id
                 }, { transaction: t }).then(function (attendance) {
@@ -293,9 +303,20 @@ module.exports = app => {
             })
             if (!match) throw new Error("赛事不存在或已结束")
 
-            //查找线上价格
+            //检查报名人数
+            if (match.limitation) {
+                const attendances = await this.Attendance.count({ where: { matchId } })
+                if (attendances >= match.limitation) throw new Error('参赛人数已满')
+            }
+
+            //查找价格
             const price = await this.MatchPriceSvr.findActivePriceById({ id: matchPriceId })
             if (!price) throw new Error('赛事价格不存在')
+
+            if (price.limitation) {
+                const priceCount = await this.Attendance.count({ where: { matchPriceId: matchPriceId } })
+                if (priceCount >= price.limitation) throw new Error('优惠价格人数已满')
+            }
 
             //检查会员
             const member = await this.Member.findOne({
@@ -339,6 +360,7 @@ module.exports = app => {
                     matchId,
                     memberId,
                     payType,
+                    matchPriceId,
                     status: 1,
                     creator: operator
                 }, { transaction: t }).then(function (attendance) {
