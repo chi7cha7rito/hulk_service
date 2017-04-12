@@ -257,6 +257,11 @@ module.exports = app => {
             const price = await this.MatchPriceSvr.findActivePriceById({ id: matchPriceId })
             if (!price) throw new Error('赛事价格不存在')
 
+            if (price.limitation) {
+                const priceCount = await this.Attendance.count({ where: { matchId, priceType: price.type } })
+                if (priceCount >= price.limitation) throw new Error('该价格优惠人数已满')
+            }
+
             //检查会员
             const member = await this.Member.findOne({
                 where: { id: memberId, status: 1 },
@@ -356,8 +361,8 @@ module.exports = app => {
             if (!price) throw new Error('赛事价格不存在')
 
             if (price.limitation) {
-                const priceCount = await this.Attendance.count({ where: { matchPriceId: matchPriceId } })
-                if (priceCount >= price.limitation) throw new Error('优惠价格人数已满')
+                const priceCount = await this.Attendance.count({ where: { matchId, priceType: price.type } })
+                if (priceCount >= price.limitation) throw new Error('该价格优惠人数已满')
             }
 
             //检查会员

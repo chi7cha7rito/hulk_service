@@ -28,7 +28,7 @@ module.exports = app => {
       type: INTEGER,
       comment: '1:余额,2:积分,3:优惠券'
     },
-    matchPriceId: {
+    priceType: {
       type: INTEGER
     },
     matchPrice: {
