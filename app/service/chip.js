@@ -76,7 +76,7 @@ module.exports = app => {
                 include: [{
                     model: this.Match,
                     duplicating: false,
-                    attributes: ['openingDatetime', 'perHand'],
+                    attributes: ['openingDatetime', 'perHand', 'payType'],
                     where: {
                         openingDatetime: {
                             $gte: startOpening || this.moment('1971-01-01').format(),
