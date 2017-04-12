@@ -64,6 +64,14 @@ module.exports = app => {
         }
 
         /**
+        * @description 获取参赛信息
+        */
+        async findResult() {
+            const result = await this.AttendanceSvr.findResult(this.ctx.query)
+            this.success(result)
+        }
+
+        /**
          * @description 根据memberId查询成绩
          */
         async findRankingByMemberId() {

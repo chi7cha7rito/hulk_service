@@ -12,6 +12,7 @@ module.exports = app => {
   app.post('/attendance/issueReward', 'attendance.issueReward')
   app.get('/attendance/findAttendances', 'attendance.findAttendances')
   app.get('/attendance/findAll', 'attendance.findAll')
+  app.get('/attendance/findResult', 'attendance.findResult')
   app.get('/attendance/findRankingByMemberId', 'attendance.findRankingByMemberId')
 
   /**

@@ -87,6 +87,47 @@ module.exports = app => {
         }
 
         /**
+         * @description 查询参赛名单
+         * @param  {} {phoneNo
+         * @param  {} matchName
+         * @param  {} openingStart
+         * @param  {} openingEnd}
+         */
+        async findResult({ phoneNo, matchName, openingStart, openingEnd }) {
+            let cond = {}
+            let matchCond = {
+                openingDatetime: {
+                    $gte: openingStart || this.moment('1971-01-01').format(),
+                    $lte: (openingEnd && this.moment(openingEnd).endOf('day')) || this.moment('9999-12-31').format(),
+                }
+            }
+            let matchConfigCond = {}
+            let userCond = {}
+
+            if (phoneNo) {
+                userCond.phoneNo = { $like: '%' + phoneNo + '%' }
+            }
+            if (matchName) {
+                matchConfigCond.name = { $like: '%' + matchName + '%' }
+            }
+            const result = await this.Attendance.findAll({
+                include: [{
+                    model: this.Match,
+                    where: matchCond,
+                    include: [{
+                        model: this.MatchConfig,
+                        where: matchConfigCond,
+                        include: [{ model: this.MatchType, as: 'Type' }]
+                    }]
+                }, {
+                    model: this.Member,
+                    include: [{ model: this.User, where: userCond }]
+                }],
+            })
+            return result
+        }
+
+        /**
          * @description 查询成绩
          * @param  {} {memberId
          * @param  {} pageIndex=1
