@@ -136,7 +136,7 @@ module.exports = app => {
         async findRankingByMemberId({ memberId, pageIndex = 1, pageSize = 10 }) {
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
             const result = await this.Attendance.findAndCount({
-                where: { memberId: memberId, status: 1 },
+                where: { memberId: memberId, issue: true, status: 1 },
                 offset: (index - 1) * size,
                 limit: size,
                 distinct: true,
