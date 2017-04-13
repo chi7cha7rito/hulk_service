@@ -40,6 +40,10 @@ module.exports = appInfo => {
     }
   }
 
+  config.logger = {
+    dir: '/usr/src/holecards/log/hulk_service',
+  }
+
   return config
 }
 

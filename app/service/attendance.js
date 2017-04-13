@@ -186,6 +186,26 @@ module.exports = app => {
             return result
         }
 
+        /**
+        * @description 确认参赛
+        * @param  {} {id
+        * @param  {} operator}
+        */
+        async confirmJoin({ id, operator }) {
+            const classSelf = this
+            const attendance = await this.Attendance.findOne({ where: { id } })
+            if (!attendance) throw new Error("您没有报名参加该赛事")
+            const member = await this.Member.findOne({ where: { id: attendance.memberId, status: 1 } })
+            if (!member) throw new Error("会员不存在或已冻结")
+            const match = await this.Match.findOne({ where: { id: attendance.matchId } })
+            if (!match) throw new Error("赛事不存在或已结束")
+            const result = classSelf.Attendance.update({
+                join: true,
+                updator: operator
+            }, { where: { id } })
+            return result
+        }
+
 
         /**
          * @description 发放奖励

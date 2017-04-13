@@ -158,7 +158,8 @@ module.exports = app => {
                     return classSelf.Sprit.create({
                         memberId: memberId,
                         type: 2,
-                        point: buyChip
+                        point: buyChip * quantity,
+                        creator: operator
                     }, { transaction: t }).then(function (result) {
                         // 余额支付返豪气
                         if (payType == 1) {

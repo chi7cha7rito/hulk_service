@@ -40,6 +40,14 @@ module.exports = app => {
         }
 
         /**
+        * @description 确认参赛
+        */
+        async confirmJoin() {
+            const result = await this.AttendanceSvr.confirmJoin(this.ctx.request.body)
+            this.success(result)
+        }
+
+        /**
        * @description 发放奖励
        */
         async issueReward() {

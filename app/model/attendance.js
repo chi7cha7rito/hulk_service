@@ -35,6 +35,11 @@ module.exports = app => {
       type: DECIMAL(10, 2),
       defaultValue: 0
     },
+    join: {
+      type: BOOLEAN,
+      defaultValue: false,
+      comment: '参赛与否'
+    },
     status: {
       type: INTEGER,
       allowNull: false,

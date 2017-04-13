@@ -20,9 +20,9 @@ module.exports = appInfo => {
   // 数据库配置
   config.sequelize = {
     port: '3306',
-    host: '115.159.94.198',
-    username: 'root',
-    password: 'hulk@2017',
+    host: 'rm-bp1uh74j9m091agg9o.mysql.rds.aliyuncs.com',
+    username: 'hole',
+    password: 'Holecards@2017',
     database: 'hulk',
     dialect: 'mysql' // support: mysql, mariadb, postgres, mssql
   }
