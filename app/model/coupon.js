@@ -41,9 +41,10 @@ module.exports = app => {
                 let str = ''
                 if (val == 1) str = '签到'
                 if (val == 2) str = '豪气排名'
+                if (val == 3) str = '赠票'
                 return { val, name: str }
             },
-            comment: '1:签到,2:豪气排名'
+            comment: '1:签到,2:豪气排名,3:赠票'
         },
         remark: {
             type: STRING
