@@ -26,10 +26,10 @@ module.exports = app => {
         async findAll({ phoneNo, type, source, status, startCreatedAt, endCreatedAt, pageIndex = 1, pageSize = 10 }) {
             let cond = {}
             let { index, size } = this.Helper.parsePage(pageIndex, pageSize)
-            let member = await this.User.findOne({ where: { phoneNo: phoneNo } })
+            let user = await this.User.findOne({ where: { phoneNo: phoneNo }, include: [this.Member] })
 
-            if (member && member.memberId) {
-                cond.memberId = member.memberId
+            if (user && user.member && user.member.id) {
+                cond.memberId = user.member.id
             }
             if (type) {
                 cond.type = type
