@@ -175,7 +175,7 @@ module.exports = app => {
             const matchCount = await this.Match.count({ where: { id: id } })
             if (matchCount == 0) throw new Error("赛事不存在")
             if (status.toString() === '3') {
-                const attendance = await this.Attendance.count({ matchId: id })
+                const attendance = await this.Attendance.count({ where: { matchId: id } })
                 if (attendance > 0) throw new Error('已有人参赛，无法删除')
             }
             const result = await this.Match.update({
