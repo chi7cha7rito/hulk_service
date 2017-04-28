@@ -9,6 +9,7 @@ module.exports = app => {
             this.User = this.app.model.User
             this.WechatPayment = this.app.model.WechatPayment
             this.RechargeSetup = this.app.model.RechargeSetup
+            this.MemberLevel = this.app.model.MemberLevel
             this.LoyaltyPoint = this.app.model.LoyaltyPoint
             this.BalanceSvr = this.service.balance
             this.LoyaltyPointSvr = this.service.loyaltyPoint
@@ -83,7 +84,7 @@ module.exports = app => {
                 where: { out_trade_no: out_trade_no }
             })
             if (!entry) throw new Error("找不到该条微信充值记录")
-            const member = await this.Member.findOne({ where: { id: entry.memberId }, include: [this.User] })
+            const member = await this.Member.findOne({ where: { id: entry.memberId }, include: [this.User, this.MemberLevel] })
             const amount = entry.total_fee ? (entry.total_fee / 100) : 0
             //微信充值回调transaction
             return classSelf.app.model.transaction(function (t) {
@@ -102,36 +103,75 @@ module.exports = app => {
                         status: 1,
                         creator: member.user.id
                     }, { transaction: t }).then(async (balance) => {
-                        const max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: amount }, status: 1 } })
-                        let totalBalance = await classSelf.BalanceSvr.totalByMemberId({ memberId: member.id })
-                        classSelf.SmsSenderSvr.balancePlus({
-                            phoneNo: member.user.phoneNo,
-                            name: member.user.name,
-                            amount: amount,
-                            avlAmt: totalBalance + amount
-                        })
-                        if (max) {
-                            return classSelf.LoyaltyPoint.create({
-                                memberId: entry.memberId,
-                                type: 1,    //获取
-                                points: max,
-                                source: 1,  //充值返现
-                                sourceNo: balance.id,
-                                status: 1,  //状态正常
-                                remark: "充值积分返现",
-                                creator: member.user.id
-                            }, { transaction: t }).then(async (points) => {
-                                let totalPoints = await classSelf.LoyaltyPointSvr.totalByMemberId({ memberId: member.id })
-                                classSelf.SmsSenderSvr.loyaltyPointPlus({
+                        let memberLevel = await classSelf.MemberLevel.findOne({ order: 'threshold DESC', where: { threshold: { $lte: amount }, status: 1 } })
+                        if (member.memberLevel.threshold < memberLevel.threshold) {
+                            return classSelf.Member.update({
+                                memberLevelId: memberLevel.id,
+                            }, { where: { id: entry.memberId }, transaction: t }).then(async (result) => {
+                                let max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: amount }, status: 1 } })
+                                let totalBalance = await classSelf.BalanceSvr.totalByMemberId({ memberId: member.id })
+                                classSelf.SmsSenderSvr.balancePlus({
                                     phoneNo: member.user.phoneNo,
                                     name: member.user.name,
-                                    points: max,
-                                    avlPts: totalPoints + max
+                                    amount: amount,
+                                    avlAmt: totalBalance + amount
                                 })
-                                return points
+                                if (max) {
+                                    return classSelf.LoyaltyPoint.create({
+                                        memberId: entry.memberId,
+                                        type: 1,    //获取
+                                        points: max,
+                                        source: 1,  //充值返现
+                                        sourceNo: balance.id,
+                                        status: 1,  //状态正常
+                                        remark: "充值积分返现",
+                                        creator: member.user.id
+                                    }, { transaction: t }).then(async (points) => {
+                                        let totalPoints = await classSelf.LoyaltyPointSvr.totalByMemberId({ memberId: member.id })
+                                        classSelf.SmsSenderSvr.loyaltyPointPlus({
+                                            phoneNo: member.user.phoneNo,
+                                            name: member.user.name,
+                                            points: max,
+                                            avlPts: totalPoints + max
+                                        })
+                                        return points
+                                    })
+                                } else {
+                                    return balance
+                                }
                             })
                         } else {
-                            return balance
+                            let max = await classSelf.RechargeSetup.max('reward', { where: { threshold: { $lte: amount }, status: 1 } })
+                            let totalBalance = await classSelf.BalanceSvr.totalByMemberId({ memberId: member.id })
+                            classSelf.SmsSenderSvr.balancePlus({
+                                phoneNo: member.user.phoneNo,
+                                name: member.user.name,
+                                amount: amount,
+                                avlAmt: totalBalance + amount
+                            })
+                            if (max) {
+                                return classSelf.LoyaltyPoint.create({
+                                    memberId: entry.memberId,
+                                    type: 1,    //获取
+                                    points: max,
+                                    source: 1,  //充值返现
+                                    sourceNo: balance.id,
+                                    status: 1,  //状态正常
+                                    remark: "充值积分返现",
+                                    creator: member.user.id
+                                }, { transaction: t }).then(async (points) => {
+                                    let totalPoints = await classSelf.LoyaltyPointSvr.totalByMemberId({ memberId: member.id })
+                                    classSelf.SmsSenderSvr.loyaltyPointPlus({
+                                        phoneNo: member.user.phoneNo,
+                                        name: member.user.name,
+                                        points: max,
+                                        avlPts: totalPoints + max
+                                    })
+                                    return points
+                                })
+                            } else {
+                                return balance
+                            }
                         }
                     })
                 })
