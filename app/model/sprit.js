@@ -19,10 +19,11 @@ module.exports = app => {
                 if (val == 2) str = '重入'
                 if (val == 3) str = '余额消费'
                 if (val == 4) str = '赛事奖励'
-                if (val == 5) str = '手动调整'
+                if (val == 5) str = '负调整'
+                if (val == 6) str = '正调整'
                 return { val, name: str }
             },
-            comment: '1:参赛,2:重入,3:余额消费,4:赛事奖励,5:手动调整'
+            comment: '1:参赛,2:重入,3:余额消费,4:赛事奖励,5:负调整,6:正调整'
         },
         point: {
             type: DECIMAL(10, 2),
