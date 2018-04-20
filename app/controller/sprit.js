@@ -15,6 +15,11 @@ module.exports = app => {
             const result = await this.SpritSvr.totalByMemberId(this.ctx.query);
             this.success(result)
         }
+
+        async adjust(){
+            const result = await this.SpritSvr.adjust(this.ctx.request.body);
+            this.success(result)
+        }
     }
     return SpritController;
 };

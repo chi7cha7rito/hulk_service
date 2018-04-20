@@ -72,13 +72,31 @@ module.exports = app => {
             return result || 0
         }
 
+         /**
+         * @description 大师积分调整
+         * @param  {} {phoneNo
+         * @param  {} type
+         * @param  {} amount
+         * @param  {} operator}
+         */
+        async adjust({ phoneNo, type, amount, operator }) {
+            const member = await this.Member.findOne({
+                where: { status: 1 },
+                include: [{ model: this.User, where: { phoneNo } }]
+            })
+            if (!member) throw new Error("会员不存在或被冻结")
+            const result = await this.create({ memberId: member.id, type, amount: parseFloat(amount), operator })
+            return result
+        }
+
+
         /**
-         * @description 获取豪气
+         * @description 获取豪气（大师积分）
          * @param  {} {memberId
          * @param  {} type
          * @param  {} amount:消费金额}
          */
-        async create({ memberId, type, amount = 0 }) {
+        async create({ memberId, type, amount = 0 ,operator}) {
             let point = 0
             let result
             const member = await this.Member.findById(memberId, { include: [this.MemberType] })
@@ -97,7 +115,8 @@ module.exports = app => {
                 result = await this.Sprit.create({
                     memberId: memberId,
                     type: type,
-                    point: point
+                    point: point,
+                    creator: operator
                 })
             }
             return result
