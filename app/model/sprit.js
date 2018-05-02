@@ -30,8 +30,16 @@ module.exports = app => {
             defaultValue: 0,
             allowNull: false,
         },
+        sourceNo: {
+            type: STRING,
+            comment: '参考号'
+        },
         creator: {
             type: INTEGER,
+        },
+        remark: {
+            type: STRING,
+            comment: '操作备注'
         },
         updator: {
             type: INTEGER

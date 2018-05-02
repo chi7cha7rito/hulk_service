@@ -93,7 +93,7 @@ module.exports = app => {
          * @param  {} openingStart
          * @param  {} openingEnd}
          */
-        async findResult({ phoneNo, matchName, openingStart, openingEnd }) {
+        async findResult({ phoneNo, matchName, status, openingStart, openingEnd }) {
             let cond = {}
             let matchCond = {
                 openingDatetime: {
@@ -110,6 +110,11 @@ module.exports = app => {
             if (matchName) {
                 matchConfigCond.name = { $like: '%' + matchName + '%' }
             }
+
+            if(status){
+                matchCond.status=status;
+            }
+
             const result = await this.Attendance.findAll({
                 include: [{
                     model: this.Match,
@@ -670,6 +675,7 @@ module.exports = app => {
                 });
             });
         }
+
     }
     return MatchReward
 }
