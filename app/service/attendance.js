@@ -429,6 +429,41 @@ module.exports = app => {
                 }, { transaction: t }).then(function (attendance) {
                     if (payType == 1) {
                         //扣余额
+                        // return classSelf.Balance.create({
+                        //     memberId,
+                        //     type: 2,  //消费
+                        //     amount: price.price,
+                        //     source: 7,  //赛事门票
+                        //     sourceNo: attendance.id,
+                        //     remark: "线上赛事报名门票费用",
+                        //     status: 1,
+                        //     creator: member.user.id
+                        // }, { transaction: t }).then(function (result) {
+                        //     // //消费返豪气
+                        //     return classSelf.Sprit.create({
+                        //         memberId,
+                        //         type: 3,
+                        //         point: price.price * consume / 100,
+                        //         creator: member.user.id
+                        //     }, { transaction: t }).then(function (result) {
+                        //         //参赛返豪气
+                        //         return classSelf.Sprit.create({
+                        //             memberId,
+                        //             type: 1,
+                        //             point: apply,
+                        //             creator: member.user.id
+                        //         }, { transaction: t }).then(function (result) {
+                        //             classSelf.SmsSenderSvr.balanceMinus({
+                        //                 phoneNo: member.user.phoneNo,
+                        //                 name: member.user.name,
+                        //                 amount: price.price,
+                        //                 avlAmt: balance - price.price
+                        //             })
+                        //             return result
+                        //         })
+                        //     })
+                        // })
+
                         return classSelf.Balance.create({
                             memberId,
                             type: 2,  //消费
@@ -438,33 +473,35 @@ module.exports = app => {
                             remark: "线上赛事报名门票费用",
                             status: 1,
                             creator: member.user.id
-                        }, { transaction: t }).then(function (result) {
-                            //消费返豪气
-                            return classSelf.Sprit.create({
-                                memberId,
-                                type: 3,
-                                point: price.price * consume / 100,
-                                creator: member.user.id
-                            }, { transaction: t }).then(function (result) {
-                                //参赛返豪气
-                                return classSelf.Sprit.create({
-                                    memberId,
-                                    type: 1,
-                                    point: apply,
-                                    creator: member.user.id
-                                }, { transaction: t }).then(function (result) {
-                                    classSelf.SmsSenderSvr.balanceMinus({
-                                        phoneNo: member.user.phoneNo,
-                                        name: member.user.name,
-                                        amount: price.price,
-                                        avlAmt: balance - price.price
-                                    })
-                                    return result
-                                })
-                            })
                         })
                     } else if (payType == 2) {
                         //扣积分
+                        // return classSelf.LoyaltyPoint.create({
+                        //     memberId,
+                        //     type: 2,
+                        //     points: price.price,
+                        //     source: 7,
+                        //     sourceNo: attendance.id,
+                        //     remark: '线上赛事报名门票费用',
+                        //     status: 1,
+                        //     creator: member.user.id
+                        // }, { transaction: t }).then(function (result) {
+                        //     //参赛返豪气
+                        //     return classSelf.Sprit.create({
+                        //         memberId,
+                        //         type: 1,
+                        //         point: apply,
+                        //         creator: member.user.id
+                        //     }, { transaction: t }).then(function (result) {
+                        //         classSelf.SmsSenderSvr.loyaltyPointMinus({
+                        //             phoneNo: member.user.phoneNo,
+                        //             name: member.user.name,
+                        //             points: price.price,
+                        //             avlPts: point - price.price
+                        //         })
+                        //         return result
+                        //     })
+                        // })
                         return classSelf.LoyaltyPoint.create({
                             memberId,
                             type: 2,
@@ -474,37 +511,25 @@ module.exports = app => {
                             remark: '线上赛事报名门票费用',
                             status: 1,
                             creator: member.user.id
-                        }, { transaction: t }).then(function (result) {
-                            //参赛返豪气
-                            return classSelf.Sprit.create({
-                                memberId,
-                                type: 1,
-                                point: apply,
-                                creator: member.user.id
-                            }, { transaction: t }).then(function (result) {
-                                classSelf.SmsSenderSvr.loyaltyPointMinus({
-                                    phoneNo: member.user.phoneNo,
-                                    name: member.user.name,
-                                    points: price.price,
-                                    avlPts: point - price.price
-                                })
-                                return result
-                            })
                         })
                     } else if (payType == 3) {
                         //使用优惠券
+                        // return classSelf.Coupon.update({
+                        //     status: 2,
+                        //     creator: member.user.id
+                        // }, { where: { id: couponId }, transaction: t }).then(function (resunt) {
+                        //     //参赛返豪气
+                        //     return classSelf.Sprit.create({
+                        //         memberId,
+                        //         type: 1,
+                        //         point: apply,
+                        //         creator: member.user.id
+                        //     })
+                        // })
                         return classSelf.Coupon.update({
                             status: 2,
                             creator: member.user.id
-                        }, { where: { id: couponId }, transaction: t }).then(function (resunt) {
-                            //参赛返豪气
-                            return classSelf.Sprit.create({
-                                memberId,
-                                type: 1,
-                                point: apply,
-                                creator: member.user.id
-                            })
-                        })
+                        }, { where: { id: couponId }, transaction: t })
                     } else {
                         throw new Error('支付方式不存在')
                     }
@@ -593,6 +618,40 @@ module.exports = app => {
                 }, { transaction: t }).then(function (attendance) {
                     if (payType == 1) {
                         //扣余额
+                        // return classSelf.Balance.create({
+                        //     memberId,
+                        //     type: 2,  //消费
+                        //     amount: price.price,
+                        //     source: 7,  //赛事门票
+                        //     sourceNo: attendance.id,
+                        //     remark: "线下赛事报名门票费用",
+                        //     status: 1,
+                        //     creator: operator
+                        // }, { transaction: t }).then(function (result) {
+                        //     //消费返豪气
+                        //     return classSelf.Sprit.create({
+                        //         memberId,
+                        //         type: 3,
+                        //         point: price.price * consume / 100,
+                        //         creator: operator
+                        //     }, { transaction: t }).then(function (result) {
+                        //         //参赛返豪气
+                        //         return classSelf.Sprit.create({
+                        //             memberId,
+                        //             type: 1,
+                        //             point: apply,
+                        //             creator: operator
+                        //         }, { transaction: t }).then(function (result) {
+                        //             classSelf.SmsSenderSvr.balanceMinus({
+                        //                 phoneNo: member.user.phoneNo,
+                        //                 name: member.user.name,
+                        //                 amount: price.price,
+                        //                 avlAmt: balance - price.price
+                        //             })
+                        //             return result
+                        //         })
+                        //     })
+                        // })
                         return classSelf.Balance.create({
                             memberId,
                             type: 2,  //消费
@@ -602,33 +661,35 @@ module.exports = app => {
                             remark: "线下赛事报名门票费用",
                             status: 1,
                             creator: operator
-                        }, { transaction: t }).then(function (result) {
-                            //消费返豪气
-                            return classSelf.Sprit.create({
-                                memberId,
-                                type: 3,
-                                point: price.price * consume / 100,
-                                creator: operator
-                            }, { transaction: t }).then(function (result) {
-                                //参赛返豪气
-                                return classSelf.Sprit.create({
-                                    memberId,
-                                    type: 1,
-                                    point: apply,
-                                    creator: operator
-                                }, { transaction: t }).then(function (result) {
-                                    classSelf.SmsSenderSvr.balanceMinus({
-                                        phoneNo: member.user.phoneNo,
-                                        name: member.user.name,
-                                        amount: price.price,
-                                        avlAmt: balance - price.price
-                                    })
-                                    return result
-                                })
-                            })
                         })
                     } else if (payType == 2) {
                         //扣积分
+                        // return classSelf.LoyaltyPoint.create({
+                        //     memberId,
+                        //     type: 2,
+                        //     points: price.price,
+                        //     source: 7,
+                        //     sourceNo: attendance.id,
+                        //     remark: '线上赛事报名门票费用',
+                        //     status: 1,
+                        //     creator: operator
+                        // }, { transaction: t }).then(function (result) {
+                        //     //参赛返豪气
+                        //     return classSelf.Sprit.create({
+                        //         memberId,
+                        //         type: 1,
+                        //         point: apply,
+                        //         creator: operator
+                        //     }, { transaction: t }).then(function (result) {
+                        //         classSelf.SmsSenderSvr.loyaltyPointMinus({
+                        //             phoneNo: member.user.phoneNo,
+                        //             name: member.user.name,
+                        //             points: price.price,
+                        //             avlPts: point - price.price
+                        //         })
+                        //         return result
+                        //     })
+                        // })
                         return classSelf.LoyaltyPoint.create({
                             memberId,
                             type: 2,
@@ -638,37 +699,26 @@ module.exports = app => {
                             remark: '线上赛事报名门票费用',
                             status: 1,
                             creator: operator
-                        }, { transaction: t }).then(function (result) {
-                            //参赛返豪气
-                            return classSelf.Sprit.create({
-                                memberId,
-                                type: 1,
-                                point: apply,
-                                creator: operator
-                            }, { transaction: t }).then(function (result) {
-                                classSelf.SmsSenderSvr.loyaltyPointMinus({
-                                    phoneNo: member.user.phoneNo,
-                                    name: member.user.name,
-                                    points: price.price,
-                                    avlPts: point - price.price
-                                })
-                                return result
-                            })
                         })
                     } else if (payType == 3) {
                         //使用优惠券
+                        // return classSelf.Coupon.update({
+                        //     status: 2,
+                        //     updator: operator
+                        // }, { where: { id: couponId }, transaction: t }).then(function (resunt) {
+                        //     //参赛返豪气
+                        //     return classSelf.Sprit.create({
+                        //         memberId,
+                        //         type: 1,
+                        //         point: apply,
+                        //         creator: operator
+                        //     })
+                        // })
+
                         return classSelf.Coupon.update({
                             status: 2,
                             updator: operator
-                        }, { where: { id: couponId }, transaction: t }).then(function (resunt) {
-                            //参赛返豪气
-                            return classSelf.Sprit.create({
-                                memberId,
-                                type: 1,
-                                point: apply,
-                                creator: operator
-                            })
-                        })
+                        }, { where: { id: couponId } })
                     } else {
                         throw new Error('支付方式不存在')
                     }

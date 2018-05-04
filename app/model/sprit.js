@@ -41,6 +41,11 @@ module.exports = app => {
             type: STRING,
             comment: '操作备注'
         },
+        status:{
+            type: INTEGER,
+            defaultValue:1,
+            comment: '0:无效,1:有效'
+        },
         updator: {
             type: INTEGER
         }

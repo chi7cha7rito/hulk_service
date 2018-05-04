@@ -118,7 +118,7 @@ module.exports = app => {
          */
         async create({ memberId, matchId, quantity, payType, payAmount, remark, operator }) {
             const classSelf = this;
-            let member, match, balance, attendance;
+            let member, match, balance, attendance,point;
             member = await classSelf.Member.findOne({ where: { id: memberId, status: 1 }, include: [this.MemberLevel, this.User] })
             if (!member) throw new Error('会员不存在或已冻结')
             match = await classSelf.Match.findOne({ where: { id: matchId, status: 1 }, include: [this.MatchConfig] })
@@ -132,7 +132,7 @@ module.exports = app => {
                 if (balance < payAmount) throw new Error("帐户余额不足")
             } else if (payType == 2) {
                 //积分支付
-                const point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
+                 point = await this.LoyaltyPointSvr.totalByMemberId({ memberId })
                 if (point < payAmount) throw new Error("帐户积分不足")
             } else {
                 throw new Error('支付方式不存在')
@@ -155,64 +155,107 @@ module.exports = app => {
                 }, { transaction: t }).then(function (result) {
                     //重入返豪气
                     let chipId = result.id
-                    return classSelf.Sprit.create({
-                        memberId: memberId,
-                        type: 2,
-                        point: buyChip * quantity,
-                        creator: operator
-                    }, { transaction: t }).then(function (result) {
-                        // 余额支付返豪气
-                        if (payType == 1) {
-                            return classSelf.Sprit.create({
-                                memberId: memberId,
-                                type: 3,
-                                point: payAmount * consume / 100,
-                                creator: operator
-                            }, { transaction: t }).then(function (result) {
-                                //扣减余额
-                                return classSelf.Balance.create({
-                                    memberId: memberId,
-                                    type: 2,
-                                    amount: payAmount,
-                                    source: 11,
-                                    sourceNo: chipId,
-                                    remark: '购买筹码',
-                                    status: 1,
-                                    creator: operator
-                                }, { transaction: t }).then(function (result) {
-                                    classSelf.SmsSenderSvr.balanceMinus({
-                                        phoneNo: member.user.phoneNo,
-                                        name: member.user.name,
-                                        amount: payAmount,
-                                        avlAmt: balance - payAmount
-                                    })
-                                    return result
-                                })
+                    // return classSelf.Sprit.create({
+                    //     memberId: memberId,
+                    //     type: 2,
+                    //     point: buyChip * quantity,
+                    //     creator: operator
+                    // }, { transaction: t }).then(function (result) {
+                    //     // 余额支付返豪气
+                    //     if (payType == 1) {
+                    //         return classSelf.Sprit.create({
+                    //             memberId: memberId,
+                    //             type: 3,
+                    //             point: payAmount * consume / 100,
+                    //             creator: operator
+                    //         }, { transaction: t }).then(function (result) {
+                    //             //扣减余额
+                    //             return classSelf.Balance.create({
+                    //                 memberId: memberId,
+                    //                 type: 2,
+                    //                 amount: payAmount,
+                    //                 source: 11,
+                    //                 sourceNo: chipId,
+                    //                 remark: '购买筹码',
+                    //                 status: 1,
+                    //                 creator: operator
+                    //             }, { transaction: t }).then(function (result) {
+                    //                 classSelf.SmsSenderSvr.balanceMinus({
+                    //                     phoneNo: member.user.phoneNo,
+                    //                     name: member.user.name,
+                    //                     amount: payAmount,
+                    //                     avlAmt: balance - payAmount
+                    //                 })
+                    //                 return result
+                    //             })
+                    //         })
+                    //     } else if (payType == 2) {
+                    //         //扣减积分
+                    //         return classSelf.LoyaltyPoint.create({
+                    //             memberId: memberId,
+                    //             type: 2,
+                    //             points: payAmount,
+                    //             source: 6,
+                    //             sourceNo: chipId,
+                    //             remark: '购买筹码',
+                    //             status: 1,
+                    //             creator: operator
+                    //         }, { transaction: t }).then(function (result) {
+                    //             classSelf.SmsSenderSvr.loyaltyPointMinus({
+                    //                 phoneNo: member.user.phoneNo,
+                    //                 name: member.user.name,
+                    //                 points: payAmount,
+                    //                 avlPts: point - payAmount
+                    //             })
+                    //             return result
+                    //         })
+                    //     } else {
+                    //         throw new Error('支付方式不存在')
+                    //     }
+                    // })
+
+                    // 余额支付返豪气
+                    if (payType == 1) {
+                        //扣减余额
+                        return classSelf.Balance.create({
+                            memberId: memberId,
+                            type: 2,
+                            amount: payAmount,
+                            source: 11,
+                            sourceNo: chipId,
+                            remark: '购买筹码',
+                            status: 1,
+                            creator: operator
+                        }, { transaction: t }).then(function (result) {
+                            return classSelf.SmsSenderSvr.balanceMinus({
+                                phoneNo: member.user.phoneNo,
+                                name: member.user.name,
+                                amount: payAmount,
+                                avlAmt: balance - payAmount
                             })
-                        } else if (payType == 2) {
-                            //扣减积分
-                            return classSelf.LoyaltyPoint.create({
-                                memberId: memberId,
-                                type: 2,
+                        })
+                    } else if (payType == 2) {
+                        //扣减积分
+                        return classSelf.LoyaltyPoint.create({
+                            memberId: memberId,
+                            type: 2,
+                            points: payAmount,
+                            source: 6,
+                            sourceNo: chipId,
+                            remark: '购买筹码',
+                            status: 1,
+                            creator: operator
+                        }, { transaction: t }).then(function (result) {
+                            return classSelf.SmsSenderSvr.loyaltyPointMinus({
+                                phoneNo: member.user.phoneNo,
+                                name: member.user.name,
                                 points: payAmount,
-                                source: 6,
-                                sourceNo: chipId,
-                                remark: '购买筹码',
-                                status: 1,
-                                creator: operator
-                            }, { transaction: t }).then(function (result) {
-                                classSelf.SmsSenderSvr.loyaltyPointMinus({
-                                    phoneNo: member.user.phoneNo,
-                                    name: member.user.name,
-                                    points: payAmount,
-                                    avlPts: point - payAmount
-                                })
-                                return result
+                                avlPts: point - payAmount
                             })
-                        } else {
-                            throw new Error('支付方式不存在')
-                        }
-                    })
+                        })
+                    } else {
+                        throw new Error('支付方式不存在')
+                    }
                 })
             })
         }

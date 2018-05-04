@@ -35,7 +35,8 @@ module.exports = app => {
                         createdAt: {
                             $gte: startDatetime,
                             $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
-                        }
+                        },
+                        status:"1"
                     }
                 }, {
                     model: this.User,
@@ -66,7 +67,8 @@ module.exports = app => {
                     createdAt: {
                         $gte: startDatetime,
                         $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
-                    }
+                    },
+                    status:"1"
                 }
             })
             return result || 0
