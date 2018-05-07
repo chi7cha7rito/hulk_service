@@ -168,6 +168,7 @@ module.exports = app => {
   app.get('/sprit/spritRanking', 'sprit.spritRanking')
   app.get('/sprit/totalByMemberId', 'sprit.totalByMemberId')
   app.post('/sprit/adjust','sprit.adjust')
+  app.get('/sprit/list','sprit.list')
 
   /**
    * 优惠券api

@@ -36,7 +36,7 @@ module.exports = app => {
                             $gte: startDatetime,
                             $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
                         },
-                        status:"1"
+                        status: "1"
                     }
                 }, {
                     model: this.User,
@@ -68,7 +68,7 @@ module.exports = app => {
                         $gte: startDatetime,
                         $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
                     },
-                    status:"1"
+                    status: "1"
                 }
             })
             return result || 0
@@ -81,18 +81,20 @@ module.exports = app => {
         * @param  {} point
         * @param  {} operator}
         */
-        async adjust({ phoneNo, type, point, sourceNo, remark, operator }) {
+        async adjust({ phoneNo, type, point, sourceNo, sourceDate, attendCount, price, rank, remark, operator }) {
             const member = await this.Member.findOne({
                 where: { status: 1 },
                 include: [{ model: this.User, where: { phoneNo } }]
             })
+
+            let formatSourceDate = sourceDate ? this.moment(sourceDate).format('YYYY-MM-DD') : '';
 
             // const member = await this.Member.findOne({
             //     where: { status: 1,id }
             // })
 
             if (!member) throw new Error("会员不存在或被冻结")
-            const result = await this.Sprit.create({ memberId: member.id, type, point: parseFloat(point), sourceNo, updator: operator, remark })
+            const result = await this.Sprit.create({ memberId: member.id, type, point: parseFloat(point), sourceNo, sourceDate: formatSourceDate, attendCount, price, ranking:rank, updator: operator, remark })
             return result
         }
 
@@ -103,7 +105,7 @@ module.exports = app => {
          * @param  {} type
          * @param  {} amount:消费金额}
          */
-        async create({ memberId, type, amount = 0, operator }) {
+        async create({ memberId, type, amount = 0, sourceDate, attendCount, price, rank,operator }) {
             let point = 0
             let result
             const member = await this.Member.findById(memberId, { include: [this.MemberType] })
@@ -118,14 +120,64 @@ module.exports = app => {
                 //消费
                 point = (amount * member.memberLevel.consume || 0) / 100
             }
+
+            let formatSourceDate = sourceDate ? this.moment(sourceDate).format('YYYY-MM-DD') : '';
+
             if (point) {
                 result = await this.Sprit.create({
                     memberId: memberId,
                     type: type,
                     point: point,
-                    creator: operator
+                    sourceDate: formatSourceDate,
+                    creator: operator,
+                    attendCount, 
+                    price, 
+                    ranking:rank
                 })
             }
+            return result
+        }
+
+        /**
+         * 查询积分详情
+         * @param {*} param0 
+         */
+        async list({ phoneNo, startDatetime, endDatetime }) {
+            if (!startDatetime) throw new Error('请输入开始时间')
+            if (!endDatetime) throw new Error('请输入结束时间')
+
+            if (phoneNo) {
+                const member = await this.Member.findOne({
+                    where: { status: 1 },
+                    include: [{ model: this.User, where: { phoneNo } }]
+                })
+
+                if (!member) throw new Error("会员不存在或被冻结")
+            }
+
+
+            let userCond = {}
+
+            if (phoneNo) {
+                userCond.phoneNo = { $like: '%' + phoneNo + '%' }
+            }
+
+            const result = await this.Sprit.findAll({
+                where: {
+                    createdAt: {
+                        $gte: startDatetime,
+                        $lte: (endDatetime && this.moment(endDatetime).endOf('day'))
+                    },
+                    status: "1"
+                },
+                include: [
+                    {
+                        model: this.Member,
+                        include: [{ model: this.User, where: userCond }]
+                    }
+                ]
+            })
+
             return result
         }
     }

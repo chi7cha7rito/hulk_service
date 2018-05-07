@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = app => {
-    const { STRING, INTEGER, DECIMAL } = app.Sequelize
+    const { STRING, INTEGER, DECIMAL,DATE } = app.Sequelize
     return app.model.define('sprit', {
         id: {
             type: INTEGER,
@@ -34,12 +34,28 @@ module.exports = app => {
             type: STRING,
             comment: '参考号'
         },
+        sourceDate: {
+            type: DATE,
+            comment: '参赛日期'
+        },
         creator: {
             type: INTEGER,
         },
         remark: {
             type: STRING,
             comment: '操作备注'
+        },
+        ranking: {
+            type: INTEGER,
+            comment: '比赛名次'
+        },
+        price: {
+            type: DECIMAL,
+            comment: '比赛价格'
+        },
+        attendCount: {
+            type: INTEGER,
+            comment: '参赛人数'
         },
         status:{
             type: INTEGER,

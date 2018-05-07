@@ -20,6 +20,11 @@ module.exports = app => {
             const result = await this.SpritSvr.adjust(this.ctx.request.body);
             this.success(result)
         }
+
+        async list(){
+            const result = await this.SpritSvr.list(this.ctx.query);
+            this.success(result)
+        }
     }
     return SpritController;
 };
