@@ -89,12 +89,17 @@ module.exports = app => {
 
             let formatSourceDate = sourceDate ? this.moment(sourceDate).format('YYYY-MM-DD') : '';
 
-            // const member = await this.Member.findOne({
-            //     where: { status: 1,id }
-            // })
+            let obj = { memberId: member.id, type, point: parseFloat(point), updator: operator, remark };
+
+            if (type == "4") {
+                obj.sourceDate = formatSourceDate;
+                obj.attendCount = attendCount;
+                obj.price = price;
+                obj.ranking = rank;
+            }
 
             if (!member) throw new Error("会员不存在或被冻结")
-            const result = await this.Sprit.create({ memberId: member.id, type, point: parseFloat(point), sourceNo, sourceDate: formatSourceDate, attendCount, price, ranking:rank, updator: operator, remark })
+            const result = await this.Sprit.create(obj)
             return result
         }
 
@@ -105,7 +110,7 @@ module.exports = app => {
          * @param  {} type
          * @param  {} amount:消费金额}
          */
-        async create({ memberId, type, amount = 0, sourceDate, attendCount, price, rank,operator }) {
+        async create({ memberId, type, amount = 0, sourceDate, attendCount, price, rank, operator }) {
             let point = 0
             let result
             const member = await this.Member.findById(memberId, { include: [this.MemberType] })
@@ -122,18 +127,24 @@ module.exports = app => {
             }
 
             let formatSourceDate = sourceDate ? this.moment(sourceDate).format('YYYY-MM-DD') : '';
+            // let obj = { memberId: member.id, type, point: parseFloat(point), updator: operator, remark };
 
             if (point) {
-                result = await this.Sprit.create({
-                    memberId: memberId,
-                    type: type,
-                    point: point,
-                    sourceDate: formatSourceDate,
-                    creator: operator,
-                    attendCount, 
-                    price, 
-                    ranking:rank
-                })
+                let obj = {
+                    memberId: member.id,
+                    type,
+                    point,
+                    creator: operator
+                };
+
+                if(type=="4"){
+                    obj.sourceDate = formatSourceDate;
+                    obj.attendCount = attendCount;
+                    obj.price = price;
+                    obj.ranking = rank;
+                }
+
+                result = await this.Sprit.create(obj)
             }
             return result
         }
